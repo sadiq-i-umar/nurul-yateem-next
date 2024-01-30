@@ -29,7 +29,7 @@ const Login: React.FC = () => {
                 <Grid item xs={12} lg={6}>
                     <Box sx={{ backgroundColor: "white", minHeight: "100vh", padding: {xs: "30px", sm: "70px"} }}>
                         <Box sx={{ marginBottom: "8px" }}>
-                            <Typography sx={{ fontSize: "28px", color: "#07020D" }}>Login</Typography>
+                            <Typography variant="h1">Login</Typography>
                         </Box>
                         <Box sx={{ marginBottom: "50px" }}>
                             <Typography sx={{ fontSize: "16px", color: "#8D8B90" }}>Please provide your login credentials</Typography>
