@@ -7,8 +7,8 @@ const Login: React.FC = () => {
 
     return (
         <Box>
-            <Grid className="border-4 border-yellow-900" container>
-                <Grid item xs={12} lg={6}>
+            <Grid container>
+                <Grid item xs={12} lg={6} sx={{ backgroundColor: "#F5F5F5" }}>
                     <Box sx={{ paddingX: {xs: "20px", sm: "100px"}, paddingY: "51px" }}>
                         <Box sx={{ marginBottom: "49px" }}>
                             <LogoImageFrame image={"/nurul_yateem_logo.png"}/>
