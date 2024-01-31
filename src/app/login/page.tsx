@@ -1,11 +1,13 @@
+import { HeroImageFrame, LogoImageFrame } from "@/common/image-frames";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import Link from "next/link";
 import React from "react";
 
 const Login: React.FC = () => {
 
     return (
         <Box>
-            <Grid container>
+            <Grid className="border-4 border-yellow-900" container>
                 <Grid item xs={12} lg={6}>
                     <Box sx={{ paddingX: {xs: "20px", sm: "100px"}, paddingY: "51px" }}>
                         <Box sx={{ marginBottom: "49px" }}>
@@ -68,39 +70,12 @@ const Login: React.FC = () => {
                             </Button>
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
-                            <Typography>You don&apos;t have an account? Create an account</Typography>
+                            <Typography>You don&apos;t have an account? <Link href="/register" style={{ color: "#268600" }}>Create an account</Link></Typography>
                         </Box>
                     </Box>
                 </Grid>
             </Grid>
         </Box>
-    );
-}
-
-const LogoImageFrame: React.FC<{image:string}> = ({image}) => {
-
-    return (
-        <Box 
-            sx={{ 
-                backgroundImage: `url(${image})`,
-                backgroundSize: "100% 100%",
-                width: "154px",
-                height: "70px"
-             }}
-        />
-    );
-}
-
-const HeroImageFrame: React.FC = () => {
-
-    return (
-        <Box 
-            sx={{ 
-                backgroundColor: "#519E33",
-                width: "300px",
-                height: "300px"
-             }}
-        />
     );
 }
 
