@@ -68,7 +68,7 @@ const Login: React.FC = () => {
                             </Button>
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
-                            <Typography>You don't have an account? Create an account</Typography>
+                            <Typography>You don&apos;t have an account? Create an account</Typography>
                         </Box>
                     </Box>
                 </Grid>
