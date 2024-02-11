@@ -1,4 +1,4 @@
-import { HeroImageFrame, LogoImageFrame } from "@/common/image-frames";
+import { HeroImageFramePlaceHolder, LogoImageFrame } from "../../../components/common/image-frames";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import Link from "next/link";
 import React from "react";
@@ -15,7 +15,7 @@ const Login: React.FC = () => {
                         </Box>
                         <Box sx={{ display: {xs: "none", lg: "block"} }}>
                         <Box sx={{ marginBottom: "27px", display: "flex", justifyContent: "center" }}>
-                            <HeroImageFrame />
+                            <HeroImageFramePlaceHolder />
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "center", textAlign: "center", fontSize: "16px" }}>
                             <Typography>
