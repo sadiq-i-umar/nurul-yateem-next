@@ -1,12 +1,30 @@
-import { Box, Button, FormControlLabel, Grid, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import { Box, Button, FormControlLabel, Grid, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
+import { Identity } from "../../utils/interfaces";
 
-const IdentityTab: React.FC<{onSubmitClick: () => void}> = ({onSubmitClick}) => {
+const IdentityTab: React.FC<{onSubmitClick: (identity: Identity) => void}> = ({onSubmitClick}) => {
 
+    //Reset scroll on tab display
     window.scrollTo({
         top: 0,
     });
+
+    //Clear items in local storage before page is unloaded
+    window.onbeforeunload = function() {
+        localStorage.setItem('meansOfIdentification', '-- Select --');
+        localStorage.setItem('identificationNumber', '');
+    };
+
+    const storedMeansOfIdentification = localStorage.getItem('meansOfIdentification');
+    const storedIdentificationNumber = localStorage.getItem('identificationNumber');
+
+    const [ meansOfIdentification, setMeansOfIdentification ] = useState(storedMeansOfIdentification);
+    const [ identificationNumber, setIdentificationNumber ] = useState(storedIdentificationNumber);
+
+    const sendDataToParent = (data: Identity) => {
+        onSubmitClick(data)
+    }
 
     return (
         <Box>
@@ -21,27 +39,20 @@ const IdentityTab: React.FC<{onSubmitClick: () => void}> = ({onSubmitClick}) => 
                             <Typography>Means of Identification</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
-                                placeholder="-- Select --"
+                            <Select
+                                value={meansOfIdentification}
                                 sx={{
-                                    width: "100%",
-                                    borderRadius: "50px"
+                                    borderRadius: '10px',
+                                    width: '100%'
                                 }}
-                                inputProps={{
-                                    sx: {
-                                        borderRadius: "10px"
-                                    }
-                                }}
-                                // onChange={
-                                //     (event: { 
-                                //         target: { 
-                                //             value: React.SetStateAction<string>; 
-                                //         }; 
-                                //     }) => setFirstName(event?.target.value)}
-                                // onClick={ () => clearFirstNameError()}
-                                // error = {firstNameError || firstNameError2}
-                                // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
-                            />
+                                onChange={ (e) => {setMeansOfIdentification(e.target.value); e.target.value ? localStorage.setItem('meansOfIdentification', e.target.value) : null}}
+                                >
+                                    {["-- Select --", "NIN", "Driver's License", "International Passport"].map((item, index) => (
+                                        <MenuItem key={index} value={item}>
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                            </Select>
                         </Box>
                     </Box>
                     </Grid>
@@ -51,8 +62,7 @@ const IdentityTab: React.FC<{onSubmitClick: () => void}> = ({onSubmitClick}) => 
                             <Typography>Identification Number</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
-                                placeholder="Enter ID Number"
+                            <TextField
                                 sx={{
                                     width: "100%",
                                     borderRadius: "50px"
@@ -62,15 +72,14 @@ const IdentityTab: React.FC<{onSubmitClick: () => void}> = ({onSubmitClick}) => 
                                         borderRadius: "10px"
                                     }
                                 }}
-                                // onChange={
-                                //     (event: { 
-                                //         target: { 
-                                //             value: React.SetStateAction<string>; 
-                                //         }; 
-                                //     }) => setFirstName(event?.target.value)}
-                                // onClick={ () => clearFirstNameError()}
-                                // error = {firstNameError || firstNameError2}
-                                // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
+                                placeholder="Enter ID Number"
+                                value={identificationNumber}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => {setIdentificationNumber(event?.target.value); event.target.value ? localStorage.setItem('identificationNumber', event.target.value) : null}}
                             />
                         </Box>
                     </Box>
@@ -97,7 +106,19 @@ const IdentityTab: React.FC<{onSubmitClick: () => void}> = ({onSubmitClick}) => 
                         </Grid>
                         <Grid item lg={6}>
                             <Box>
-                                <Button onClick={onSubmitClick} variant="contained" sx={{ boxShadow: "none", width: "100%", borderRadius: "6px", textTransform: "none", paddingY: "10px", paddingX: "70px" }}>
+                                <Button onClick={() => sendDataToParent({
+                                        meansOfIdentification: meansOfIdentification,
+                                        identificationNumber: identificationNumber
+                                    })} 
+                                    variant="contained" 
+                                    sx={{ 
+                                        boxShadow: "none", 
+                                        width: "100%", 
+                                        borderRadius: "6px", 
+                                        textTransform: "none", 
+                                        paddingY: "10px", 
+                                        paddingX: "70px" 
+                                    }}>
                                         Submit
                                 </Button>
                             </Box>
