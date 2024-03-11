@@ -43,12 +43,9 @@ const Register: React.FC = () => {
 
   useEffect(() => {
     if (status === "success" && Data?.status === true) {
-      // Display a success toast notification when the registration is successful
       toast.success("Your account has been created successfully");
     } else if (status === "success" && Data?.status === false) {
-      // Parse the errors string and extract the error message
       const errors = JSON.parse(Data.errors);
-      // Display an error toast notification with the error message
       toast.error(errors.email[0]);
     }
   }, [status, Data]);
