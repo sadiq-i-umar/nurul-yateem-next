@@ -3,8 +3,8 @@
 import {
   HeroImageFrame,
   LogoImageFrame,
-} from "../../../components/common/image-frames";
-import { emailValidationRegexp, nameValidationRegexp } from "../../../utils";
+} from "../../../../components/common/image-frames";
+import { emailValidationRegexp, nameValidationRegexp } from "../../../../utils";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Alert,
@@ -25,9 +25,9 @@ import {
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import React, { useEffect, useState } from "react";
-import RegistrationSuccessMessage from "../../../components/registration-success-message";
-import { Loader } from "../../../components/common/loader";
-import { RegisterUser } from "../../../service/register";
+import RegistrationSuccessMessage from "../../../../components/registration-success-message";
+import { Loader } from "../../../../components/common/loader";
+import { RegisterUser } from "../../../../service/register";
 import { useMutation } from "@tanstack/react-query";
 
 const Register: React.FC = () => {
