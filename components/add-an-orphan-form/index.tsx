@@ -10,60 +10,30 @@ import { states_in_nigeria_dropdown } from "../../utils";
 import { PhotoUploadFrame } from "../common/image-frames";
 import { PersonalInformation } from "../../utils/interfaces";
 import { VisuallyHiddenInput } from "../common/input";
+import DragUpload from "../drag-upload";
+import { Add } from "@mui/icons-material";
+import SubmitOrphan from "../submit-orphan";
 
-const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInformation | undefined) => void}> = ({onNextClick}) => {
+const AddAnOrphanForm: React.FC<{onNextClick: (personalInfo: PersonalInformation | undefined) => void}> = ({onNextClick}) => {
 
     //Reset scroll on tab display
     window.scrollTo({
         top: 0,
     });
 
-    //Clear items in local storage before page is unloaded
-    window.onbeforeunload = function() {
-        localStorage.setItem('image', '');
-        localStorage.setItem('gender', '');
-        localStorage.setItem('dob', '');
-        localStorage.setItem('maritalStatus', '-- Select --')
-        localStorage.setItem('phone', '')
-        localStorage.setItem('altPhone', '')
-        localStorage.setItem('homeAddress', '')
-        localStorage.setItem('stateOfOrigin', '-- Select --')
-        localStorage.setItem('lga', '')
-    };
-
-    const storedImage = localStorage.getItem('image');
-    const storedGender = localStorage.getItem('gender');
-    let storedDob: Dayjs | null;
-    if (localStorage.getItem('dob') == '') {
-        storedDob = null
-    } else {
-        storedDob = dayjs(localStorage.getItem('dob'))
-    }
-    const storedMaritalStatus = localStorage.getItem('maritalStatus')
-    const storedPhone = localStorage.getItem('phone')
-    const storedAltPhone = localStorage.getItem('altPhone')
-    const storedHomeAddress = localStorage.getItem('homeAddress')
-    const storedStateOfOrigin = localStorage.getItem('stateOfOrigin')
-    const storedLga = localStorage.getItem('lga')
-
-    const [ image, setImage ] = useState<{ url: string | null; file?: any }>({ url: storedImage });
-    const [checkedGender, setCheckedGender] = useState(storedGender);
-    const [dob, setDob] = useState<Dayjs | null>(storedDob);
-    const [ maritalStatus, setMaritalStatus ] = useState(storedMaritalStatus);
-    const [ phone, setPhone ] = useState(storedPhone);
-    const [ altPhone, setAltPhone ] = useState(storedAltPhone);
-    const [ homeAddress, setHomeAddress ] = useState(storedHomeAddress);
-    const [ stateOfOrigin, setStateOfOrigin ] = useState(storedStateOfOrigin);
-    const [ lga, setLga ] = useState(storedLga);
-
-    const [ logoError, setLogoError ] = useState(false);
-    const [ dobError, setDobError ] = useState(false);
-    const [ maritalStatusError, setMaritalStatusError ] = useState(false);
-    const [ phoneError, setPhoneError ] = useState(false);
-    const [ altPhoneError, setAltPhoneError ] = useState(false);
-    const [ homeAddressError, setHomeAddressError ] = useState(false);
-    const [ stateOfOriginError, setStateOfOriginError ] = useState(false);
-    const [ lgaError, setLgaError ] = useState(false);
+    const [ image, setImage ] = useState<{ url: string | null; file?: any }>({ url: '' });
+    const [checkedGender, setCheckedGender] = useState('');
+    const [ firstName, setFirstName ] = useState('')
+    const [ lastName, setLastName ] = useState('')
+    const [ affidavit, setAffidavit ] = useState('')
+    const [ stateOfOrigin, setStateOfOrigin ] = useState('')
+    const [ lga, setLga ] = useState('')
+    const [ dob, setDob ] = useState<Dayjs | null>(null);
+    const [ schoolingStatus, setSchoolingStatus ] = useState('')
+    const [ schoolName, setSchoolName ] = useState('')
+    const [ schoolAddress, setSchoolAddress ] = useState('')
+    const [ schoolContactPerson, setSchoolContactPerson ] = useState('')
+    const [ schoolContactPersonPhone, setSchoolContactPersonPhone ] = useState('')
 
     const sendDataToParent = (data: PersonalInformation) => {
         onNextClick(data)
@@ -75,7 +45,6 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImage({ file, url: reader?.result as string });
-                localStorage.setItem('image', reader?.result as string);
             };
             reader.readAsDataURL(file);
         }
@@ -90,9 +59,6 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
 
     return (
         <Box>
-            <Box sx={{ marginBottom: "20px" }}>
-                <Typography sx={{ fontSize: "16px", fontWeight: "bold" }}>Step 1: Personal Information</Typography>
-            </Box>
             <Box sx={{ display: "flex", marginBottom: "20px", alignItems: "center", flexDirection: {xs: "column", md: "row"} }}>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid #DFDFDF", borderStyle: "dashed", paddingX: "15px", paddingY: "10px", marginRight: "30px" }}>
                     <Box sx={{ marginBottom: "10px" }}><Typography>Avatar</Typography></Box>
@@ -121,63 +87,19 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                     sx={{ display: "flex", flexDirection: "row" }}
                 >
                     <Box onClick={() => setCheckedGender("Male")} sx={{ flexShrink: 1, cursor: "pointer", border: "2px solid", paddingY: "10px", paddingX: "15px", borderRadius: "10px", marginRight: "40px", ...( checkedGender == "Male" ? {borderColor: "#268500"} : {borderColor: "#D2D2D2"} ), marginBottom: "30px" }}>
-                        <FormControlLabel onClick={() => {setCheckedGender("Male"), localStorage.setItem('gender', 'Male')}} value="Male" control={<Radio />} label="Male" />
+                        <FormControlLabel onClick={() => setCheckedGender("Male")} value="Male" control={<Radio />} label="Male" />
                     </Box>
                     <Box onClick={() => setCheckedGender("Female")} sx={{ cursor: "pointer", border: "2px solid", paddingY: "10px", paddingX: "15px", borderRadius: "10px", ...( checkedGender == "Female" ? {borderColor: "#268500"} : {borderColor: "#D2D2D2"} ), marginBottom: "30px" }}>
-                        <FormControlLabel onClick={(e) => {setCheckedGender("Female"), localStorage.setItem('gender', 'Female')}} value="Female" control={<Radio />} label="Female" />
+                        <FormControlLabel onClick={(e) => setCheckedGender("Female")} value="Female" control={<Radio />} label="Female" />
                     </Box>
                 </RadioGroup>
             </Box>
-            <Box sx={{ marginBottom: "10px" }}>
+            <Box sx={{ marginBottom: "30px" }}>
                 <Grid container spacing={5}>
                     <Grid item lg={6}>
                     <Box sx={{ marginBottom: "21.5px" }}>
                         <Box sx={{ marginBottom: "11.5px" }}>
-                            <Typography>Date of Birth</Typography>
-                        </Box>
-                        <Box sx={{ borderRadius: "10px" }}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker
-                                        value={dob}
-                                        onChange={(newDate) => {setDob(newDate ?? null); newDate ? localStorage.setItem('dob',newDate.add(1, 'day').toISOString().substring(0, 10)) : null;}}
-                                        format="DD/MM/YYYY"
-                                        sx={{ width: "100%" }}
-                                    />
-                            </LocalizationProvider>
-                        </Box>
-                    </Box>
-                    </Grid>
-                    <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                        <Box sx={{ marginBottom: "11.5px" }}>
-                            <Typography>Marital Status</Typography>
-                        </Box>
-                        <Box sx={{ borderRadius: "10px" }}>
-                            <Select
-                                value={maritalStatus}
-                                sx={{
-                                    borderRadius: '10px',
-                                    width: '100%'
-                                }}
-                                onChange={ (e) => {setMaritalStatus(e.target.value); e.target.value ? localStorage.setItem('maritalStatus', e.target.value) : null}}
-                                >
-                                    {[ "-- Select --", "Single", "Married" ].map((item, index) => (
-                                        <MenuItem key={index} value={item}>
-                                            {item}
-                                        </MenuItem>
-                                    ))}
-                            </Select>
-                        </Box>
-                    </Box>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box sx={{ marginBottom: "10px" }}>
-                <Grid container spacing={5}>
-                    <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                        <Box sx={{ marginBottom: "11.5px" }}>
-                            <Typography>Phone Number</Typography>
+                            <Typography>Firstname</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
                             <TextField
@@ -190,14 +112,14 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                                         borderRadius: "10px"
                                     }
                                 }}
-                                placeholder="Enter Phone Number"
-                                value={phone}
+                                placeholder="Enter firstname"
+                                value={firstName}
                                 onChange={
                                     (event: { 
                                         target: { 
                                             value: string; 
                                         }; 
-                                    }) => {setPhone(event?.target.value); event.target.value ? localStorage.setItem('phone', event.target.value) : null}}
+                                    }) => setFirstName(event?.target.value)}
                             />
                         </Box>
                     </Box>
@@ -205,10 +127,10 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                     <Grid item lg={6}>
                     <Box sx={{ marginBottom: "21.5px" }}>
                         <Box sx={{ marginBottom: "11.5px" }}>
-                            <Typography>Alternate Phone Number {`(Optional)`}</Typography>
+                            <Typography>Lastname</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
+                            <TextField
                                 sx={{
                                     width: "100%",
                                     borderRadius: "50px"
@@ -218,49 +140,24 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                                         borderRadius: "10px"
                                     }
                                 }}
-                                placeholder={"Enter Alternate Phone Number"}
-                                value={altPhone}
+                                placeholder="Enter lastname"
+                                value={lastName}
                                 onChange={
                                     (event: { 
                                         target: { 
                                             value: string; 
                                         }; 
-                                    }) => {setAltPhone(event?.target.value); event.target.value ? localStorage.setItem('altPhone', event.target.value) : null}}
+                                    }) => setLastName(event?.target.value)}
                             />
                         </Box>
                     </Box>
                     </Grid>
                 </Grid>
             </Box>
-            <Box sx={{ marginBottom: "21.5px" }}>
-                <Box sx={{ marginBottom: "11.5px" }}>
-                    <Typography>Home Address</Typography>
-                </Box>
-                <Box sx={{ borderRadius: "10px" }}>
-                    <TextField 
-                        placeholder="Write in here..."
-                        sx={{
-                            width: "100%",
-                            borderRadius: "50px"
-                        }}
-                        inputProps={{
-                            sx: {
-                                borderRadius: "10px"
-                            }
-                        }}
-                        value={homeAddress}
-                        onChange={
-                            (event: { 
-                                target: { 
-                                    value: string; 
-                                }; 
-                            }) => {setHomeAddress(event?.target.value); event.target.value ? localStorage.setItem('homeAddress', event.target.value) : null}}
-                        multiline
-                        rows={4}
-                    />
-                </Box>
+            <Box sx={{ marginBottom: "60px", width: "100%" }}>
+                <DragUpload title={"Affidavit of Guardianship"} subtitle={"Drag and Drop Document"} />
             </Box>
-            <Box sx={{ marginBottom: "30px" }}>
+            <Box sx={{ marginBottom: "10px" }}>
                 <Grid container spacing={5}>
                     <Grid item lg={6}>
                     <Box sx={{ marginBottom: "21.5px" }}>
@@ -268,20 +165,20 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                             <Typography>State of Origin</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                        <Select
-                            value={stateOfOrigin}
-                            sx={{
-                                borderRadius: '10px',
-                                width: '100%'
-                            }}
-                            onChange={ (e) => {setStateOfOrigin(e.target.value); e.target.value ? localStorage.setItem('stateOfOrigin', e.target.value) : null}}
-                            >
-                                {["-- Select --", ...states_in_nigeria_dropdown].map((item, index) => (
-                                    <MenuItem key={index} value={item}>
-                                        {item}
-                                    </MenuItem>
-                                ))}
-                        </Select>
+                            <Select
+                                value={stateOfOrigin}
+                                sx={{
+                                    borderRadius: '10px',
+                                    width: '100%'
+                                }}
+                                onChange={ (e) => {setStateOfOrigin(e.target.value); e.target.value ? localStorage.setItem('stateOfOrigin', e.target.value) : null}}
+                                >
+                                    {["-- Select --", ...states_in_nigeria_dropdown].map((item, index) => (
+                                        <MenuItem key={index} value={item}>
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                            </Select>
                         </Box>
                     </Box>
                     </Grid>
@@ -291,7 +188,7 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                             <Typography>LGA</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
+                        <TextField 
                                 sx={{
                                     width: "100%",
                                     borderRadius: "50px"
@@ -308,12 +205,183 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                                         target: { 
                                             value: string; 
                                         }; 
-                                    }) => {setLga(event?.target.value); event.target.value ? localStorage.setItem('lga', event.target.value) : null}}
+                                    }) => setLga(event?.target.value)}
                             />
                         </Box>
                     </Box>
                     </Grid>
                 </Grid>
+            </Box>
+            <Box sx={{ marginBottom: "50px" }}>
+                <Grid container spacing={5}>
+                    <Grid item lg={6}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                            <Typography>Date of Birth</Typography>
+                        </Box>
+                        <Box sx={{ borderRadius: "10px" }}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    value={dob}
+                                    onChange={(newDate) => setDob(newDate ?? null)}
+                                    format="DD/MM/YYYY"
+                                    sx={{ width: "100%" }}
+                                />
+                            </LocalizationProvider>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+            <Box sx={{ marginBottom: "50px" }}>
+                <Typography variant={"h1"} sx={{ fontWeight: 400 }}>School Information</Typography>
+            </Box>
+            <Box sx={{ marginBottom: "10px" }}>
+                <Grid container spacing={5}>
+                    <Grid item lg={6}>
+                    <Box sx={{ marginBottom: "21.5px" }}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                            <Typography>Is he/she in school?</Typography>
+                        </Box>
+                        <Box sx={{ borderRadius: "10px" }}>
+                            <Select
+                                value={schoolingStatus}
+                                sx={{
+                                    borderRadius: '10px',
+                                    width: '100%'
+                                }}
+                                onChange={ (e) => setSchoolingStatus(e.target.value)}
+                                >
+                                    {["-- Select --", ...states_in_nigeria_dropdown].map((item, index) => (
+                                        <MenuItem key={index} value={item}>
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                            </Select>
+                        </Box>
+                    </Box>
+                    </Grid>
+                    <Grid item lg={6}>
+                    <Box sx={{ marginBottom: "21.5px" }}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                            <Typography>School Name</Typography>
+                        </Box>
+                        <Box sx={{ borderRadius: "10px" }}>
+                        <TextField 
+                                sx={{
+                                    width: "100%",
+                                    borderRadius: "50px"
+                                }}
+                                inputProps={{
+                                    sx: {
+                                        borderRadius: "10px"
+                                    }
+                                }}
+                                placeholder={"Enter School Name"}
+                                value={schoolName}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => setSchoolName(event?.target.value)}
+                            />
+                        </Box>
+                    </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+            <Box sx={{ marginBottom: "40px" }}>
+                <Box sx={{ marginBottom: "11.5px" }}>
+                    <Typography>School Address</Typography>
+                </Box>
+                <Box sx={{ borderRadius: "10px" }}>
+                    <TextField 
+                        placeholder="Write in here..."
+                        sx={{
+                            width: "100%",
+                            borderRadius: "50px"
+                        }}
+                        inputProps={{
+                            sx: {
+                                borderRadius: "10px"
+                            }
+                        }}
+                        value={schoolAddress}
+                        onChange={
+                            (event: { 
+                                target: { 
+                                    value: string; 
+                                }; 
+                            }) => setSchoolAddress(event?.target.value)}
+                        multiline
+                        rows={4}
+                    />
+                </Box>
+            </Box>
+            <Box sx={{ marginBottom: "30px" }}>
+                <Grid container spacing={5}>
+                    <Grid item lg={6}>
+                    <Box sx={{ marginBottom: "21.5px" }}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                            <Typography>School Contact Person</Typography>
+                        </Box>
+                        <Box sx={{ borderRadius: "10px" }}>
+                            <TextField
+                                sx={{
+                                    width: "100%",
+                                    borderRadius: "50px"
+                                }}
+                                inputProps={{
+                                    sx: {
+                                        borderRadius: "10px"
+                                    }
+                                }}
+                                placeholder="Enter full name"
+                                value={schoolContactPerson}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => setSchoolContactPerson(event?.target.value)}
+                            />
+                        </Box>
+                    </Box>
+                    </Grid>
+                    <Grid item lg={6}>
+                    <Box sx={{ marginBottom: "21.5px" }}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                            <Typography>Phone Number of Contact Person</Typography>
+                        </Box>
+                        <Box sx={{ borderRadius: "10px" }}>
+                            <TextField
+                                sx={{
+                                    width: "100%",
+                                    borderRadius: "50px"
+                                }}
+                                inputProps={{
+                                    sx: {
+                                        borderRadius: "10px"
+                                    }
+                                }}
+                                placeholder="Enter phone number"
+                                value={schoolContactPersonPhone}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => setSchoolContactPersonPhone(event?.target.value)}
+                            />
+                        </Box>
+                    </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+            <Box sx={{ marginBottom: "80px" }}>
+                <Box sx={{ display: "flex", alignItems: "center", color: "#007A27" }}>
+                    <Add sx={{ marginRight: "10px" }}/>
+                    <Typography sx={{ fontSize: "16px" }}>Add Orphan</Typography>
+                </Box>
             </Box>
             <Box sx={{ marginBottom: "100px" }}>
             <Grid container spacing={5}>
@@ -335,29 +403,7 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
                         </Grid>
                         <Grid item lg={6}>
                             <Box>
-                                <Button 
-                                    onClick={() => sendDataToParent({
-                                        image: image, 
-                                        gender: checkedGender, 
-                                        dob: dob?.format('DD/MM/YYYY'), 
-                                        maritalStatus: maritalStatus,
-                                        phone: phone, 
-                                        altPhone: altPhone, 
-                                        homeAddress: homeAddress, 
-                                        stateOfOrigin: stateOfOrigin, 
-                                        lga: lga
-                                    })} 
-                                    variant="contained" 
-                                    sx={{ 
-                                        boxShadow: "none", 
-                                        width: "100%", 
-                                        borderRadius: "6px", 
-                                        textTransform: "none", 
-                                        paddingY: "10px", 
-                                        paddingX: "70px" 
-                                }}>
-                                        Next
-                                </Button>
+                                <SubmitOrphan />
                             </Box>
                         </Grid>
                     </Grid>
@@ -368,4 +414,4 @@ const PersonalInformationTab: React.FC<{onNextClick: (personalInfo: PersonalInfo
     );
 }
 
-export default PersonalInformationTab;
+export default AddAnOrphanForm;

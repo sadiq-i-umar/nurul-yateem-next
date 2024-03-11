@@ -7,6 +7,7 @@ import { Alert, Box, Button, CircularProgress, FormControl, FormControlLabel, Gr
 import Link from "next/link";
 import React, { useState } from "react";
 import RegistrationSuccessMessage from "../../../components/registration-success-message";
+import { Loader } from "../../../components/common/loader";
 
 const Register: React.FC = () => {
 
@@ -175,8 +176,8 @@ const Register: React.FC = () => {
 
     return (
         <>
-        <Box sx={{ ...(isLoading ? {display: "flex"} : {display: "none"}), justifyContent: "center", alignItems: "center", position: "fixed", width: "100%", height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: "1" }}>
-            <CircularProgress color="success" />
+        <Box sx={{ ...(isLoading ? {display: "block"} : {display: "none"})}}>
+            <Loader />
         </Box>
         <Box>
             <Box>

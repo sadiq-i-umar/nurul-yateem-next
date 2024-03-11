@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import Image from "next/image";
 import React from "react";
 
 export const LogoImageFrame: React.FC<{image:string}> = ({image}) => {
@@ -59,6 +60,27 @@ export const ProfileImageFrame: React.FC<{initials: string}> = ({initials}) => {
              }}
         >
         {initials}
+        </Box>
+    );
+}
+
+export const PhotoUploadFrame: React.FC<{image: string}> = ({image}) => {
+
+    return (
+        <Box 
+            sx={{ 
+                backgroundImage: `url(${image})`,
+                backgroundSize: "100% 100%",
+                marginBottom: "10px", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                backgroundColor: "#F5F5F5", 
+                borderRadius: "50%",
+                width: "110px",
+                height: "110px"
+        }}>
+            {image == "" && <Image src={"/camera.svg"} width={30} height={30} alt={"Upload Camera Icon"}/>}
         </Box>
     );
 }

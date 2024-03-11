@@ -1,14 +1,41 @@
-import { Box, Button, FormControlLabel, Grid, Radio, RadioGroup, TextField, Typography } from "@mui/material";
-import Image from "next/image";
+import { Box, Button, Grid, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import { Occupation } from "../../utils/interfaces";
 
-const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
+const OccupationTab: React.FC<{onNextClick: (occupation: Occupation) => void}> = ({onNextClick}) => {
 
+    //Reset scroll on tab display
     window.scrollTo({
         top: 0,
     });
 
-    const [checkedGender, setCheckedGender] = useState("Male");
+    //Clear items in local storage before page is unloaded
+    window.onbeforeunload = function() {
+        localStorage.setItem('employmentStatus', '-- Select --');
+        localStorage.setItem('natureOfJob', '');
+        localStorage.setItem('annualIncome', '');
+        localStorage.setItem('employerName', '')
+        localStorage.setItem('employerPhone', '')
+        localStorage.setItem('employerAddress', '')
+    };
+
+    const storedEmploymentStatus = localStorage.getItem('employmentStatus');
+    const storedNatureOfJob = localStorage.getItem('natureOfJob');
+    const storedAnnualIncome = localStorage.getItem('annualIncome');
+    const storedEmployerName = localStorage.getItem('employerName');
+    const storedEmployerPhone = localStorage.getItem('employerPhone');
+    const storedEmployerAddress = localStorage.getItem('employerAddress');
+
+    const [ employmentStatus, setEmploymentStatus ] = useState(storedEmploymentStatus);
+    const [ natureOfJob, setNatureOfJob ] = useState(storedNatureOfJob);
+    const [ annualIncome, setAnnualIncome ] = useState(storedAnnualIncome);
+    const [ employerName, setEmployerName ] = useState(storedEmployerName);
+    const [ employerPhone, setEmployerPhone ] = useState(storedEmployerPhone);
+    const [ employerAddress, setEmployerAddress ] = useState(storedEmployerAddress);
+
+    const sendDataToParent = (data: Occupation) => {
+        onNextClick(data)
+    }
 
     return (
         <Box>
@@ -23,27 +50,20 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                             <Typography>Employment Status</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
-                                placeholder="-- Select --"
+                            <Select
+                                value={employmentStatus}
                                 sx={{
-                                    width: "100%",
-                                    borderRadius: "50px"
+                                    borderRadius: '10px',
+                                    width: '100%'
                                 }}
-                                inputProps={{
-                                    sx: {
-                                        borderRadius: "10px"
-                                    }
-                                }}
-                                // onChange={
-                                //     (event: { 
-                                //         target: { 
-                                //             value: React.SetStateAction<string>; 
-                                //         }; 
-                                //     }) => setFirstName(event?.target.value)}
-                                // onClick={ () => clearFirstNameError()}
-                                // error = {firstNameError || firstNameError2}
-                                // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
-                            />
+                                onChange={ (e) => {setEmploymentStatus(e.target.value); e.target.value ? localStorage.setItem('employmentStatus', e.target.value) : null}}
+                                >
+                                    {[ "-- Select --", "Employed", "Unemployed" ].map((item, index) => (
+                                        <MenuItem key={index} value={item}>
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                            </Select>
                         </Box>
                     </Box>
                     </Grid>
@@ -53,8 +73,7 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                             <Typography>Nature of Job</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
-                                placeholder="-- Select --"
+                            <TextField
                                 sx={{
                                     width: "100%",
                                     borderRadius: "50px"
@@ -64,15 +83,14 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                                         borderRadius: "10px"
                                     }
                                 }}
-                                // onChange={
-                                //     (event: { 
-                                //         target: { 
-                                //             value: React.SetStateAction<string>; 
-                                //         }; 
-                                //     }) => setFirstName(event?.target.value)}
-                                // onClick={ () => clearFirstNameError()}
-                                // error = {firstNameError || firstNameError2}
-                                // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
+                                placeholder="Enter Nature of Job"
+                                value={natureOfJob}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => {setNatureOfJob(event?.target.value); event.target.value ? localStorage.setItem('natureOfJob', event.target.value) : null}}
                             />
                         </Box>
                     </Box>
@@ -87,8 +105,7 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                             <Typography>Annual Income</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
-                                placeholder="Currency in Naira"
+                            <TextField
                                 sx={{
                                     width: "100%",
                                     borderRadius: "50px"
@@ -98,15 +115,14 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                                         borderRadius: "10px"
                                     }
                                 }}
-                                // onChange={
-                                //     (event: { 
-                                //         target: { 
-                                //             value: React.SetStateAction<string>; 
-                                //         }; 
-                                //     }) => setFirstName(event?.target.value)}
-                                // onClick={ () => clearFirstNameError()}
-                                // error = {firstNameError || firstNameError2}
-                                // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
+                                placeholder="Enter Annual Income"
+                                value={annualIncome}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => {setAnnualIncome(event?.target.value); event.target.value ? localStorage.setItem('annualIncome', event.target.value) : null}}
                             />
                         </Box>
                     </Box>
@@ -117,8 +133,7 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                             <Typography>Employer's Name</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
-                                placeholder="Enter Fullname"
+                            <TextField
                                 sx={{
                                     width: "100%",
                                     borderRadius: "50px"
@@ -128,15 +143,14 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                                         borderRadius: "10px"
                                     }
                                 }}
-                                // onChange={
-                                //     (event: { 
-                                //         target: { 
-                                //             value: React.SetStateAction<string>; 
-                                //         }; 
-                                //     }) => setFirstName(event?.target.value)}
-                                // onClick={ () => clearFirstNameError()}
-                                // error = {firstNameError || firstNameError2}
-                                // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
+                                placeholder="Employer's name"
+                                value={employerName}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => {setEmployerName(event?.target.value); event.target.value ? localStorage.setItem('employerName', event.target.value) : null}}
                             />
                         </Box>
                     </Box>
@@ -151,8 +165,7 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                             <Typography>Employer's Phone Number</Typography>
                         </Box>
                         <Box sx={{ borderRadius: "10px" }}>
-                            <TextField 
-                                placeholder="08109875634"
+                            <TextField
                                 sx={{
                                     width: "100%",
                                     borderRadius: "50px"
@@ -162,15 +175,14 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                                         borderRadius: "10px"
                                     }
                                 }}
-                                // onChange={
-                                //     (event: { 
-                                //         target: { 
-                                //             value: React.SetStateAction<string>; 
-                                //         }; 
-                                //     }) => setFirstName(event?.target.value)}
-                                // onClick={ () => clearFirstNameError()}
-                                // error = {firstNameError || firstNameError2}
-                                // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
+                                placeholder="Enter Phone Number"
+                                value={employerPhone}
+                                onChange={
+                                    (event: { 
+                                        target: { 
+                                            value: string; 
+                                        }; 
+                                    }) => {setEmployerPhone(event?.target.value); event.target.value ? localStorage.setItem('employerPhone', event.target.value) : null}}
                             />
                         </Box>
                     </Box>
@@ -195,17 +207,15 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                                 borderRadius: "10px"
                             }
                         }}
+                        value={employerAddress}
+                        onChange={
+                            (event: { 
+                                target: { 
+                                    value: string; 
+                                }; 
+                            }) => {setEmployerAddress(event?.target.value); event.target.value ? localStorage.setItem('employerAddress', event.target.value) : null}}
                         multiline
-                        rows={3}
-                        // onChange={
-                        //     (event: { 
-                        //         target: { 
-                        //             value: React.SetStateAction<string>; 
-                        //         }; 
-                        //     }) => setFirstName(event?.target.value)}
-                        // onClick={ () => clearFirstNameError()}
-                        // error = {firstNameError || firstNameError2}
-                        // helperText = {(firstNameError && "Must not be empty") || (firstNameError2 && "Must be a valid name input")}
+                        rows={4}
                     />
                 </Box>
             </Box>
@@ -229,7 +239,24 @@ const OccupationTab: React.FC<{onNextClick: () => void}> = ({onNextClick}) => {
                         </Grid>
                         <Grid item lg={6}>
                             <Box>
-                                <Button onClick={onNextClick} variant="contained" sx={{ boxShadow: "none", width: "100%", borderRadius: "6px", textTransform: "none", paddingY: "10px", paddingX: "70px" }}>
+                            <Button 
+                                    onClick={() => sendDataToParent({
+                                        employmentStatus: employmentStatus,
+                                        natureOfJob: natureOfJob,
+                                        annualIncome: annualIncome,
+                                        employerName: employerName,
+                                        employerPhone: employerPhone,
+                                        employerAddress: employerAddress
+                                    })} 
+                                    variant="contained" 
+                                    sx={{ 
+                                        boxShadow: "none", 
+                                        width: "100%", 
+                                        borderRadius: "6px", 
+                                        textTransform: "none", 
+                                        paddingY: "10px", 
+                                        paddingX: "70px" 
+                                    }}>
                                         Next
                                 </Button>
                             </Box>
