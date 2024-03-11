@@ -11,8 +11,6 @@ import AddAnOrphanForm from "../../../components/add-an-orphan-form";
 
 const AddAnOrphan: React.FC = () => {
 
-    localStorage.clear();
-
     const [ isLoading, setIsLoading ] = useState(false);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
