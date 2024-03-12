@@ -63,48 +63,65 @@ const Login: React.FC = () => {
     }
 
     if (emailAddress && password && password.length >= 8) {
-      const res = await signIn("credentials", {
-        email: emailAddress,
-        password: password,
-        redirect: false,
-      });
+      try {
+        const res = await signIn("credentials", {
+          email: emailAddress,
+          password: password,
+          redirect: false,
+        });
 
-      if (res && res.ok) {
-        const user: Session | null | undefined = await getSession();
-        console.log(user);
-        if (user !== undefined) {
-          if (user?.user?.account === "SPONSOR") {
-            toast.success("Login successful! Redirecting...");
-            router.push("/dashboard/home");
-          } else if (user?.user?.account === "GUARDIAN") {
-            try {
-              const profileRes = await axios.get(`${baseUrl}/user-profile`, {
-                headers: {
-                  Authorization: `Bearer ${user?.token}`,
-                },
-              });
-              console.log("User profile:", profileRes.data);
+        if (res && res.ok) {
+          const user: Session | null | undefined = await getSession();
+          console.log(user);
+          if (user !== undefined) {
+            if (user?.user?.account === "ADMIN") {
+              toast.success("Login successful! Redirecting...");
+              router.push("/dashboard/admin");
+            } else if (user?.user?.account === "SPONSOR") {
+              toast.success("Login successful! Redirecting...");
+              router.push("/dashboard/home");
+            } else if (user?.user?.account === "GUARDIAN") {
+              try {
+                const profileRes = await axios.get(`${baseUrl}/user-profile`, {
+                  headers: {
+                    Authorization: `Bearer ${user?.token}`,
+                  },
+                });
+                console.log("User profile:", profileRes?.data);
 
-              const { guardian_profile, orphans } = profileRes.data;
+                const { orphans } = profileRes?.data;
 
-              if (!guardian_profile) {
-                router.push("/add-guardian");
-              } else if (orphans.length === 0) {
-                router.push("/add-orphan");
-              } else {
-                router.push("/dashboard/home");
+                if (orphans.length === 0) {
+                  router.push("/dashboard/add-an-orphan");
+                } else {
+                  router.push("/dashboard/home");
+                }
+              } catch (error: any) {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.error ===
+                    "Guardian profile not found for this user."
+                ) {
+                  router.push("/dashboard/complete-account");
+                } else {
+                  console.error("Error getting user profile:", error);
+                }
               }
-            } catch (error) {
-              console.error("Error getting user profile:", error);
             }
+          } else {
+            console.error(
+              "User session or user role is undefined after sign in"
+            );
+            //   setShowError(true);
           }
         } else {
-          console.error("User session or user role is undefined after sign in");
-          //   setShowError(true);
+          console.error("Error during sign in:", res);
+          // setShowError(true);
         }
-      } else {
-        console.error("Error during sign in:", res);
-        // setShowError(true);
+      } catch (error) {
+        console.error("Error during sign in:", error);
+        // Handle other errors if needed
       }
     }
   };
