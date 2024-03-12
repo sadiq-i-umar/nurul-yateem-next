@@ -1,15 +1,15 @@
 "use client";
 
-import { LogoImageFrame, ProfileImageFrame } from "../../../components/common/image-frames";
+import { LogoImageFrame, ProfileImageFrame } from "../../../../../components/common/image-frames";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { useState } from "react";
-import PersonalInformationTab from "../../../components/personal-information-tab";
-import OccupationTab from "../../../components/occupation-tab";
-import IdentityTab from "../../../components/identity-tab";
-import ProfileSubmitSuccess from "../../../components/profile-submit-success";
+import PersonalInformationTab from "../../../../../components/personal-information-tab";
+import OccupationTab from "../../../../../components/occupation-tab";
+import IdentityTab from "../../../../../components/identity-tab";
+import ProfileSubmitSuccess from "../../../../../components/profile-submit-success";
 import { ArrowLeft } from "@mui/icons-material";
-import { Identity, Occupation, PersonalInformation } from "../../../utils/interfaces";
-import { Loader } from "../../../components/common/loader";
+import { Identity, Occupation, PersonalInformation } from "../../../../../utils/interfaces";
+import { Loader } from "../../../../../components/common/loader";
 
 const CompleteAccount: React.FC = () => {
 
