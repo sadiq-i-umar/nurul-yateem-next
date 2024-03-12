@@ -5,6 +5,7 @@ import {
   HeroImageFramePlaceHolder,
   LogoImageFrame,
 } from "../../../../components/common/image-frames";
+import { toast } from "react-hot-toast";
 import {
   Box,
   Button,
@@ -22,11 +23,14 @@ import {
 import Link from "next/link";
 import { Session } from "next-auth";
 import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { baseUrl } from "../../../../utils/constant";
 
 const Login: React.FC = () => {
+  const router = useRouter();
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
-  const [checkedAccountType, setCheckedAccountType] = useState("GUARDIAN");
   const [emailAddressError, setEmailAddressError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // Define showPassword state
@@ -58,24 +62,42 @@ const Login: React.FC = () => {
       setPasswordError2(true);
     }
 
-    if (
-      emailAddress &&
-      password &&
-      password.length >= 8 &&
-      checkedAccountType
-    ) {
+    if (emailAddress && password && password.length >= 8) {
       const res = await signIn("credentials", {
         email: emailAddress,
         password: password,
-        account_type: checkedAccountType,
         redirect: false,
       });
 
       if (res && res.ok) {
         const user: Session | null | undefined = await getSession();
-
+        console.log(user);
         if (user !== undefined) {
-          console.log("User session:", user);
+          if (user?.user?.account === "SPONSOR") {
+            toast.success("Login successful! Redirecting...");
+            router.push("/dashboard/home");
+          } else if (user?.user?.account === "GUARDIAN") {
+            try {
+              const profileRes = await axios.get(`${baseUrl}/user-profile`, {
+                headers: {
+                  Authorization: `Bearer ${user?.token}`,
+                },
+              });
+              console.log("User profile:", profileRes.data);
+
+              const { guardian_profile, orphans } = profileRes.data;
+
+              if (!guardian_profile) {
+                router.push("/add-guardian");
+              } else if (orphans.length === 0) {
+                router.push("/add-orphan");
+              } else {
+                router.push("/dashboard/home");
+              }
+            } catch (error) {
+              console.error("Error getting user profile:", error);
+            }
+          }
         } else {
           console.error("User session or user role is undefined after sign in");
           //   setShowError(true);
@@ -212,59 +234,7 @@ const Login: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
-                <Typography>Select Account Type</Typography>
-              </Box>
-              <RadioGroup value={checkedAccountType}>
-                <Grid container rowSpacing={3} columnSpacing={5}>
-                  <Grid item xs={12} sm={6}>
-                    <Box
-                      onClick={() => setCheckedAccountType("GUARDIAN")}
-                      sx={{
-                        cursor: "pointer",
-                        border: "2px solid",
-                        paddingY: "10px",
-                        paddingX: "15px",
-                        borderRadius: "5px",
-                        ...(checkedAccountType == "GUARDIAN"
-                          ? { borderColor: "#268500" }
-                          : { borderColor: "#D2D2D2" }),
-                      }}
-                    >
-                      <FormControlLabel
-                        onClick={() => setCheckedAccountType("GUARDIAN")}
-                        value="GUARDIAN"
-                        control={<Radio />}
-                        label="Guardian"
-                      />
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box
-                      onClick={() => setCheckedAccountType("SPONSOR")}
-                      sx={{
-                        cursor: "pointer",
-                        border: "2px solid",
-                        paddingY: "10px",
-                        paddingX: "15px",
-                        borderRadius: "5px",
-                        ...(checkedAccountType == "SPONSOR"
-                          ? { borderColor: "#268500" }
-                          : { borderColor: "#D2D2D2" }),
-                      }}
-                    >
-                      <FormControlLabel
-                        onClick={() => setCheckedAccountType("SPONSOR")}
-                        value="SPONSOR"
-                        control={<Radio />}
-                        label="Sponsor"
-                      />
-                    </Box>
-                  </Grid>
-                </Grid>
-              </RadioGroup>
-            </Box>
+
             <Box sx={{ marginBottom: "19px" }}>
               <Button
                 onClick={handleLogin}

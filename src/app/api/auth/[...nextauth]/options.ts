@@ -42,7 +42,6 @@ const credentialsProviderOptions: any = {
           },
           account: json.user.account_type,
         };
-        console.log(user);
         return user;
       }
     } catch (err) {
