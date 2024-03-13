@@ -47,6 +47,7 @@ const Login: React.FC = () => {
   function handleClickShowPassword() {
     setShowPassword(!showPassword);
   }
+  
 
   const handleLogin = async () => {
     setLoading(true); // Set loading state to true when login process starts
@@ -83,9 +84,12 @@ const Login: React.FC = () => {
             if (user?.user?.account === "ADMIN") {
               toast.success("Login successful!");
               router.push("/dashboard/admin");
+              router.refresh();
             } else if (user?.user?.account === "SPONSOR") {
               toast.success("Login successful!");
               router.push("/dashboard/home");
+              router.refresh();
+
             } else if (user?.user?.account === "GUARDIAN") {
               try {
                 const profileRes = await axios.get(`${baseUrl}/user-profile`, {
@@ -101,9 +105,13 @@ const Login: React.FC = () => {
                     "Please complete your profile first. You have no orphans."
                   );
                   router.push("/dashboard/add-an-orphan");
+                  router.refresh();
+
                 } else {
                   toast.success("Login successful!");
                   router.push("/dashboard/home");
+                  router.refresh();
+
                 }
               } catch (error: any) {
                 if (
@@ -114,6 +122,8 @@ const Login: React.FC = () => {
                 ) {
                   toast.success("Please complete your profile first.");
                   router.push("/dashboard/complete-account");
+                  router.refresh();
+
                 } else {
                   console.error("Error during fetching user profile:", error);
                   toast.error("Invalid email or password.");
