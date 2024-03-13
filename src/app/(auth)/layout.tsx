@@ -14,10 +14,10 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
     return null;
   }
 
-  if (session) {
-    redirect("/dashboard/home");
-    return null;
-  }
+  // if (session) {
+    // redirect("/dashboard/home");
+  //   return null;
+  // }
 
   return <main>{children}</main>;
 };

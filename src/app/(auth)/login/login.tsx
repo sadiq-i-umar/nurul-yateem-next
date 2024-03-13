@@ -100,7 +100,7 @@ const Login: React.FC = () => {
 
                 const { orphans } = profileRes?.data;
 
-                if (orphans.length === 0) {
+                if (orphans?.length === 0) {
                   toast.success(
                     "Please complete your profile first. You have no orphans."
                   );
@@ -109,7 +109,7 @@ const Login: React.FC = () => {
 
                 } else {
                   toast.success("Login successful!");
-                  router.push("/dashboard/home");
+                  router.push("/dashboard/complete-account");
                   router.refresh();
 
                 }

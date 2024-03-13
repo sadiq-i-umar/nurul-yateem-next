@@ -39,7 +39,6 @@ const Register: React.FC = () => {
   } = useMutation({
     mutationFn: (payload: any) => RegisterUser(payload), // Assuming RegisterUser is an async function returning a Promise
   });
-  console.log(Data?.status);
 
   useEffect(() => {
     if (status === "success" && Data?.status === true) {

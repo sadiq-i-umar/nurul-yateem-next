@@ -16,15 +16,26 @@ import {
   Occupation,
   PersonalInformation,
 } from "../../../../../../utils/interfaces";
+import { useSession } from "next-auth/react";
 import { Loader } from "../../../../../../components/common/loader";
-import { signOut } from "next-auth/react";
+import { UpdateAccount } from "../../../../../../service/update-account";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const CompleteAccount: React.FC = () => {
-  localStorage.clear();
-
+  const { data: session } = useSession();
+  const token = session?.token;
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const {
+    mutateAsync,
+    status,
+    isSuccess,
+    data: Data,
+  } = useMutation({
+    mutationFn: (payload: any) => UpdateAccount(payload, token), // Assuming RegisterUser is an async function returning a Promise
+  });
 
   let image: { url: string | null; file?: any } | undefined;
   let gender: string | null | undefined;
@@ -50,14 +61,46 @@ const CompleteAccount: React.FC = () => {
     setActiveTab(activeTab + 1);
   };
 
-  const handleSubmitClick = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setShowSuccessMessage(true);
-    }, 4000);
-  };
+  const handleSubmitClick = async () => {
+    if (!token) {
+      return;
+    }
 
+    setIsLoading(true); // Set loading to true just before making the mutation call
+
+    try {
+      const payload = {
+        profile_photo: "url_to_profile_photo",
+        gender: localStorage.getItem("gender")?.toUpperCase(),
+        date_of_birth: localStorage.getItem("dob"),
+        marital_status: localStorage.getItem("maritalStatus")?.toUpperCase(),
+        phone_number: localStorage.getItem("phone"),
+        alt_phn_number: localStorage.getItem("altPhone"),
+        home_address: localStorage.getItem("homeAddress"),
+        state_of_origin: localStorage.getItem("stateOfOrigin"),
+        local_government_area: localStorage.getItem("lga"),
+        employment_status: localStorage
+          .getItem("employmentStatus")
+          ?.toUpperCase(),
+        nature_of_occupation: localStorage.getItem("natureOfJob"),
+        annual_income: localStorage.getItem("annualIncome"),
+        employer_name: localStorage.getItem("employerName"),
+        employer_phone: localStorage.getItem("employerPhone"),
+        employer_address: localStorage.getItem("employerAddress"),
+        mean_of_identity: localStorage
+          .getItem("meansOfIdentification")
+          ?.toUpperCase(),
+        identity_number: localStorage.getItem("identificationNumber"),
+      };
+
+      await mutateAsync(payload);
+      setShowSuccessMessage(true);
+    } catch (error) {
+      toast.error("An error occurred. Please try again later");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const handleDataFromTabOne = (
     personalInfo: PersonalInformation | undefined
   ) => {
@@ -72,18 +115,7 @@ const CompleteAccount: React.FC = () => {
     homeAddress = personalInfo?.homeAddress;
     stateOfOrigin = personalInfo?.stateOfOrigin;
     lga = personalInfo?.lga;
-    console.log(
-      "Data from Tab One: ",
-      image?.url,
-      gender,
-      dob,
-      maritalStatus,
-      phone,
-      altPhone,
-      homeAddress,
-      stateOfOrigin,
-      lga
-    );
+
     handleNextClick();
   };
 
@@ -94,26 +126,14 @@ const CompleteAccount: React.FC = () => {
     employerName = occupation?.employerName;
     employerPhone = occupation?.employerPhone;
     employerAddress = occupation?.employerAddress;
-    console.log(
-      "Data from Tab Two: ",
-      employmentStatus,
-      natureOfJob,
-      annualIncome,
-      employerName,
-      employerPhone,
-      employerAddress
-    );
+
     handleNextClick();
   };
 
   const handleDataFromTabThree = (identity: Identity | undefined) => {
     meansOfIdentification = identity?.meansOfIdentification;
     identificationNumber = identity?.identificationNumber;
-    console.log(
-      "Data from Tab Three: ",
-      meansOfIdentification,
-      identificationNumber
-    );
+
     handleSubmitClick();
   };
 
