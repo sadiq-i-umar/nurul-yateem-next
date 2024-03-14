@@ -8,7 +8,6 @@ declare module '@mui/material/styles' {
         danger: string;
       };
     }
-    // allow configuration using `createTheme`
     interface ThemeOptions {
       status?: {
         danger?: string;
