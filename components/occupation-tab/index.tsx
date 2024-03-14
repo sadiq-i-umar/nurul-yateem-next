@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Occupation } from "../../utils/interfaces";
+import { occupationOptions } from "../../utils/constant";
 
 const OccupationTab: React.FC<{
   onNextClick: (occupation: Occupation) => void;
@@ -75,14 +76,16 @@ const OccupationTab: React.FC<{
                       ? localStorage.setItem("employmentStatus", e.target.value)
                       : null;
                   }}
+                  displayEmpty
                 >
-                  {["-- Select --", "Employed", "Unemployed"].map(
-                    (item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    )
-                  )}
+                  <MenuItem value="" disabled>
+                    -- Select --
+                  </MenuItem>
+                  {occupationOptions.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </Box>
             </Box>

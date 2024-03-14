@@ -1,49 +1,37 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
-  FormControlLabel,
   Grid,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Typography,
+  SelectChangeEvent, // Import SelectChangeEvent from @mui/material
 } from "@mui/material";
-import Image from "next/image";
-import { useState } from "react";
 import { Identity } from "../../utils/interfaces";
+import { identityOptions } from "../../utils/constant";
 
 const IdentityTab: React.FC<{
   onSubmitClick: (identity: Identity) => void;
 }> = ({ onSubmitClick }) => {
-  //Reset scroll on tab display
-  window.scrollTo({
-    top: 0,
-  });
+  const [meansOfIdentification, setMeansOfIdentification] = useState("");
+  const [identificationNumber, setIdentificationNumber] = useState("");
 
-  //Clear items in local storage before page is unloaded
-  window.onbeforeunload = function () {
-    localStorage.setItem("meansOfIdentification", "-- Select --");
-    localStorage.setItem("identificationNumber", "");
+  const handleMeansOfIdentificationChange = (
+    event: SelectChangeEvent<string>, // Use SelectChangeEvent instead of React.ChangeEvent
+    child: React.ReactNode
+  ) => {
+    const value = event.target.value;
+    setMeansOfIdentification(value);
+    localStorage.setItem("meansOfIdentification", value);
   };
 
-  const storedMeansOfIdentification = localStorage.getItem(
-    "meansOfIdentification"
-  );
-  const storedIdentificationNumber = localStorage.getItem(
-    "identificationNumber"
-  );
-
-  const [meansOfIdentification, setMeansOfIdentification] = useState(
-    storedMeansOfIdentification
-  );
-  const [identificationNumber, setIdentificationNumber] = useState(
-    storedIdentificationNumber
-  );
-
-  const sendDataToParent = (data: Identity) => {
-    onSubmitClick(data);
+  const sendDataToParent = () => {
+    onSubmitClick({
+      meansOfIdentification: meansOfIdentification,
+      identificationNumber: identificationNumber,
+    });
   };
 
   return (
@@ -63,29 +51,19 @@ const IdentityTab: React.FC<{
               <Box sx={{ borderRadius: "10px" }}>
                 <Select
                   value={meansOfIdentification}
+                  onChange={handleMeansOfIdentificationChange}
                   sx={{
                     borderRadius: "10px",
                     width: "100%",
                   }}
-                  onChange={(e) => {
-                    setMeansOfIdentification(e.target.value);
-                    e.target.value
-                      ? localStorage.setItem(
-                          "meansOfIdentification",
-                          e.target.value
-                        )
-                      : null;
-                  }}
+                  displayEmpty // This prop ensures that the empty placeholder is displayed
                 >
-                  {[
-                    "-- Select --",
-                    "NATIONAL_ID",
-                    "DRIVER_LICENCE",
-                    "VOTERS_CARD",
-                    "INTERNATIONAL_PASSPORT",
-                  ].map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item}
+                  <MenuItem value="" disabled>
+                    -- Select --
+                  </MenuItem>
+                  {identityOptions?.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option?.label}
                     </MenuItem>
                   ))}
                 </Select>
@@ -110,18 +88,12 @@ const IdentityTab: React.FC<{
                   }}
                   placeholder="Enter ID Number"
                   value={identificationNumber}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setIdentificationNumber(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem(
-                          "identificationNumber",
-                          event.target.value
-                        )
-                      : null;
+                  onChange={(event: React.ChangeEvent<{ value: string }>) => {
+                    setIdentificationNumber(event.target.value);
+                    localStorage.setItem(
+                      "identificationNumber",
+                      event.target.value
+                    );
                   }}
                 />
               </Box>
@@ -172,12 +144,7 @@ const IdentityTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        meansOfIdentification: meansOfIdentification,
-                        identificationNumber: identificationNumber,
-                      })
-                    }
+                    onClick={sendDataToParent}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

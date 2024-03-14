@@ -23,3 +23,4 @@ export interface Identity {
     meansOfIdentification: string | null,
     identificationNumber: string | null,
 }
+
