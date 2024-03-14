@@ -11,16 +11,13 @@ import OccupationTab from "../../../../../../components/occupation-tab";
 import IdentityTab from "../../../../../../components/identity-tab";
 import ProfileSubmitSuccess from "../../../../../../components/profile-submit-success";
 import { ArrowLeft } from "@mui/icons-material";
-import {
-  Identity,
-  Occupation,
-  PersonalInformation,
-} from "../../../../../../utils/interfaces";
 import { useSession } from "next-auth/react";
 import { Loader } from "../../../../../../components/common/loader";
 import { UpdateAccount } from "../../../../../../service/update-account";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useGuardianStore } from "../../../../../../utils/zustand/guardianstore";
+import SubmitProfil from "./submit-profile";
 
 const CompleteAccount: React.FC = () => {
   const { data: session } = useSession();
@@ -36,61 +33,52 @@ const CompleteAccount: React.FC = () => {
   } = useMutation({
     mutationFn: (payload: any) => UpdateAccount(payload, token),
   });
-
-  let image: { url: string | null; file?: any } | undefined;
-  let gender: string | null | undefined;
-  let dob: string | undefined;
-  let maritalStatus: string | null | undefined;
-  let phone: string | null | undefined;
-  let altPhone: string | null | undefined;
-  let homeAddress: string | null | undefined;
-  let stateOfOrigin: string | null | undefined;
-  let lga: string | null | undefined;
-
-  let employmentStatus: string | null | undefined;
-  let natureOfJob: string | null | undefined;
-  let annualIncome: string | null | undefined;
-  let employerName: string | null | undefined;
-  let employerPhone: string | null | undefined;
-  let employerAddress: string | null | undefined;
-
-  let meansOfIdentification: string | null | undefined;
-  let identificationNumber: string | null | undefined;
-
   const handleNextClick = () => {
     setActiveTab(activeTab + 1);
   };
 
   const handleSubmitClick = async () => {
+    const {
+      gender,
+      dateOfBirth,
+      maritalStatus,
+      phoneNumber,
+      altPhoneNumber,
+      homeAddress,
+      stateOfOrigin,
+      localGovernmentArea,
+      employmentStatus,
+      natureOfOccupation,
+      annualIncome,
+      employerName,
+      employerPhone,
+      employerAddress,
+      meansOfIdentification,
+      identificationNumber,
+    } = useGuardianStore.getState();
     if (!token) {
       return;
     }
-
-    setIsLoading(true); // Set loading to true just before making the mutation call
-
+    setIsLoading(true);
     try {
       const payload = {
         profile_photo: "url_to_profile_photo",
-        gender: localStorage.getItem("gender")?.toUpperCase(),
-        date_of_birth: localStorage.getItem("dob"),
-        marital_status: localStorage.getItem("maritalStatus")?.toUpperCase(),
-        phone_number: localStorage.getItem("phone"),
-        alt_phn_number: localStorage.getItem("altPhone"),
-        home_address: localStorage.getItem("homeAddress"),
-        state_of_origin: localStorage.getItem("stateOfOrigin"),
-        local_government_area: localStorage.getItem("lga"),
-        employment_status: localStorage
-          .getItem("employmentStatus")
-          ?.toUpperCase(),
-        nature_of_occupation: localStorage.getItem("natureOfJob"),
-        annual_income: localStorage.getItem("annualIncome"),
-        employer_name: localStorage.getItem("employerName"),
-        employer_phone: localStorage.getItem("employerPhone"),
-        employer_address: localStorage.getItem("employerAddress"),
-        mean_of_identity: localStorage
-          .getItem("meansOfIdentification")
-          ?.toUpperCase(),
-        identity_number: localStorage.getItem("identificationNumber"),
+        gender: gender?.toUpperCase(),
+        date_of_birth: dateOfBirth,
+        marital_status: maritalStatus?.toUpperCase(),
+        phone_number: phoneNumber,
+        alt_phn_number: altPhoneNumber,
+        home_address: homeAddress,
+        state_of_origin: stateOfOrigin,
+        local_government_area: localGovernmentArea,
+        employment_status: employmentStatus?.toUpperCase(),
+        nature_of_occupation: natureOfOccupation,
+        annual_income: annualIncome,
+        employer_name: employerName,
+        employer_phone: employerPhone,
+        employer_address: employerAddress,
+        mean_of_identity: meansOfIdentification?.toUpperCase(),
+        identity_number: identificationNumber,
       };
 
       await mutateAsync(payload);
@@ -101,39 +89,16 @@ const CompleteAccount: React.FC = () => {
       setIsLoading(false);
     }
   };
-  const handleDataFromTabOne = (
-    personalInfo: PersonalInformation | undefined
-  ) => {
-    image = personalInfo?.image;
-    gender = personalInfo?.gender;
-    if (personalInfo?.dob != undefined) {
-      dob = personalInfo?.dob;
-    }
-    maritalStatus = personalInfo?.maritalStatus;
-    phone = personalInfo?.phone;
-    altPhone = personalInfo?.altPhone;
-    homeAddress = personalInfo?.homeAddress;
-    stateOfOrigin = personalInfo?.stateOfOrigin;
-    lga = personalInfo?.lga;
 
+  const handleDataFromTabOne = () => {
     handleNextClick();
   };
 
-  const handleDataFromTabTwo = (occupation: Occupation | undefined) => {
-    employmentStatus = occupation?.employmentStatus;
-    natureOfJob = occupation?.natureOfJob;
-    annualIncome = occupation?.annualIncome;
-    employerName = occupation?.employerName;
-    employerPhone = occupation?.employerPhone;
-    employerAddress = occupation?.employerAddress;
-
+  const handleDataFromTabTwo = () => {
     handleNextClick();
   };
 
-  const handleDataFromTabThree = (identity: Identity | undefined) => {
-    meansOfIdentification = identity?.meansOfIdentification;
-    identificationNumber = identity?.identificationNumber;
-
+  const handleDataFromTabThree = () => {
     handleSubmitClick();
   };
 
@@ -524,6 +489,7 @@ const CompleteAccount: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
+      {/* <SubmitProfil/> */}
     </>
   );
 };

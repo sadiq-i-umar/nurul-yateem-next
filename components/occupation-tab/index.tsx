@@ -7,46 +7,34 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
-import { Occupation } from "../../utils/interfaces";
-import { occupationOptions } from "../../utils/constant";
+import { occupationOptions } from "../../utils";
+import { useGuardianStore } from "../../utils/zustand/guardianstore";
 
 const OccupationTab: React.FC<{
-  onNextClick: (occupation: Occupation) => void;
+  onNextClick: () => void;
 }> = ({ onNextClick }) => {
   //Reset scroll on tab display
   window.scrollTo({
     top: 0,
   });
 
-  //Clear items in local storage before page is unloaded
-  window.onbeforeunload = function () {
-    localStorage.setItem("employmentStatus", "-- Select --");
-    localStorage.setItem("natureOfJob", "");
-    localStorage.setItem("annualIncome", "");
-    localStorage.setItem("employerName", "");
-    localStorage.setItem("employerPhone", "");
-    localStorage.setItem("employerAddress", "");
-  };
+  const {
+    employmentStatus,
+    setEmploymentStatus,
+    natureOfOccupation,
+    setNatureOfOccupation,
+    annualIncome,
+    setAnnualIncome,
+    employerName,
+    setEmployerName,
+    employerPhone,
+    setEmployerPhone,
+    employerAddress,
+    setEmployerAddress,
+  } = useGuardianStore();
 
-  const storedEmploymentStatus = localStorage.getItem("employmentStatus");
-  const storedNatureOfJob = localStorage.getItem("natureOfJob");
-  const storedAnnualIncome = localStorage.getItem("annualIncome");
-  const storedEmployerName = localStorage.getItem("employerName");
-  const storedEmployerPhone = localStorage.getItem("employerPhone");
-  const storedEmployerAddress = localStorage.getItem("employerAddress");
-
-  const [employmentStatus, setEmploymentStatus] = useState(
-    storedEmploymentStatus
-  );
-  const [natureOfJob, setNatureOfJob] = useState(storedNatureOfJob);
-  const [annualIncome, setAnnualIncome] = useState(storedAnnualIncome);
-  const [employerName, setEmployerName] = useState(storedEmployerName);
-  const [employerPhone, setEmployerPhone] = useState(storedEmployerPhone);
-  const [employerAddress, setEmployerAddress] = useState(storedEmployerAddress);
-
-  const sendDataToParent = (data: Occupation) => {
-    onNextClick(data);
+  const sendDataToParent = () => {
+    onNextClick();
   };
 
   return (
@@ -72,9 +60,6 @@ const OccupationTab: React.FC<{
                   }}
                   onChange={(e) => {
                     setEmploymentStatus(e.target.value);
-                    e.target.value
-                      ? localStorage.setItem("employmentStatus", e.target.value)
-                      : null;
                   }}
                   displayEmpty
                 >
@@ -107,16 +92,13 @@ const OccupationTab: React.FC<{
                     },
                   }}
                   placeholder="Enter Nature of Job"
-                  value={natureOfJob}
+                  value={natureOfOccupation}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
                   }) => {
-                    setNatureOfJob(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("natureOfJob", event.target.value)
-                      : null;
+                    setNatureOfOccupation(event?.target.value);
                   }}
                 />
               </Box>
@@ -150,9 +132,6 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setAnnualIncome(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("annualIncome", event.target.value)
-                      : null;
                   }}
                 />
               </Box>
@@ -182,9 +161,6 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setEmployerName(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("employerName", event.target.value)
-                      : null;
                   }}
                 />
               </Box>
@@ -218,12 +194,6 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setEmployerPhone(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem(
-                          "employerPhone",
-                          event.target.value
-                        )
-                      : null;
                   }}
                 />
               </Box>
@@ -255,9 +225,6 @@ const OccupationTab: React.FC<{
               };
             }) => {
               setEmployerAddress(event?.target.value);
-              event.target.value
-                ? localStorage.setItem("employerAddress", event.target.value)
-                : null;
             }}
             multiline
             rows={4}
@@ -307,16 +274,7 @@ const OccupationTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        employmentStatus: employmentStatus,
-                        natureOfJob: natureOfJob,
-                        annualIncome: annualIncome,
-                        employerName: employerName,
-                        employerPhone: employerPhone,
-                        employerAddress: employerAddress,
-                      })
-                    }
+                    onClick={() => sendDataToParent()}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

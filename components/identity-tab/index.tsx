@@ -9,29 +9,29 @@ import {
   Typography,
   SelectChangeEvent, // Import SelectChangeEvent from @mui/material
 } from "@mui/material";
-import { Identity } from "../../utils/interfaces";
-import { identityOptions } from "../../utils/constant";
+import { identityOptions } from "../../utils";
+import { useGuardianStore } from "../../utils/zustand/guardianstore";
 
 const IdentityTab: React.FC<{
-  onSubmitClick: (identity: Identity) => void;
+  onSubmitClick: () => void;
 }> = ({ onSubmitClick }) => {
-  const [meansOfIdentification, setMeansOfIdentification] = useState("");
-  const [identificationNumber, setIdentificationNumber] = useState("");
+  const {
+    meansOfIdentification,
+    identificationNumber,
+    setMeansOfIdentification,
+    setIdentificationNumber,
+  } = useGuardianStore();
 
   const handleMeansOfIdentificationChange = (
-    event: SelectChangeEvent<string>, // Use SelectChangeEvent instead of React.ChangeEvent
+    event: SelectChangeEvent<string>,
     child: React.ReactNode
   ) => {
     const value = event.target.value;
     setMeansOfIdentification(value);
-    localStorage.setItem("meansOfIdentification", value);
   };
 
   const sendDataToParent = () => {
-    onSubmitClick({
-      meansOfIdentification: meansOfIdentification,
-      identificationNumber: identificationNumber,
-    });
+    onSubmitClick();
   };
 
   return (
@@ -56,7 +56,7 @@ const IdentityTab: React.FC<{
                     borderRadius: "10px",
                     width: "100%",
                   }}
-                  displayEmpty // This prop ensures that the empty placeholder is displayed
+                  displayEmpty
                 >
                   <MenuItem value="" disabled>
                     -- Select --
@@ -90,10 +90,6 @@ const IdentityTab: React.FC<{
                   value={identificationNumber}
                   onChange={(event: React.ChangeEvent<{ value: string }>) => {
                     setIdentificationNumber(event.target.value);
-                    localStorage.setItem(
-                      "identificationNumber",
-                      event.target.value
-                    );
                   }}
                 />
               </Box>
