@@ -1,13 +1,13 @@
 "use client";
 
-import { LogoImageFrame, ProfileImageFrame } from "../../../../../components/common/image-frames";
+import { LogoImageFrame, ProfileImageFrame } from "../../../../../../components/common/image-frames";
 import { Box, Grid, Typography } from "@mui/material";
 import { useState } from "react";
-import PersonalInformationTab from "../../../../../components/personal-information-tab";
-import ProfileSubmitSuccess from "../../../../../components/profile-submit-success";
-import { PersonalInformation } from "../../../../../utils/interfaces";
-import { Loader } from "../../../../../components/common/loader";
-import AddAnOrphanForm from "../../../../../components/add-an-orphan-form";
+import PersonalInformationTab from "../../../../../../components/personal-information-tab";
+import ProfileSubmitSuccess from "../../../../../../components/profile-submit-success";
+import { PersonalInformation } from "../../../../../../utils/interfaces";
+import { Loader } from "../../../../../../components/common/loader";
+import AddAnOrphanForm from "../../../../../../components/add-an-orphan-form";
 
 const AddAnOrphan: React.FC = () => {
 

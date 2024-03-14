@@ -5,7 +5,6 @@ import theme from "./theme";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@mui/material/styles";
 import QueryClientProvider from "../../utils/ReactQueryProvider";
-import { getServerSession } from "next-auth";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,8 +21,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
-  console.log(session);
+
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider>

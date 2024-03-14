@@ -51,7 +51,7 @@ const RegistrationSuccessMessage: React.FC = () => {
           </Box>
           <Box sx={{ marginBottom: { xs: "5px", sm: "0px" } }}>
             <Typography sx={{ fontSize: "16px", textAlign: "center" }}>
-              Now, let's make a positive difference together.
+              Now, let&apos;s make a positive difference together.
             </Typography>
           </Box>
           <Box>
