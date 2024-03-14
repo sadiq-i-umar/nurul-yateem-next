@@ -34,7 +34,7 @@ const CompleteAccount: React.FC = () => {
     isSuccess,
     data: Data,
   } = useMutation({
-    mutationFn: (payload: any) => UpdateAccount(payload, token), // Assuming RegisterUser is an async function returning a Promise
+    mutationFn: (payload: any) => UpdateAccount(payload, token),
   });
 
   let image: { url: string | null; file?: any } | undefined;
