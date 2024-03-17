@@ -10,14 +10,14 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { data: session, status } = useSession();
   const isCheckingAuthStatus = !session && status === "loading";
 
-  if (isCheckingAuthStatus) {
-    return null;
-  }
+  // if (isCheckingAuthStatus) {
+  //   return null;
+  // }
 
-  if (!session) {
-    redirect("/login");
-    return null;
-  }
+  // if (!session) {
+  //   redirect("/login");
+  //   return null;
+  // }
 
   return (
     <main>
