@@ -1,7 +1,7 @@
 export interface PersonalInformation {
   image: { url: string | null; file?: any };
   gender: string | null;
-  dob: string | undefined;
+  dob?: string | undefined;
   maritalStatus: string | null;
   phone: string | null;
   altPhone: string | null;

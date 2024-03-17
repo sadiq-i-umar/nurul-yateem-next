@@ -9,9 +9,10 @@ import {
 } from "@mui/material";
 import { occupationOptions } from "../../utils";
 import { useGuardianStore } from "../../utils/zustand/guardianstore";
+import { Occupation } from "../../utils/interfaces";
 
 const OccupationTab: React.FC<{
-  onNextClick: () => void;
+  onNextClick: (occupation: Occupation) => void;
 }> = ({ onNextClick }) => {
   //Reset scroll on tab display
   window.scrollTo({
@@ -33,8 +34,8 @@ const OccupationTab: React.FC<{
     setEmployerAddress,
   } = useGuardianStore();
 
-  const sendDataToParent = () => {
-    onNextClick();
+  const sendDataToParent = (data: Occupation) => {
+    onNextClick(data);
   };
 
   return (
@@ -274,7 +275,16 @@ const OccupationTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() => sendDataToParent()}
+                    onClick={() =>
+                      sendDataToParent({
+                        employmentStatus: employmentStatus,
+                        natureOfJob: natureOfOccupation,
+                        annualIncome: annualIncome,
+                        employerName: employerName,
+                        employerPhone: employerPhone,
+                        employerAddress: employerAddress,
+                      })
+                    }
                     variant="contained"
                     sx={{
                       boxShadow: "none",

@@ -18,6 +18,11 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useGuardianStore } from "../../../../../../utils/zustand/guardianstore";
 import SubmitProfil from "./submit-profile";
+import {
+  Identity,
+  Occupation,
+  PersonalInformation,
+} from "../../../../../../utils/interfaces";
 
 const CompleteAccount: React.FC = () => {
   const { data: session } = useSession();
@@ -80,7 +85,6 @@ const CompleteAccount: React.FC = () => {
         mean_of_identity: meansOfIdentification?.toUpperCase(),
         identity_number: identificationNumber,
       };
-
       await mutateAsync(payload);
       setShowSuccessMessage(true);
     } catch (error) {
@@ -90,15 +94,27 @@ const CompleteAccount: React.FC = () => {
     }
   };
 
-  const handleDataFromTabOne = () => {
+  const handleDataFromTabOne = (
+    personalInfo: PersonalInformation | undefined | any
+  ) => {
+    if (personalInfo) {
+      console.log(personalInfo);
+    }
     handleNextClick();
   };
 
-  const handleDataFromTabTwo = () => {
+  const handleDataFromTabTwo = (occupation: Occupation | undefined | any) => {
+    if (occupation) {
+      console.log(occupation);
+    }
     handleNextClick();
   };
 
-  const handleDataFromTabThree = () => {
+  const handleDataFromTabThree = (identity: Identity | undefined | any) => {
+    if (identity) {
+      console.log(identity);
+    }
+
     handleSubmitClick();
   };
 

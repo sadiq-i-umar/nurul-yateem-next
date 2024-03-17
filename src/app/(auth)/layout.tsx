@@ -1,23 +1,57 @@
-// Ensure that your layout component is wrapped with SessionProvider
-"use client";
+"use client"
 import { SessionProvider, useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { useScrollToTop } from "../(dashboard)/hooks/use-scroll-to-top";
+import { useEffect } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { baseUrl } from "../../../utils/constant";
 
 const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  useScrollToTop();
-
   const { data: session, status } = useSession();
-  const isCheckingAuthStatus = !session && status === "loading";
+  const router = useRouter();
 
-  if (isCheckingAuthStatus) {
-    return null;
+ if(session){
+    const checkAuthorization = async () => {
+      if (!session) {
+        // If no session, redirect to login page
+        router.push("/login");
+      } else {
+        const accountType = session.user.account;
+
+        if (accountType === "ADMIN" || accountType === "SPONSOR") {
+          // Redirect admin and sponsor to dashboard home
+          router.push("/dashboard/home");
+        } else if (accountType === "GUARDIAN") {
+          try {
+            const profileRes = await axios.get(`${baseUrl}/user-profile`, {
+              headers: {
+                Authorization: `Bearer ${session.token}`,
+              },
+            });
+
+            const { orphans } = profileRes.data;
+
+            if (orphans.length === 0) {
+              // If guardian profile is incomplete, redirect to add orphan page
+              router.push("/dashboard/add-an-orphan");
+            } else {
+              // If guardian profile is complete, redirect to dashboard home
+              router.push("/dashboard/home");
+            }
+          } catch (error) {
+            console.error("Error during fetching user profile:", error);
+            // If profile not found or other error, redirect to complete profile page
+            router.push("/dashboard/complete-account");
+          }
+        }
+      }
+    };
+
+    checkAuthorization();
   }
 
-  // if (session) {
-    // redirect("/dashboard/home");
-  //   return null;
-  // }
+  if (status === "loading") {
+    return null; // Render nothing while checking authentication status
+  }
 
   return <main>{children}</main>;
 };

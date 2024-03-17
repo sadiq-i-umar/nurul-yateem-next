@@ -11,9 +11,10 @@ import {
 } from "@mui/material";
 import { identityOptions } from "../../utils";
 import { useGuardianStore } from "../../utils/zustand/guardianstore";
+import { Identity } from "../../utils/interfaces";
 
 const IdentityTab: React.FC<{
-  onSubmitClick: () => void;
+  onSubmitClick: (identity: Identity) => void;
 }> = ({ onSubmitClick }) => {
   const {
     meansOfIdentification,
@@ -30,8 +31,8 @@ const IdentityTab: React.FC<{
     setMeansOfIdentification(value);
   };
 
-  const sendDataToParent = () => {
-    onSubmitClick();
+  const sendDataToParent = (data: Identity) => {
+    onSubmitClick(data);
   };
 
   return (
@@ -140,7 +141,12 @@ const IdentityTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={sendDataToParent}
+                    onClick={() =>
+                      sendDataToParent({
+                        meansOfIdentification: meansOfIdentification,
+                        identificationNumber: identificationNumber,
+                      })
+                    }
                     variant="contained"
                     sx={{
                       boxShadow: "none",

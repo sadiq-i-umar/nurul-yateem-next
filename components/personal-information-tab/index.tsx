@@ -19,9 +19,12 @@ import { maritalStatusOptions, states_in_nigeria_dropdown } from "../../utils";
 import { PhotoUploadFrame } from "../common/image-frames";
 import { VisuallyHiddenInput } from "../common/input";
 import { useGuardianStore } from "../../utils/zustand/guardianstore";
+import { PersonalInformation } from "../../utils/interfaces";
+import { useEffect, useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
 
 const PersonalInformationTab: React.FC<{
-  onNextClick: () => void;
+  onNextClick: (personalInfo: PersonalInformation | undefined) => void;
 }> = ({ onNextClick }) => {
   //Reset scroll on tab display
   window.scrollTo({
@@ -32,7 +35,6 @@ const PersonalInformationTab: React.FC<{
     setImage,
     gender,
     setGender,
-    dateOfBirth,
     setDateOfBirth,
     maritalStatus,
     setMaritalStatus,
@@ -47,10 +49,6 @@ const PersonalInformationTab: React.FC<{
     localGovernmentArea,
     setLocalGovernmentArea,
   } = useGuardianStore();
-
-  const sendDataToParent = () => {
-    onNextClick();
-  };
 
   const handleImageSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -69,6 +67,18 @@ const PersonalInformationTab: React.FC<{
     }
   }
 
+  let storedDob: Dayjs | null;
+  if (localStorage.getItem("dob") == "") {
+    storedDob = null;
+  } else {
+    storedDob = dayjs(localStorage.getItem("dob"));
+  }
+  const [dob, setDob] = useState<Dayjs | null | any>(storedDob);
+
+  const sendDataToParent = (data: PersonalInformation) => {
+    setDateOfBirth(dob);
+    onNextClick(data);
+  };
   return (
     <Box>
       <Box sx={{ marginBottom: "20px" }}>
@@ -203,9 +213,15 @@ const PersonalInformationTab: React.FC<{
               <Box sx={{ borderRadius: "10px" }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                    value={dateOfBirth}
+                    value={dob}
                     onChange={(newDate) => {
-                      setDateOfBirth(newDate ?? null);
+                      setDob(newDate ?? null);
+                      newDate
+                        ? localStorage.setItem(
+                            "dob",
+                            newDate.add(1, "day").toISOString().substring(0, 10)
+                          )
+                        : null;
                     }}
                     format="DD/MM/YYYY"
                     sx={{ width: "100%" }}
@@ -442,7 +458,19 @@ const PersonalInformationTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() => sendDataToParent()}
+                    onClick={() =>
+                      sendDataToParent({
+                        image: image,
+                        gender: gender,
+                        dob: dob?.format("DD/MM/YYYY"),
+                        maritalStatus: maritalStatus,
+                        phone: phoneNumber,
+                        altPhone: altPhoneNumber,
+                        homeAddress: homeAddress,
+                        stateOfOrigin: stateOfOrigin,
+                        lga: localGovernmentArea,
+                      })
+                    }
                     variant="contained"
                     sx={{
                       boxShadow: "none",
