@@ -1,11 +1,12 @@
-import React from "react";
-import Login from "./login";
 
-const page = async () => {
+import React from "react";
+import Login from "../../../../components/auth/login";
+
+const page = () => {
   return (
-    <>
+    <div>
       <Login />
-    </>
+    </div>
   );
 };
 

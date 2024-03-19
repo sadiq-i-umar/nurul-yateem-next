@@ -7,45 +7,78 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { occupationOptions } from "../../utils";
+import { useGuardianStore } from "../../utils/zustand/guardianstore";
 import { Occupation } from "../../utils/interfaces";
+import { useState } from "react";
+import { setEnvironmentData } from "worker_threads";
+import toast from "react-hot-toast";
 
 const OccupationTab: React.FC<{
   onNextClick: (occupation: Occupation) => void;
 }> = ({ onNextClick }) => {
-  //Reset scroll on tab display
-  window.scrollTo({
-    top: 0,
-  });
+  const {
+    employmentStatus,
+    setEmploymentStatus,
+    natureOfOccupation,
+    setNatureOfOccupation,
+    annualIncome,
+    setAnnualIncome,
+    employerName,
+    setEmployerName,
+    employerPhone,
+    setEmployerPhone,
+    employerAddress,
+    setEmployerAddress,
+  } = useGuardianStore();
 
-  //Clear items in local storage before page is unloaded
-  window.onbeforeunload = function () {
-    localStorage.setItem("employmentStatus", "-- Select --");
-    localStorage.setItem("natureOfJob", "");
-    localStorage.setItem("annualIncome", "");
-    localStorage.setItem("employerName", "");
-    localStorage.setItem("employerPhone", "");
-    localStorage.setItem("employerAddress", "");
-  };
+  const [employmentStatusError, setEmploymentStatusError] = useState(false);
+  const [natureOfOccupationError, setNatureOfOccupationError] = useState(false);
+  const [annualIncomeError, setAnnualIncomeError] = useState(false);
+  const [employerNameError, setEmployerNameError] = useState(false);
+  const [employerPhoneError, setEmployerPhoneError] = useState(false);
+  const [employerAddressError, setEmployerAddressError] = useState(false);
 
-  const storedEmploymentStatus = localStorage.getItem("employmentStatus");
-  const storedNatureOfJob = localStorage.getItem("natureOfJob");
-  const storedAnnualIncome = localStorage.getItem("annualIncome");
-  const storedEmployerName = localStorage.getItem("employerName");
-  const storedEmployerPhone = localStorage.getItem("employerPhone");
-  const storedEmployerAddress = localStorage.getItem("employerAddress");
+  const sendDataToParent = () => {
+    let isValid = true;
+    if (!employmentStatus) {
+      setEmploymentStatusError(true);
+      isValid = false;
+    }
+    if (!natureOfOccupation) {
+      setNatureOfOccupationError(true);
+      isValid = false;
+    }
+    if (!annualIncome) {
+      setAnnualIncomeError(true);
+      isValid = false;
+    }
+    if (!employerName) {
+      setEmployerNameError(true);
+      isValid = false;
+    }
+    if (!employerPhone) {
+      setEmployerPhoneError(true);
+      isValid = false;
+    }
+    if (!employerAddress) {
+      setEmployerAddressError(true);
+      isValid = false;
+    }
+    if (!isValid) {
+      toast.error("Please fill in all required fields");
+    }
 
-  const [employmentStatus, setEmploymentStatus] = useState(
-    storedEmploymentStatus
-  );
-  const [natureOfJob, setNatureOfJob] = useState(storedNatureOfJob);
-  const [annualIncome, setAnnualIncome] = useState(storedAnnualIncome);
-  const [employerName, setEmployerName] = useState(storedEmployerName);
-  const [employerPhone, setEmployerPhone] = useState(storedEmployerPhone);
-  const [employerAddress, setEmployerAddress] = useState(storedEmployerAddress);
-
-  const sendDataToParent = (data: Occupation) => {
-    onNextClick(data);
+    if (isValid) {
+      onNextClick({
+        employmentStatus,
+        natureOfOccupation,
+        annualIncome,
+        employerName,
+        employerPhone,
+        employerAddress,
+      });
+    }
   };
 
   return (
@@ -71,19 +104,24 @@ const OccupationTab: React.FC<{
                   }}
                   onChange={(e) => {
                     setEmploymentStatus(e.target.value);
-                    e.target.value
-                      ? localStorage.setItem("employmentStatus", e.target.value)
-                      : null;
+                    setEmploymentStatusError(false);
                   }}
+                  displayEmpty
                 >
-                  {["-- Select --", "Employed", "Unemployed"].map(
-                    (item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    )
-                  )}
+                  <MenuItem value="" disabled>
+                    -- Select --
+                  </MenuItem>
+                  {occupationOptions.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
                 </Select>
+                {employmentStatusError && (
+                  <Typography component="p" color="error">
+                    Employment Status is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -104,18 +142,21 @@ const OccupationTab: React.FC<{
                     },
                   }}
                   placeholder="Enter Nature of Job"
-                  value={natureOfJob}
+                  value={natureOfOccupation}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
                   }) => {
-                    setNatureOfJob(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("natureOfJob", event.target.value)
-                      : null;
+                    setNatureOfOccupation(event?.target.value);
+                    setNatureOfOccupationError(false);
                   }}
                 />
+                {natureOfOccupationError && (
+                  <Typography component="p" color="error">
+                    Nature of Job is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -147,11 +188,14 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setAnnualIncome(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("annualIncome", event.target.value)
-                      : null;
+                    setAnnualIncomeError(false);
                   }}
                 />
+                {annualIncomeError && (
+                  <Typography component="p" color="error">
+                    Annual Income is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -179,11 +223,14 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setEmployerName(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("employerName", event.target.value)
-                      : null;
+                    setEmployerNameError(false);
                   }}
                 />
+                {employerNameError && (
+                  <Typography component="p" color="error">
+                    Employer&apos;s Name is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -215,14 +262,14 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setEmployerPhone(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem(
-                          "employerPhone",
-                          event.target.value
-                        )
-                      : null;
+                    setEmployerPhoneError(false);
                   }}
                 />
+                {employerPhoneError && (
+                  <Typography component="p" color="error">
+                    Employer&apos;s Phone Number is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -252,34 +299,20 @@ const OccupationTab: React.FC<{
               };
             }) => {
               setEmployerAddress(event?.target.value);
-              event.target.value
-                ? localStorage.setItem("employerAddress", event.target.value)
-                : null;
+              setEmployerAddressError(false);
             }}
             multiline
             rows={4}
           />
+          {employerAddressError && (
+            <Typography component="p" color="error">
+              Employer&apos;s Address is required
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box sx={{ marginBottom: "100px" }}>
         <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box>
-              <Button
-                variant="outlined"
-                sx={{
-                  boxShadow: "none",
-                  width: "100%",
-                  borderRadius: "6px",
-                  textTransform: "none",
-                  paddingY: "10px",
-                  paddingX: "70px",
-                }}
-              >
-                Save progress and continue later
-              </Button>
-            </Box>
-          </Grid>
           <Grid item lg={6}>
             <Grid container spacing={4}>
               <Grid item lg={6}>
@@ -304,16 +337,7 @@ const OccupationTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        employmentStatus: employmentStatus,
-                        natureOfJob: natureOfJob,
-                        annualIncome: annualIncome,
-                        employerName: employerName,
-                        employerPhone: employerPhone,
-                        employerAddress: employerAddress,
-                      })
-                    }
+                    onClick={sendDataToParent}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

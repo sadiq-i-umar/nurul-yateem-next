@@ -4,7 +4,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   HeroImageFramePlaceHolder,
   LogoImageFrame,
-} from "../../../../components/common/image-frames";
+} from "../common/image-frames";
 import { toast } from "react-hot-toast";
 import {
   Box,
@@ -22,8 +22,8 @@ import { Session } from "next-auth";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { baseUrl } from "../../../../utils/constant";
-import { Loader } from "../../../../components/common/loader";
+import { baseUrl } from "../../utils/constant";
+import { Loader } from "../common/loader";
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -47,7 +47,6 @@ const Login: React.FC = () => {
   function handleClickShowPassword() {
     setShowPassword(!showPassword);
   }
-  
 
   const handleLogin = async () => {
     setLoading(true); // Set loading state to true when login process starts
@@ -70,8 +69,10 @@ const Login: React.FC = () => {
       return;
     }
 
+    // Only proceed with login if email and password are provided and password meets the length criteria
     if (emailAddress && password && password.length >= 8) {
       try {
+        // Sign in user with provided credentials
         const res = await signIn("credentials", {
           email: emailAddress,
           password: password,
@@ -79,8 +80,10 @@ const Login: React.FC = () => {
         });
 
         if (res && res.ok) {
+          // Get the session after successful sign-in
           const user: Session | null | undefined = await getSession();
           if (user !== undefined) {
+            // Check user account type and redirect accordingly
             if (user?.user?.account === "ADMIN") {
               toast.success("Login successful!");
               router.push("/dashboard/admin");
@@ -89,9 +92,9 @@ const Login: React.FC = () => {
               toast.success("Login successful!");
               router.push("/dashboard/home");
               router.refresh();
-
             } else if (user?.user?.account === "GUARDIAN") {
               try {
+                // Fetch user profile data
                 const profileRes = await axios.get(`${baseUrl}/user-profile`, {
                   headers: {
                     Authorization: `Bearer ${user?.token}`,
@@ -100,33 +103,29 @@ const Login: React.FC = () => {
 
                 const { orphans } = profileRes?.data;
 
+                // Check if the user has added any orphans
                 if (orphans?.length === 0) {
-                  toast.success(
-                    "Please complete your profile first. You have no orphans."
-                  );
+                  toast.success("Please complete your profile first. You have no orphans.");
                   router.push("/dashboard/add-an-orphan");
                   router.refresh();
-
                 } else {
                   toast.success("Login successful!");
-                  router.push("/dashboard/complete-account");
+                  router.push("/dashboard/home");
                   router.refresh();
-
                 }
               } catch (error: any) {
+                // Handle errors during profile fetching
                 if (
                   error.response &&
                   error.response.data &&
-                  error.response.data.error ===
-                    "Guardian profile not found for this user."
+                  error.response.data.error === "Guardian profile not found for this user."
                 ) {
                   toast.success("Please complete your profile first.");
                   router.push("/dashboard/complete-account");
                   router.refresh();
-
                 } else {
                   console.error("Error during fetching user profile:", error);
-                  toast.error("Invalid email or password.");
+                  toast.error("An unexpected error occurred. Please try again.");
                 }
               }
             }
@@ -137,12 +136,15 @@ const Login: React.FC = () => {
           toast.error("Invalid email or password.");
         }
       } catch (error: any) {
-        toast.error("An error occurred. Please try again.");
+        // Handle other errors during sign-in process
+        console.error("An error occurred during sign-in:", error);
+        toast.error("An unexpected error occurred. Please try again.");
       } finally {
         setLoading(false); // Set loading state to false when login process finishes
       }
     }
   };
+
 
   return (
     <>
