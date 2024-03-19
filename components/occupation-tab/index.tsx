@@ -10,15 +10,13 @@ import {
 import { occupationOptions } from "../../utils";
 import { useGuardianStore } from "../../utils/zustand/guardianstore";
 import { Occupation } from "../../utils/interfaces";
+import { useState } from "react";
+import { setEnvironmentData } from "worker_threads";
+import toast from "react-hot-toast";
 
 const OccupationTab: React.FC<{
   onNextClick: (occupation: Occupation) => void;
 }> = ({ onNextClick }) => {
-  //Reset scroll on tab display
-  window.scrollTo({
-    top: 0,
-  });
-
   const {
     employmentStatus,
     setEmploymentStatus,
@@ -34,8 +32,53 @@ const OccupationTab: React.FC<{
     setEmployerAddress,
   } = useGuardianStore();
 
-  const sendDataToParent = (data: Occupation) => {
-    onNextClick(data);
+  const [employmentStatusError, setEmploymentStatusError] = useState(false);
+  const [natureOfOccupationError, setNatureOfOccupationError] = useState(false);
+  const [annualIncomeError, setAnnualIncomeError] = useState(false);
+  const [employerNameError, setEmployerNameError] = useState(false);
+  const [employerPhoneError, setEmployerPhoneError] = useState(false);
+  const [employerAddressError, setEmployerAddressError] = useState(false);
+
+  const sendDataToParent = () => {
+    let isValid = true;
+    if (!employmentStatus) {
+      setEmploymentStatusError(true);
+      isValid = false;
+    }
+    if (!natureOfOccupation) {
+      setNatureOfOccupationError(true);
+      isValid = false;
+    }
+    if (!annualIncome) {
+      setAnnualIncomeError(true);
+      isValid = false;
+    }
+    if (!employerName) {
+      setEmployerNameError(true);
+      isValid = false;
+    }
+    if (!employerPhone) {
+      setEmployerPhoneError(true);
+      isValid = false;
+    }
+    if (!employerAddress) {
+      setEmployerAddressError(true);
+      isValid = false;
+    }
+    if (!isValid) {
+      toast.error("Please fill in all required fields");
+    }
+
+    if (isValid) {
+      onNextClick({
+        employmentStatus,
+        natureOfOccupation,
+        annualIncome,
+        employerName,
+        employerPhone,
+        employerAddress,
+      });
+    }
   };
 
   return (
@@ -61,6 +104,7 @@ const OccupationTab: React.FC<{
                   }}
                   onChange={(e) => {
                     setEmploymentStatus(e.target.value);
+                    setEmploymentStatusError(false);
                   }}
                   displayEmpty
                 >
@@ -73,6 +117,11 @@ const OccupationTab: React.FC<{
                     </MenuItem>
                   ))}
                 </Select>
+                {employmentStatusError && (
+                  <Typography component="p" color="error">
+                    Employment Status is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -100,8 +149,14 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setNatureOfOccupation(event?.target.value);
+                    setNatureOfOccupationError(false);
                   }}
                 />
+                {natureOfOccupationError && (
+                  <Typography component="p" color="error">
+                    Nature of Job is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -133,8 +188,14 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setAnnualIncome(event?.target.value);
+                    setAnnualIncomeError(false);
                   }}
                 />
+                {annualIncomeError && (
+                  <Typography component="p" color="error">
+                    Annual Income is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -162,8 +223,14 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setEmployerName(event?.target.value);
+                    setEmployerNameError(false);
                   }}
                 />
+                {employerNameError && (
+                  <Typography component="p" color="error">
+                    Employer&apos;s Name is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -195,8 +262,14 @@ const OccupationTab: React.FC<{
                     };
                   }) => {
                     setEmployerPhone(event?.target.value);
+                    setEmployerPhoneError(false);
                   }}
                 />
+                {employerPhoneError && (
+                  <Typography component="p" color="error">
+                    Employer&apos;s Phone Number is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -226,31 +299,20 @@ const OccupationTab: React.FC<{
               };
             }) => {
               setEmployerAddress(event?.target.value);
+              setEmployerAddressError(false);
             }}
             multiline
             rows={4}
           />
+          {employerAddressError && (
+            <Typography component="p" color="error">
+              Employer&apos;s Address is required
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box sx={{ marginBottom: "100px" }}>
         <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box>
-              <Button
-                variant="outlined"
-                sx={{
-                  boxShadow: "none",
-                  width: "100%",
-                  borderRadius: "6px",
-                  textTransform: "none",
-                  paddingY: "10px",
-                  paddingX: "70px",
-                }}
-              >
-                Save progress and continue later
-              </Button>
-            </Box>
-          </Grid>
           <Grid item lg={6}>
             <Grid container spacing={4}>
               <Grid item lg={6}>
@@ -275,16 +337,7 @@ const OccupationTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        employmentStatus: employmentStatus,
-                        natureOfJob: natureOfOccupation,
-                        annualIncome: annualIncome,
-                        employerName: employerName,
-                        employerPhone: employerPhone,
-                        employerAddress: employerAddress,
-                      })
-                    }
+                    onClick={sendDataToParent}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

@@ -12,6 +12,7 @@ import {
 import { identityOptions } from "../../utils";
 import { useGuardianStore } from "../../utils/zustand/guardianstore";
 import { Identity } from "../../utils/interfaces";
+import toast from "react-hot-toast";
 
 const IdentityTab: React.FC<{
   onSubmitClick: (identity: Identity) => void;
@@ -23,16 +24,41 @@ const IdentityTab: React.FC<{
     setIdentificationNumber,
   } = useGuardianStore();
 
+  const [meansOfIdentificationError, setMeansOfIdentificationError] =
+    useState(false);
+  const [identificationNumberError, setIdentificationNumberError] =
+    useState(false);
+
   const handleMeansOfIdentificationChange = (
     event: SelectChangeEvent<string>,
     child: React.ReactNode
   ) => {
     const value = event.target.value;
     setMeansOfIdentification(value);
+    setMeansOfIdentificationError(false);
   };
 
-  const sendDataToParent = (data: Identity) => {
-    onSubmitClick(data);
+  const sendDataToParent = () => {
+    let isValid = true;
+    if (!meansOfIdentification) {
+      setMeansOfIdentificationError(true);
+      isValid = false;
+    }
+    if (!identificationNumber) {
+      setIdentificationNumberError(true);
+      isValid = false;
+    }
+
+    if (!isValid) {
+      toast.error("Please fill in all required fields");
+    }
+
+    if (isValid) {
+      onSubmitClick({
+        meansOfIdentification: meansOfIdentification,
+        identificationNumber: identificationNumber,
+      });
+    }
   };
 
   return (
@@ -68,6 +94,11 @@ const IdentityTab: React.FC<{
                     </MenuItem>
                   ))}
                 </Select>
+                {meansOfIdentificationError && (
+                  <Typography component="p" color="error">
+                    Please select means of identification
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -91,8 +122,14 @@ const IdentityTab: React.FC<{
                   value={identificationNumber}
                   onChange={(event: React.ChangeEvent<{ value: string }>) => {
                     setIdentificationNumber(event.target.value);
+                    setIdentificationNumberError(false);
                   }}
                 />
+                {identificationNumberError && (
+                  <Typography component="p" color="error">
+                    Please enter identification number
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -141,12 +178,7 @@ const IdentityTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        meansOfIdentification: meansOfIdentification,
-                        identificationNumber: identificationNumber,
-                      })
-                    }
+                    onClick={sendDataToParent}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

@@ -22,14 +22,13 @@ import { useGuardianStore } from "../../utils/zustand/guardianstore";
 import { PersonalInformation } from "../../utils/interfaces";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
+import toast from "react-hot-toast";
 
 const PersonalInformationTab: React.FC<{
   onNextClick: (personalInfo: PersonalInformation | undefined) => void;
 }> = ({ onNextClick }) => {
   //Reset scroll on tab display
-  window.scrollTo({
-    top: 0,
-  });
+
   const {
     image,
     setImage,
@@ -50,6 +49,16 @@ const PersonalInformationTab: React.FC<{
     setLocalGovernmentArea,
   } = useGuardianStore();
 
+  const [phoneNumberError, setPhoneNumberError] = useState(false);
+  const [maritalStatusError, setMaritalStatusError] = useState(false);
+  const [stateOfOriginError, setStateOfOriginError] = useState(false);
+  const [localGovernmentAreaError, setLocalGovernmentAreaError] =
+    useState(false);
+  const [dobError, setDobError] = useState(false);
+  const [genderError, setGenderError] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [homeAddressError, setHomeAddressError] = useState(false);
+
   const handleImageSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
@@ -58,6 +67,9 @@ const PersonalInformationTab: React.FC<{
         setImage({ file, url: reader?.result as string });
       };
       reader.readAsDataURL(file);
+      setImageError(false);
+    } else {
+      setImageError(true);
     }
   };
 
@@ -75,10 +87,62 @@ const PersonalInformationTab: React.FC<{
   }
   const [dob, setDob] = useState<Dayjs | null | any>(storedDob);
 
-  const sendDataToParent = (data: PersonalInformation) => {
-    setDateOfBirth(dob);
-    onNextClick(data);
+  const sendDataToParent = () => {
+    let isValid = true;
+    if (!phoneNumber && phoneNumber.trim() === "") {
+      setPhoneNumberError(true);
+      isValid = false;
+    }
+    if (!maritalStatus && maritalStatus.trim() === "") {
+      setMaritalStatusError(true);
+      isValid = false;
+    }
+    if (!stateOfOrigin && stateOfOrigin.trim() === "") {
+      setStateOfOriginError(true);
+      isValid = false;
+    }
+    if (!localGovernmentArea || localGovernmentArea.trim() === "") {
+      setLocalGovernmentAreaError(true);
+      isValid = false;
+    }
+
+    if (!dob && dob?.format("DD/MM/YYYY") === "") {
+      setDobError(true);
+      isValid = false;
+    }
+    if (!gender && gender.trim() === "") {
+      setGenderError(true);
+      isValid = false;
+    }
+    if (!image.url && image.url.trim() === "") {
+      setImageError(true);
+      isValid = false;
+    }
+
+    if (!homeAddress && homeAddress.trim() === "") {
+      setHomeAddressError(true);
+      isValid = false;
+    }
+    if (!isValid) {
+      toast.error("Please fill in all required fields");
+    }
+
+    if (isValid) {
+      setDateOfBirth(dob);
+      onNextClick({
+        image,
+        gender,
+        dob: dob?.format("DD/MM/YYYY"),
+        maritalStatus,
+        phone: phoneNumber,
+        altPhone: altPhoneNumber,
+        homeAddress,
+        stateOfOrigin,
+        lga: localGovernmentArea,
+      });
+    }
   };
+
   return (
     <Box>
       <Box sx={{ marginBottom: "20px" }}>
@@ -133,6 +197,11 @@ const PersonalInformationTab: React.FC<{
               />
             </Button>
           </Box>
+          {imageError && (
+            <Typography component="p" color="error">
+              Image is required
+            </Typography>
+          )}
         </Box>
         <Box
           sx={{
@@ -216,17 +285,17 @@ const PersonalInformationTab: React.FC<{
                     value={dob}
                     onChange={(newDate) => {
                       setDob(newDate ?? null);
-                      newDate
-                        ? localStorage.setItem(
-                            "dob",
-                            newDate.add(1, "day").toISOString().substring(0, 10)
-                          )
-                        : null;
+                      setDobError(false);
                     }}
                     format="DD/MM/YYYY"
                     sx={{ width: "100%" }}
                   />
                 </LocalizationProvider>
+                {dobError && (
+                  <Typography component="p" color="error">
+                    Date of birth is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -244,6 +313,7 @@ const PersonalInformationTab: React.FC<{
                   }}
                   onChange={(e) => {
                     setMaritalStatus(e.target.value);
+                    setMaritalStatusError(false);
                   }}
                   displayEmpty
                 >
@@ -256,6 +326,11 @@ const PersonalInformationTab: React.FC<{
                     </MenuItem>
                   ))}
                 </Select>
+                {maritalStatusError && (
+                  <Typography component="p" color="error">
+                    Marital status is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -274,21 +349,22 @@ const PersonalInformationTab: React.FC<{
                     width: "100%",
                     borderRadius: "50px",
                   }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder="Enter Phone Number"
+                  placeholder="080********"
                   value={phoneNumber}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
                   }) => {
-                    setPhoneNumber(event?.target.value);
+                    setPhoneNumber(event.target.value);
+                    setPhoneNumberError(false);
                   }}
                 />
+                {phoneNumberError && (
+                  <Typography component="p" color="error">
+                    Phone number is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -308,7 +384,7 @@ const PersonalInformationTab: React.FC<{
                       borderRadius: "10px",
                     },
                   }}
-                  placeholder={"Enter Alternate Phone Number"}
+                  placeholder={"080********"}
                   value={altPhoneNumber}
                   onChange={(event: {
                     target: {
@@ -316,7 +392,6 @@ const PersonalInformationTab: React.FC<{
                     };
                   }) => {
                     setAltPhoneNumber(event?.target.value);
-                    event.target.value;
                   }}
                 />
               </Box>
@@ -347,10 +422,16 @@ const PersonalInformationTab: React.FC<{
               };
             }) => {
               setHomeAddress(event?.target.value);
+              setHomeAddressError(false);
             }}
             multiline
-            rows={4}
+            rows={3}
           />
+          {homeAddressError && (
+            <Typography component="p" color="error">
+              Home address is required
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box sx={{ marginBottom: "30px" }}>
@@ -369,6 +450,7 @@ const PersonalInformationTab: React.FC<{
                   }}
                   onChange={(e) => {
                     setStateOfOrigin(e.target.value);
+                    setStateOfOriginError(false);
                   }}
                   displayEmpty
                 >
@@ -381,6 +463,11 @@ const PersonalInformationTab: React.FC<{
                     </MenuItem>
                   ))}
                 </Select>
+                {stateOfOriginError && (
+                  <Typography component="p" color="error">
+                    Image is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -408,8 +495,14 @@ const PersonalInformationTab: React.FC<{
                     };
                   }) => {
                     setLocalGovernmentArea(event?.target.value);
+                    setLocalGovernmentAreaError(false);
                   }}
                 />
+                {localGovernmentAreaError && (
+                  <Typography component="p" color="error">
+                    local government area is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -417,23 +510,6 @@ const PersonalInformationTab: React.FC<{
       </Box>
       <Box sx={{ marginBottom: "100px" }}>
         <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box>
-              <Button
-                variant="outlined"
-                sx={{
-                  boxShadow: "none",
-                  width: "100%",
-                  borderRadius: "6px",
-                  textTransform: "none",
-                  paddingY: "10px",
-                  paddingX: "70px",
-                }}
-              >
-                Save progress and continue later
-              </Button>
-            </Box>
-          </Grid>
           <Grid item lg={6}>
             <Grid container spacing={4}>
               <Grid item lg={6}>
@@ -458,19 +534,7 @@ const PersonalInformationTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        image: image,
-                        gender: gender,
-                        dob: dob?.format("DD/MM/YYYY"),
-                        maritalStatus: maritalStatus,
-                        phone: phoneNumber,
-                        altPhone: altPhoneNumber,
-                        homeAddress: homeAddress,
-                        stateOfOrigin: stateOfOrigin,
-                        lga: localGovernmentArea,
-                      })
-                    }
+                    onClick={sendDataToParent}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

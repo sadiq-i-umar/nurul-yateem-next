@@ -12,12 +12,14 @@ export interface PersonalInformation {
 
 export interface Occupation {
   employmentStatus: string | null;
-  natureOfJob: string | null;
+  natureOfJob?: string | null; 
   annualIncome: string | null;
+  natureOfOccupation?: string | null;
   employerName: string | null;
   employerPhone: string | null;
   employerAddress: string | null;
 }
+
 
 export interface Identity {
   meansOfIdentification: string | null;
@@ -28,6 +30,7 @@ export interface AddOrphanState {
   firstName: string;
   lastName: string;
   image: any;
+  affidavit: any;
   gender: string;
   dateOfBirth: string | null | any;
   stateOfOrigin: string;
@@ -37,11 +40,12 @@ export interface AddOrphanState {
   schoolAddress: string;
   schoolContact: string;
   phoneNumberOfSchool: string;
-  class: string;
+  class_: string;
 
   setFirstName: (firstName: string) => void;
   setLastName: (lastName: string) => void;
   setImage: (image: any) => void;
+  setAffidavit: (affidavit: any) => void;
   setGender: (gender: string) => void;
   setDateOfBirth: (dateOfBirth: string) => void;
   setStateOfOrigin: (stateOfOrigin: string) => void;

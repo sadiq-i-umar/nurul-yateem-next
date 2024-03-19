@@ -1,6 +1,5 @@
-"use client"
+"use client";
 import { SessionProvider, useSession } from "next-auth/react";
-import { useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { baseUrl } from "../../../utils/constant";
@@ -9,10 +8,9 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
- if(session){
+  if (session) {
     const checkAuthorization = async () => {
       if (!session) {
-        // If no session, redirect to login page
         router.push("/login");
       } else {
         const accountType = session.user.account;
@@ -49,8 +47,8 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
     checkAuthorization();
   }
 
-  if (status === "loading") {
-    return null; // Render nothing while checking authentication status
+  if (!session ) {
+    router.push("/login");
   }
 
   return <main>{children}</main>;
@@ -63,3 +61,4 @@ const WrappedMainDashboardLayout = (props: any) => (
 );
 
 export default WrappedMainDashboardLayout;
+

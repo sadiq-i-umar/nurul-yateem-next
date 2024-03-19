@@ -16,42 +16,56 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
 import { states_in_nigeria_dropdown } from "../../utils";
 import { PhotoUploadFrame } from "../common/image-frames";
-import { PersonalInformation } from "../../utils/interfaces";
 import { VisuallyHiddenInput } from "../common/input";
 import DragUpload from "../drag-upload";
-import { Add } from "@mui/icons-material";
-import SubmitOrphan from "../submit-orphan";
+import { useAddOrphanStore } from "../../utils/zustand/addOrphanstore";
+import toast from "react-hot-toast";
 
-const AddAnOrphanForm: React.FC<{
-  onNextClick: (personalInfo: PersonalInformation | undefined) => void;
-}> = ({ onNextClick }) => {
-  //Reset scroll on tab display
-  window.scrollTo({
-    top: 0,
-  });
+const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
 
-  const [image, setImage] = useState<{ url: string | null; file?: any }>({
-    url: "",
-  });
-  const [checkedGender, setCheckedGender] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [affidavit, setAffidavit] = useState("");
-  const [stateOfOrigin, setStateOfOrigin] = useState("");
-  const [lga, setLga] = useState("");
-  const [dob, setDob] = useState<Dayjs | null>(null);
-  const [schoolingStatus, setSchoolingStatus] = useState("");
-  const [schoolName, setSchoolName] = useState("");
-  const [schoolAddress, setSchoolAddress] = useState("");
-  const [schoolContactPerson, setSchoolContactPerson] = useState("");
-  const [schoolContactPersonPhone, setSchoolContactPersonPhone] = useState("");
-
-  const sendDataToParent = (data: PersonalInformation) => {
-    onNextClick(data);
-  };
+  const {
+    firstName,
+    lastName,
+    image,
+    gender,
+    dateOfBirth,
+    stateOfOrigin,
+    localGovernmentArea,
+    InSchool,
+    schoolName,
+    schoolAddress,
+    schoolContact,
+    phoneNumberOfSchool,
+    class_,
+    setFirstName,
+    setLastName,
+    setImage,
+    setGender,
+    setDateOfBirth,
+    setStateOfOrigin,
+    setLocalGovernmentArea,
+    setInSchool,
+    setSchoolName,
+    setSchoolAddress,
+    setSchoolContact,
+    setPhoneNumberOfSchool,
+    setClass,
+  } = useAddOrphanStore();
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
+  const [dateOfBirthError, setDateOfBirthError] = useState(false);
+  const [stateOfOriginError, setStateOfOriginError] = useState(false);
+  const [localGovernmentAreaError, setLocalGovernmentAreaError] =
+    useState(false);
+  const [schoolNameError, setSchoolNameError] = useState(false);
+  const [schoolAddressError, setSchoolAddressError] = useState(false);
+  const [schoolContactError, setSchoolContactError] = useState(false);
+  const [phoneNumberOfSchoolError, setPhoneNumberOfSchoolError] =
+    useState(false);
+  const [classError, setClassError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const handleImageSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -61,6 +75,9 @@ const AddAnOrphanForm: React.FC<{
         setImage({ file, url: reader?.result as string });
       };
       reader.readAsDataURL(file);
+      setImageError(false);
+    } else {
+      setImageError(true);
     }
   };
 
@@ -69,6 +86,62 @@ const AddAnOrphanForm: React.FC<{
       // TODO: Upload image to google bucket and store response
     }
   }
+  const sendDataToParent = () => {
+    let isValid = true;
+    if (!firstName) {
+      setFirstNameError(true);
+      isValid = false;
+    }
+    if (!lastName) {
+      setLastNameError(true);
+      isValid = false;
+    }
+    if (!dateOfBirth) {
+      setDateOfBirthError(true);
+      isValid = false;
+    }
+    if (!stateOfOrigin) {
+      setStateOfOriginError(true);
+      isValid = false;
+    }
+    if (!localGovernmentArea) {
+      setLocalGovernmentAreaError(true);
+      isValid = false;
+    }
+
+    if (!schoolName) {
+      setSchoolNameError(true);
+      isValid = false;
+    }
+    if (!schoolAddress) {
+      setSchoolAddressError(true);
+      isValid = false;
+    }
+    if (!schoolContact) {
+      setSchoolContactError(true);
+      isValid = false;
+    }
+    if (!phoneNumberOfSchool) {
+      setPhoneNumberOfSchoolError(true);
+      isValid = false;
+    }
+    if (!class_) {
+      setClassError(true);
+      isValid = false;
+    }
+    if (!image.url) {
+      setImageError(true);
+      isValid = false;
+    }
+
+    if (!isValid) {
+      toast.error("Please fill in all required fields");
+    }
+
+    if (isValid) {
+      onClick();
+    }
+  };
 
   return (
     <Box>
@@ -119,6 +192,11 @@ const AddAnOrphanForm: React.FC<{
               />
             </Button>
           </Box>
+          {imageError && (
+            <Typography component="p" color="error">
+              Image is required
+            </Typography>
+          )}
         </Box>
         <Box
           sx={{
@@ -136,11 +214,11 @@ const AddAnOrphanForm: React.FC<{
           <Typography>Gender</Typography>
         </Box>
         <RadioGroup
-          value={checkedGender}
+          value={gender}
           sx={{ display: "flex", flexDirection: "row" }}
         >
           <Box
-            onClick={() => setCheckedGender("Male")}
+            onClick={() => setGender("MALE")}
             sx={{
               flexShrink: 1,
               cursor: "pointer",
@@ -149,36 +227,36 @@ const AddAnOrphanForm: React.FC<{
               paddingX: "15px",
               borderRadius: "10px",
               marginRight: "40px",
-              ...(checkedGender == "Male"
+              ...(gender == "MALE"
                 ? { borderColor: "#268500" }
                 : { borderColor: "#D2D2D2" }),
               marginBottom: "30px",
             }}
           >
             <FormControlLabel
-              onClick={() => setCheckedGender("Male")}
-              value="Male"
+              onClick={() => setGender("MALE")}
+              value="MALE"
               control={<Radio />}
               label="Male"
             />
           </Box>
           <Box
-            onClick={() => setCheckedGender("Female")}
+            onClick={() => setGender("FEMALE")}
             sx={{
               cursor: "pointer",
               border: "2px solid",
               paddingY: "10px",
               paddingX: "15px",
               borderRadius: "10px",
-              ...(checkedGender == "Female"
+              ...(gender == "FEMALE"
                 ? { borderColor: "#268500" }
                 : { borderColor: "#D2D2D2" }),
               marginBottom: "30px",
             }}
           >
             <FormControlLabel
-              onClick={(e) => setCheckedGender("Female")}
-              value="Female"
+              onClick={(e) => setGender("FEMALE")}
+              value="FEMALE"
               control={<Radio />}
               label="Female"
             />
@@ -190,7 +268,7 @@ const AddAnOrphanForm: React.FC<{
           <Grid item lg={6}>
             <Box sx={{ marginBottom: "21.5px" }}>
               <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>Firstname</Typography>
+                <Typography>First Name</Typography>
               </Box>
               <Box sx={{ borderRadius: "10px" }}>
                 <TextField
@@ -203,21 +281,29 @@ const AddAnOrphanForm: React.FC<{
                       borderRadius: "10px",
                     },
                   }}
-                  placeholder="Enter firstname"
+                  placeholder="Enter First Name"
                   value={firstName}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
-                  }) => setFirstName(event?.target.value)}
+                  }) => {
+                    setFirstName(event?.target.value);
+                    setFirstNameError(false);
+                  }}
                 />
+                {firstNameError && (
+                  <Typography component="p" color="error">
+                    First Name is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
           <Grid item lg={6}>
             <Box sx={{ marginBottom: "21.5px" }}>
               <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>Lastname</Typography>
+                <Typography>Last Name</Typography>
               </Box>
               <Box sx={{ borderRadius: "10px" }}>
                 <TextField
@@ -230,14 +316,22 @@ const AddAnOrphanForm: React.FC<{
                       borderRadius: "10px",
                     },
                   }}
-                  placeholder="Enter lastname"
+                  placeholder="Enter Last Name"
                   value={lastName}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
-                  }) => setLastName(event?.target.value)}
+                  }) => {
+                    setLastName(event?.target.value);
+                    setLastNameError(false);
+                  }}
                 />
+                {lastNameError && (
+                  <Typography component="p" color="error">
+                    Last Name is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -265,19 +359,24 @@ const AddAnOrphanForm: React.FC<{
                   }}
                   onChange={(e) => {
                     setStateOfOrigin(e.target.value);
-                    e.target.value
-                      ? localStorage.setItem("stateOfOrigin", e.target.value)
-                      : null;
+                    setStateOfOriginError(false);
                   }}
+                  displayEmpty
                 >
-                  {["-- Select --", ...states_in_nigeria_dropdown].map(
-                    (item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    )
-                  )}
+                  <MenuItem value="" disabled>
+                    -- Select --
+                  </MenuItem>
+                  {[...states_in_nigeria_dropdown].map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
                 </Select>
+                {stateOfOriginError && (
+                  <Typography component="p" color="error">
+                    State of Origin is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -298,13 +397,21 @@ const AddAnOrphanForm: React.FC<{
                     },
                   }}
                   placeholder={"Enter LGA"}
-                  value={lga}
+                  value={localGovernmentArea}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
-                  }) => setLga(event?.target.value)}
+                  }) => {
+                    setLocalGovernmentArea(event?.target.value);
+                    setLocalGovernmentAreaError(false);
+                  }}
                 />
+                {localGovernmentAreaError && (
+                  <Typography component="p" color="error">
+                    Local governmnet area is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -319,12 +426,20 @@ const AddAnOrphanForm: React.FC<{
             <Box sx={{ borderRadius: "10px" }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  value={dob}
-                  onChange={(newDate) => setDob(newDate ?? null)}
+                  value={dateOfBirth}
+                  onChange={(newDate) => {
+                    setDateOfBirth(newDate ?? null);
+                    setDateOfBirthError(false);
+                  }}
                   format="DD/MM/YYYY"
                   sx={{ width: "100%" }}
                 />
               </LocalizationProvider>
+              {dateOfBirthError && (
+                <Typography component="p" color="error">
+                  Date of birth is required
+                </Typography>
+              )}
             </Box>
           </Grid>
         </Grid>
@@ -337,28 +452,59 @@ const AddAnOrphanForm: React.FC<{
       <Box sx={{ marginBottom: "10px" }}>
         <Grid container spacing={5}>
           <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
+            <Box sx={{}}>
+              <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
                 <Typography>Is he/she in school?</Typography>
               </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <Select
-                  value={schoolingStatus}
+              <RadioGroup
+                value={InSchool}
+                sx={{ display: "flex", flexDirection: "row" }}
+              >
+                <Box
+                  onClick={() => setInSchool("YES")}
                   sx={{
+                    flexShrink: 1,
+                    cursor: "pointer",
+                    border: "2px solid",
+                    paddingY: "10px",
+                    paddingX: "15px",
                     borderRadius: "10px",
-                    width: "100%",
+                    marginRight: "40px",
+                    ...(InSchool == "YES"
+                      ? { borderColor: "#268500" }
+                      : { borderColor: "#D2D2D2" }),
+                    marginBottom: "30px",
                   }}
-                  onChange={(e) => setSchoolingStatus(e.target.value)}
                 >
-                  {["-- Select --", ...states_in_nigeria_dropdown].map(
-                    (item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    )
-                  )}
-                </Select>
-              </Box>
+                  <FormControlLabel
+                    onClick={() => setInSchool("YES")}
+                    value="YES"
+                    control={<Radio />}
+                    label="Yes"
+                  />
+                </Box>
+                <Box
+                  onClick={() => setInSchool("NO")}
+                  sx={{
+                    cursor: "pointer",
+                    border: "2px solid",
+                    paddingY: "10px",
+                    paddingX: "15px",
+                    borderRadius: "10px",
+                    ...(InSchool == "NO"
+                      ? { borderColor: "#268500" }
+                      : { borderColor: "#D2D2D2" }),
+                    marginBottom: "30px",
+                  }}
+                >
+                  <FormControlLabel
+                    onClick={(e) => setInSchool("NO")}
+                    value="NO"
+                    control={<Radio />}
+                    label="NO"
+                  />
+                </Box>
+              </RadioGroup>
             </Box>
           </Grid>
           <Grid item lg={6}>
@@ -383,11 +529,54 @@ const AddAnOrphanForm: React.FC<{
                     target: {
                       value: string;
                     };
-                  }) => setSchoolName(event?.target.value)}
+                  }) => {
+                    setSchoolName(event?.target.value);
+                    setSchoolNameError(false);
+                  }}
                 />
+                {schoolNameError && (
+                  <Typography component="p" color="error">
+                    School Name is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
+        </Grid>
+        <Grid item lg={6}>
+          <Box sx={{ marginBottom: "21.5px" }}>
+            <Box sx={{ marginBottom: "11.5px" }}>
+              <Typography>Class</Typography>
+            </Box>
+            <Box sx={{ borderRadius: "10px" }}>
+              <TextField
+                sx={{
+                  width: "100%",
+                  borderRadius: "50px",
+                }}
+                inputProps={{
+                  sx: {
+                    borderRadius: "10px",
+                  },
+                }}
+                placeholder={"Enter Class Level"}
+                value={class_}
+                onChange={(event: {
+                  target: {
+                    value: string;
+                  };
+                }) => {
+                  setClass(event?.target.value);
+                  setClassError(false);
+                }}
+              />
+              {classError && (
+                <Typography component="p" color="error">
+                  Class is required
+                </Typography>
+              )}
+            </Box>
+          </Box>
         </Grid>
       </Box>
       <Box sx={{ marginBottom: "40px" }}>
@@ -411,10 +600,18 @@ const AddAnOrphanForm: React.FC<{
               target: {
                 value: string;
               };
-            }) => setSchoolAddress(event?.target.value)}
+            }) => {
+              setSchoolAddress(event?.target.value);
+              setSchoolAddressError(false);
+            }}
             multiline
             rows={4}
           />
+          {schoolAddressError && (
+            <Typography component="p" color="error">
+              School Address is required
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box sx={{ marginBottom: "30px" }}>
@@ -436,13 +633,21 @@ const AddAnOrphanForm: React.FC<{
                     },
                   }}
                   placeholder="Enter full name"
-                  value={schoolContactPerson}
+                  value={schoolContact}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
-                  }) => setSchoolContactPerson(event?.target.value)}
+                  }) => {
+                    setSchoolContact(event?.target.value);
+                    setSchoolContactError(false);
+                  }}
                 />
+                {schoolContactError && (
+                  <Typography component="p" color="error">
+                    School Contact Person is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -463,43 +668,29 @@ const AddAnOrphanForm: React.FC<{
                     },
                   }}
                   placeholder="Enter phone number"
-                  value={schoolContactPersonPhone}
+                  value={phoneNumberOfSchool}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
-                  }) => setSchoolContactPersonPhone(event?.target.value)}
+                  }) => {
+                    setPhoneNumberOfSchool(event?.target.value);
+                    setPhoneNumberOfSchoolError(false);
+                  }}
                 />
+                {phoneNumberOfSchoolError && (
+                  <Typography component="p" color="error">
+                    Phone Number of Contact Person is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ marginBottom: "80px" }}>
-        <Box sx={{ display: "flex", alignItems: "center", color: "#007A27" }}>
-          <Add sx={{ marginRight: "10px" }} />
-          <Typography sx={{ fontSize: "16px" }}>Add Orphan</Typography>
-        </Box>
-      </Box>
+
       <Box sx={{ marginBottom: "100px" }}>
         <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box>
-              <Button
-                variant="outlined"
-                sx={{
-                  boxShadow: "none",
-                  width: "100%",
-                  borderRadius: "6px",
-                  textTransform: "none",
-                  paddingY: "10px",
-                  paddingX: "70px",
-                }}
-              >
-                Save progress and continue later
-              </Button>
-            </Box>
-          </Grid>
           <Grid item lg={6}>
             <Grid container spacing={4}>
               <Grid item lg={6}>
@@ -523,7 +714,20 @@ const AddAnOrphanForm: React.FC<{
               </Grid>
               <Grid item lg={6}>
                 <Box>
-                  <SubmitOrphan />
+                  <Button
+                    onClick={sendDataToParent}
+                    variant="contained"
+                    sx={{
+                      boxShadow: "none",
+                      width: "100%",
+                      borderRadius: "6px",
+                      textTransform: "none",
+                      paddingY: "10px",
+                      paddingX: "70px",
+                    }}
+                  >
+                    Submit
+                  </Button>
                 </Box>
               </Grid>
             </Grid>

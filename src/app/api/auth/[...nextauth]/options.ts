@@ -41,6 +41,8 @@ const credentialsProviderOptions: any = {
             refreshToken: json.refreshToken,
           },
           account: json.user.account_type,
+          firstName: json.user.first_name,
+          lastName: json.user.last_name,
         };
         return user;
       }
@@ -59,6 +61,8 @@ export const authOptions: AuthOptions = {
         token.name = user.email;
         token.access = user.token.accessToken;
         token.account = user.account;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
       }
       return token;
     },
@@ -70,6 +74,8 @@ export const authOptions: AuthOptions = {
           refreshToken: token.refreshToken as string,
         },
         account: token.account as string,
+        firstName: token.firstName as string,
+        lastName: token.lastName as string,
       };
       session.token = token.access;
 

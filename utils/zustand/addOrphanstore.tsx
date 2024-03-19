@@ -5,20 +5,22 @@ import dayjs from "dayjs";
 export const useAddOrphanStore = create<AddOrphanState>((set) => ({
   firstName: "",
   lastName: "",
-  image: null,
-  gender: "",
+  image: '',
+  affidavit: '',
+  gender: "MALE",
   dateOfBirth: "",
   stateOfOrigin: "",
   localGovernmentArea: "",
-  InSchool: "",
+  InSchool: "YES",
   schoolName: "",
   schoolAddress: "",
   schoolContact: "",
   phoneNumberOfSchool: "",
-  class: "",
+  class_: "",
   setFirstName: (firstName) => set((state) => ({ ...state, firstName })),
   setLastName: (lastName) => set((state) => ({ ...state, lastName })),
   setImage: (image) => set((state) => ({ ...state, image })), // Added setImage
+  setAffidavit: (affidavit) => set((state) => ({ ...state, affidavit })), // Added setImage
   setGender: (gender) => set((state) => ({ ...state, gender })),
   setDateOfBirth: (dateOfBirth) =>
     set((state) => ({

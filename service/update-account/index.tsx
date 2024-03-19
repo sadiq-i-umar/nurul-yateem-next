@@ -13,3 +13,15 @@ export const UpdateAccount = async (Data: any, token: any) => {
 
   return res;
 };
+export const AddOphanApi = async (Data: any, token: any) => {
+  const res = await request("POST", `${baseUrl}/guardian/add-orphan`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+
+    data: Data,
+  });
+
+  return res;
+};

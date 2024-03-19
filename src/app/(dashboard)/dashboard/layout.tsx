@@ -19,11 +19,7 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
     return null;
   }
 
-  return (
-    <main>
-      {children}
-    </main>
-  );
+  return <main>{children}</main>;
 };
 
 const WrappedMainDashboardLayout = (props: any) => (

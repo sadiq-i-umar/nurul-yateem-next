@@ -27,6 +27,8 @@ import {
 const CompleteAccount: React.FC = () => {
   const { data: session } = useSession();
   const token = session?.token;
+  const firstName = session?.user?.firstName;
+  const lastName = session?.user?.lastName;
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -98,21 +100,18 @@ const CompleteAccount: React.FC = () => {
     personalInfo: PersonalInformation | undefined | any
   ) => {
     if (personalInfo) {
-      console.log(personalInfo);
     }
     handleNextClick();
   };
 
   const handleDataFromTabTwo = (occupation: Occupation | undefined | any) => {
     if (occupation) {
-      console.log(occupation);
     }
     handleNextClick();
   };
 
   const handleDataFromTabThree = (identity: Identity | undefined | any) => {
     if (identity) {
-      console.log(identity);
     }
 
     handleSubmitClick();
@@ -200,10 +199,14 @@ const CompleteAccount: React.FC = () => {
             }}
           >
             <Box sx={{ marginRight: "15px" }}>
-              <Typography>Welcome, Sadiq Umar</Typography>
+              <Typography
+                style={{ textTransform: "capitalize" }}
+              >{`Welcome ${firstName} ${lastName}`}</Typography>
             </Box>
             <Box>
-              <ProfileImageFrame initials={"SU"} />
+              <ProfileImageFrame
+                initials={`${firstName?.charAt(0)}${lastName?.charAt(0)}`}
+              />
             </Box>
           </Box>
         </Box>
