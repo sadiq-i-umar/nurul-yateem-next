@@ -7,17 +7,17 @@ import { redirect } from "next/navigation";
 const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   useScrollToTop();
 
-  const { data: session, status } = useSession();
-  const isCheckingAuthStatus = !session && status === "loading";
+  // const { data: session, status } = useSession();
+  // const isCheckingAuthStatus = !session && status === "loading";
 
-  if (isCheckingAuthStatus) {
-    return null;
-  }
+  // if (isCheckingAuthStatus) {
+  //   return null;
+  // }
 
-  if (!session) {
-    redirect("/login");
-    return null;
-  }
+  // if (!session) {
+  //   redirect("/login");
+  //   return null;
+  // }
 
   return <main>{children}</main>;
 };
