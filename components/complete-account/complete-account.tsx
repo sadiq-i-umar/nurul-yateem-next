@@ -1,28 +1,27 @@
 "use client";
-
 import {
   LogoImageFrame,
   ProfileImageFrame,
-} from "../../../../../../components/common/image-frames";
+} from "../common/image-frames";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { useState } from "react";
-import PersonalInformationTab from "../../../../../../components/personal-information-tab";
-import OccupationTab from "../../../../../../components/occupation-tab";
-import IdentityTab from "../../../../../../components/identity-tab";
-import ProfileSubmitSuccess from "../../../../../../components/profile-submit-success";
+import PersonalInformationTab from "../personal-information-tab";
+import OccupationTab from "../occupation-tab";
+import IdentityTab from "../identity-tab";
+import ProfileSubmitSuccess from "../profile-submit-success";
 import { ArrowLeft } from "@mui/icons-material";
 import { useSession } from "next-auth/react";
-import { Loader } from "../../../../../../components/common/loader";
-import { UpdateAccount } from "../../../../../../service/update-account";
+import { Loader } from "../common/loader";
+import { UpdateAccount } from "../../service/update-account";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useGuardianStore } from "../../../../../../utils/zustand/guardianstore";
+import { useGuardianStore } from "../../utils/zustand/guardianstore";
 import SubmitProfil from "./submit-profile";
 import {
   Identity,
   Occupation,
   PersonalInformation,
-} from "../../../../../../utils/interfaces";
+} from "../../utils/interfaces";
 
 const CompleteAccount: React.FC = () => {
   const { data: session } = useSession();

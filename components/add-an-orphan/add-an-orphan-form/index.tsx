@@ -16,11 +16,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
-import { states_in_nigeria_dropdown } from "../../utils";
-import { PhotoUploadFrame } from "../common/image-frames";
-import { VisuallyHiddenInput } from "../common/input";
-import DragUpload from "../drag-upload";
-import { useAddOrphanStore } from "../../utils/zustand/addOrphanstore";
+import { states_in_nigeria_dropdown } from "../../../utils";
+import { PhotoUploadFrame } from "../../common/image-frames";
+import { VisuallyHiddenInput } from "../../common/input";
+import DragUpload from "../../drag-upload";
+import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
 import toast from "react-hot-toast";
 
 const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {

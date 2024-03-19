@@ -3,7 +3,7 @@
 import {
   LogoImageFrame,
   ProfileImageFrame,
-} from "../../../../../../components/common/image-frames";
+} from "../common/image-frames";
 import {
   Button,
   Dialog,
@@ -13,12 +13,12 @@ import {
 } from "@mui/material";
 import { Box, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Loader } from "../../../../../../components/common/loader";
-import AddAnOrphanForm from "../../../../../../components/add-an-orphan-form";
+import { Loader } from "../common/loader";
+import AddAnOrphanForm from "./add-an-orphan-form";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { useAddOrphanStore } from "../../../../../../utils/zustand/addOrphanstore";
-import { AddOphanApi } from "../../../../../../service/update-account";
+import { useAddOrphanStore } from "../../utils/zustand/addOrphanstore";
+import { AddOphanApi } from "../../service/update-account";
 import { useMutation } from "@tanstack/react-query";
 import AddOrphanSuccess from "./success/page";
 

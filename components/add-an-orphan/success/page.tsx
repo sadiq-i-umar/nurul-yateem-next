@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Dialog, Typography } from "@mui/material";
 import Image from "next/image";
-import { LogoImageFrame } from "../../../../../../../components/common/image-frames";
+import { LogoImageFrame } from "../../common/image-frames";
 
 const AddOrphanSuccess: React.FC = () => {
 
