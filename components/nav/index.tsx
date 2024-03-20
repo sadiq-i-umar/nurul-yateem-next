@@ -1,15 +1,16 @@
 import { Box } from "@mui/material";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const Nav: React.FC = () => {
 
   const path = usePathname();
+  const router = useRouter();
 
   return (
     <Box sx={{ paddingLeft: "5px", paddingTop: "50px" }}>
       {navConfig.map((item) => (
-        <Box sx={{ mb: "40px", mr: "20px" }}>
-        <NavItem key={item.title} icon={item.icon} title={item.title} isActive={path === item.path ? (true) : (false)} />
+        <Box key={item.title} sx={{ mb: "40px", mr: "20px" }}>
+          <Box onClick={() => router.replace(item.path)}><NavItem key={item.title} icon={item.icon} title={item.title} isActive={path === item.path ? (true) : (false)} /></Box>
         </Box>
       ))}
     </Box>
