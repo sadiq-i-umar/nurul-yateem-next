@@ -1,10 +1,7 @@
 "use client";
-import {
-  LogoImageFrame,
-  ProfileImageFrame,
-} from "../common/image-frames";
+import { LogoImageFrame, ProfileImageFrame } from "../common/image-frames";
 import { Box, Button, Grid, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PersonalInformationTab from "../personal-information-tab";
 import OccupationTab from "../occupation-tab";
 import IdentityTab from "../identity-tab";
@@ -16,7 +13,6 @@ import { UpdateAccount } from "../../service/update-account";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useGuardianStore } from "../../utils/zustand/guardianstore";
-import SubmitProfil from "./submit-profile";
 import {
   Identity,
   Occupation,
@@ -31,12 +27,7 @@ const CompleteAccount: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const {
-    mutateAsync,
-    status,
-    isSuccess,
-    data: Data,
-  } = useMutation({
+  const { mutateAsync, status, isSuccess, data } = useMutation({
     mutationFn: (payload: any) => UpdateAccount(payload, token),
   });
   const handleNextClick = () => {
@@ -87,13 +78,19 @@ const CompleteAccount: React.FC = () => {
         identity_number: identificationNumber,
       };
       await mutateAsync(payload);
-      setShowSuccessMessage(true);
     } catch (error) {
       toast.error("An error occurred. Please try again later");
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (data?.status === true) {
+      setShowSuccessMessage(true);
+      mutateAsync(null);
+    }
+  }, [status]);
 
   const handleDataFromTabOne = (
     personalInfo: PersonalInformation | undefined | any
