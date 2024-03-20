@@ -16,6 +16,20 @@ export const LogoImageFrame: React.FC<{image:string}> = ({image}) => {
     );
 }
 
+export const ImageFrameRectangular117By53: React.FC<{image:string}> = ({image}) => {
+
+    return (
+        <Box
+            sx={{ 
+            backgroundImage: `url(${image})`,
+            backgroundSize: "100% 100%",
+            width: "117px",
+            height: "53px"
+            }}
+        />
+    )
+}
+
 export const HeroImageFrame: React.FC<{image:string}> = ({image}) => {
 
     return (
