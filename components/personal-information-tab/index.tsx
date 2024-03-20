@@ -15,91 +15,127 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import { states_in_nigeria_dropdown } from "../../utils";
+import { maritalStatusOptions, states_in_nigeria_dropdown } from "../../utils";
 import { PhotoUploadFrame } from "../common/image-frames";
-import { PersonalInformation } from "../../utils/interfaces";
 import { VisuallyHiddenInput } from "../common/input";
+import { useGuardianStore } from "../../utils/zustand/guardianstore";
+import { PersonalInformation } from "../../utils/interfaces";
+import { useEffect, useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import toast from "react-hot-toast";
 
 const PersonalInformationTab: React.FC<{
   onNextClick: (personalInfo: PersonalInformation | undefined) => void;
 }> = ({ onNextClick }) => {
   //Reset scroll on tab display
-  window.scrollTo({
-    top: 0,
-  });
 
-  //Clear items in local storage before page is unloaded
-  window.onbeforeunload = function () {
-    localStorage.setItem("image", "");
-    localStorage.setItem("gender", "");
-    localStorage.setItem("dob", "");
-    localStorage.setItem("maritalStatus", "-- Select --");
-    localStorage.setItem("phone", "");
-    localStorage.setItem("altPhone", "");
-    localStorage.setItem("homeAddress", "");
-    localStorage.setItem("stateOfOrigin", "-- Select --");
-    localStorage.setItem("lga", "");
-  };
+  const {
+    image,
+    setImage,
+    gender,
+    setGender,
+    setDateOfBirth,
+    maritalStatus,
+    setMaritalStatus,
+    phoneNumber,
+    altPhoneNumber,
+    setPhoneNumber,
+    setAltPhoneNumber,
+    homeAddress,
+    setHomeAddress,
+    stateOfOrigin,
+    setStateOfOrigin,
+    localGovernmentArea,
+    setLocalGovernmentArea,
+  } = useGuardianStore();
 
-  const storedImage = localStorage.getItem("image");
-  const storedGender = localStorage.getItem("gender");
-  let storedDob: Dayjs | null;
-  if (localStorage.getItem("dob") == "") {
-    storedDob = null;
-  } else {
-    storedDob = dayjs(localStorage.getItem("dob"));
-  }
-  const storedMaritalStatus = localStorage.getItem("maritalStatus");
-  const storedPhone = localStorage.getItem("phone");
-  const storedAltPhone = localStorage.getItem("altPhone");
-  const storedHomeAddress = localStorage.getItem("homeAddress");
-  const storedStateOfOrigin = localStorage.getItem("stateOfOrigin");
-  const storedLga = localStorage.getItem("lga");
-
-  const [image, setImage] = useState<{ url: string | null; file?: any }>({
-    url: storedImage,
-  });
-  const [checkedGender, setCheckedGender] = useState(storedGender);
-  const [dob, setDob] = useState<Dayjs | null>(storedDob);
-  const [maritalStatus, setMaritalStatus] = useState(storedMaritalStatus);
-  const [phone, setPhone] = useState(storedPhone);
-  const [altPhone, setAltPhone] = useState(storedAltPhone);
-  const [homeAddress, setHomeAddress] = useState(storedHomeAddress);
-  const [stateOfOrigin, setStateOfOrigin] = useState(storedStateOfOrigin);
-  const [lga, setLga] = useState(storedLga);
-
-  const [logoError, setLogoError] = useState(false);
-  const [dobError, setDobError] = useState(false);
+  const [phoneNumberError, setPhoneNumberError] = useState(false);
   const [maritalStatusError, setMaritalStatusError] = useState(false);
-  const [phoneError, setPhoneError] = useState(false);
-  const [altPhoneError, setAltPhoneError] = useState(false);
-  const [homeAddressError, setHomeAddressError] = useState(false);
   const [stateOfOriginError, setStateOfOriginError] = useState(false);
-  const [lgaError, setLgaError] = useState(false);
-
-  const sendDataToParent = (data: PersonalInformation) => {
-    onNextClick(data);
-  };
+  const [localGovernmentAreaError, setLocalGovernmentAreaError] =
+    useState(false);
+  const [dobError, setDobError] = useState(false);
+  const [genderError, setGenderError] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [homeAddressError, setHomeAddressError] = useState(false);
 
   const handleImageSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage({ file, url: reader?.result as string });
-        localStorage.setItem("image", reader?.result as string);
+        setImage({ file, url: reader.result as string }); 
       };
       reader.readAsDataURL(file);
+      setImageError(false);
+    } else {
+      setImageError(true);
     }
   };
-
-  if (image.url?.indexOf("data:image") != undefined) {
-    if (image.url?.indexOf("data:image") > -1) {
-      // TODO: Upload image to google bucket and store response
-    }
+  
+  if (image.url && image.url.startsWith("data:image")) {
+    // Conditionally upload image to Google bucket and store response
+    // You can call your upload function here
   }
+  
+
+  const [dob, setDob] = useState<Dayjs | null | any>(null);
+
+  const sendDataToParent = () => {
+    let isValid = true;
+    if (!phoneNumber) {
+      setPhoneNumberError(true);
+      isValid = false;
+    }
+    if (!maritalStatus) {
+      setMaritalStatusError(true);
+      isValid = false;
+    }
+    if (!stateOfOrigin) {
+      setStateOfOriginError(true);
+      isValid = false;
+    }
+    if (!localGovernmentArea) {
+      setLocalGovernmentAreaError(true);
+      isValid = false;
+    }
+
+    if (!dob) {
+      setDobError(true);
+      isValid = false;
+    }
+    if (!gender) {
+      setGenderError(true);
+      isValid = false;
+    }
+    if (!image.url) {
+      setImageError(true);
+      isValid = false;
+    }
+
+    if (!homeAddress) {
+      setHomeAddressError(true);
+      isValid = false;
+    }
+    if (!isValid) {
+      toast.error("Please fill in all required fields");
+    }
+
+    if (isValid) {
+      setDateOfBirth(dob);
+      onNextClick({
+        image,
+        gender,
+        dob: dob?.format("DD/MM/YYYY"),
+        maritalStatus,
+        phone: phoneNumber,
+        altPhone: altPhoneNumber,
+        homeAddress,
+        stateOfOrigin,
+        lga: localGovernmentArea,
+      });
+    }
+  };
 
   return (
     <Box>
@@ -155,6 +191,11 @@ const PersonalInformationTab: React.FC<{
               />
             </Button>
           </Box>
+          {imageError && (
+            <Typography component="p" color="error">
+              Image is required
+            </Typography>
+          )}
         </Box>
         <Box
           sx={{
@@ -167,16 +208,16 @@ const PersonalInformationTab: React.FC<{
           </Typography>
         </Box>
       </Box>
-      <Box sx={{}}>
+      <Box>
         <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
           <Typography>Gender</Typography>
         </Box>
         <RadioGroup
-          value={checkedGender}
+          value={gender}
           sx={{ display: "flex", flexDirection: "row" }}
         >
           <Box
-            onClick={() => setCheckedGender("Male")}
+            onClick={() => setGender("MALE")}
             sx={{
               flexShrink: 1,
               cursor: "pointer",
@@ -185,7 +226,7 @@ const PersonalInformationTab: React.FC<{
               paddingX: "15px",
               borderRadius: "10px",
               marginRight: "40px",
-              ...(checkedGender == "Male"
+              ...(gender == "MALE"
                 ? { borderColor: "#268500" }
                 : { borderColor: "#D2D2D2" }),
               marginBottom: "30px",
@@ -193,34 +234,32 @@ const PersonalInformationTab: React.FC<{
           >
             <FormControlLabel
               onClick={() => {
-                setCheckedGender("Male"),
-                  localStorage.setItem("gender", "Male");
+                setGender("MALE");
               }}
-              value="Male"
+              value="MALE"
               control={<Radio />}
               label="Male"
             />
           </Box>
           <Box
-            onClick={() => setCheckedGender("Female")}
+            onClick={() => setGender("FEMALE")}
             sx={{
               cursor: "pointer",
               border: "2px solid",
               paddingY: "10px",
               paddingX: "15px",
               borderRadius: "10px",
-              ...(checkedGender == "Female"
+              ...(gender == "FEMALE"
                 ? { borderColor: "#268500" }
                 : { borderColor: "#D2D2D2" }),
               marginBottom: "30px",
             }}
           >
             <FormControlLabel
-              onClick={(e) => {
-                setCheckedGender("Female"),
-                  localStorage.setItem("gender", "Female");
+              onClick={() => {
+                setGender("FEMALE");
               }}
-              value="Female"
+              value="FEMALE"
               control={<Radio />}
               label="Female"
             />
@@ -240,17 +279,17 @@ const PersonalInformationTab: React.FC<{
                     value={dob}
                     onChange={(newDate) => {
                       setDob(newDate ?? null);
-                      newDate
-                        ? localStorage.setItem(
-                            "dob",
-                            newDate.add(1, "day").toISOString().substring(0, 10)
-                          )
-                        : null;
+                      setDobError(false);
                     }}
                     format="DD/MM/YYYY"
                     sx={{ width: "100%" }}
                   />
                 </LocalizationProvider>
+                {dobError && (
+                  <Typography component="p" color="error">
+                    Date of birth is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -268,17 +307,24 @@ const PersonalInformationTab: React.FC<{
                   }}
                   onChange={(e) => {
                     setMaritalStatus(e.target.value);
-                    e.target.value
-                      ? localStorage.setItem("maritalStatus", e.target.value)
-                      : null;
+                    setMaritalStatusError(false);
                   }}
+                  displayEmpty
                 >
-                  {["-- Select --", "Single", "Married"].map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item}
+                  <MenuItem value="" disabled>
+                    -- Select --
+                  </MenuItem>
+                  {maritalStatusOptions?.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option?.label}
                     </MenuItem>
                   ))}
                 </Select>
+                {maritalStatusError && (
+                  <Typography component="p" color="error">
+                    Marital status is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -297,24 +343,22 @@ const PersonalInformationTab: React.FC<{
                     width: "100%",
                     borderRadius: "50px",
                   }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder="Enter Phone Number"
-                  value={phone}
+                  placeholder="080********"
+                  value={phoneNumber}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
                   }) => {
-                    setPhone(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("phone", event.target.value)
-                      : null;
+                    setPhoneNumber(event.target.value);
+                    setPhoneNumberError(false);
                   }}
                 />
+                {phoneNumberError && (
+                  <Typography component="p" color="error">
+                    Phone number is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -334,17 +378,14 @@ const PersonalInformationTab: React.FC<{
                       borderRadius: "10px",
                     },
                   }}
-                  placeholder={"Enter Alternate Phone Number"}
-                  value={altPhone}
+                  placeholder={"080********"}
+                  value={altPhoneNumber}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
                   }) => {
-                    setAltPhone(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("altPhone", event.target.value)
-                      : null;
+                    setAltPhoneNumber(event?.target.value);
                   }}
                 />
               </Box>
@@ -375,13 +416,16 @@ const PersonalInformationTab: React.FC<{
               };
             }) => {
               setHomeAddress(event?.target.value);
-              event.target.value
-                ? localStorage.setItem("homeAddress", event.target.value)
-                : null;
+              setHomeAddressError(false);
             }}
             multiline
-            rows={4}
+            rows={3}
           />
+          {homeAddressError && (
+            <Typography component="p" color="error">
+              Home address is required
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box sx={{ marginBottom: "30px" }}>
@@ -400,19 +444,24 @@ const PersonalInformationTab: React.FC<{
                   }}
                   onChange={(e) => {
                     setStateOfOrigin(e.target.value);
-                    e.target.value
-                      ? localStorage.setItem("stateOfOrigin", e.target.value)
-                      : null;
+                    setStateOfOriginError(false);
                   }}
+                  displayEmpty
                 >
-                  {["-- Select --", ...states_in_nigeria_dropdown].map(
-                    (item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    )
-                  )}
+                  <MenuItem value="" disabled>
+                    -- Select --
+                  </MenuItem>
+                  {[...states_in_nigeria_dropdown].map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
                 </Select>
+                {stateOfOriginError && (
+                  <Typography component="p" color="error">
+                    Image is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -433,18 +482,21 @@ const PersonalInformationTab: React.FC<{
                     },
                   }}
                   placeholder={"Enter LGA"}
-                  value={lga}
+                  value={localGovernmentArea}
                   onChange={(event: {
                     target: {
                       value: string;
                     };
                   }) => {
-                    setLga(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem("lga", event.target.value)
-                      : null;
+                    setLocalGovernmentArea(event?.target.value);
+                    setLocalGovernmentAreaError(false);
                   }}
                 />
+                {localGovernmentAreaError && (
+                  <Typography component="p" color="error">
+                    local government area is required
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -452,23 +504,6 @@ const PersonalInformationTab: React.FC<{
       </Box>
       <Box sx={{ marginBottom: "100px" }}>
         <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box>
-              <Button
-                variant="outlined"
-                sx={{
-                  boxShadow: "none",
-                  width: "100%",
-                  borderRadius: "6px",
-                  textTransform: "none",
-                  paddingY: "10px",
-                  paddingX: "70px",
-                }}
-              >
-                Save progress and continue later
-              </Button>
-            </Box>
-          </Grid>
           <Grid item lg={6}>
             <Grid container spacing={4}>
               <Grid item lg={6}>
@@ -493,19 +528,7 @@ const PersonalInformationTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        image: image,
-                        gender: checkedGender,
-                        dob: dob?.format("DD/MM/YYYY"),
-                        maritalStatus: maritalStatus,
-                        phone: phone,
-                        altPhone: altPhone,
-                        homeAddress: homeAddress,
-                        stateOfOrigin: stateOfOrigin,
-                        lga: lga,
-                      })
-                    }
+                    onClick={sendDataToParent}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

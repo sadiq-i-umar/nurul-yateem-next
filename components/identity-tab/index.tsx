@@ -1,49 +1,64 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
-  FormControlLabel,
   Grid,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Typography,
+  SelectChangeEvent, // Import SelectChangeEvent from @mui/material
 } from "@mui/material";
-import Image from "next/image";
-import { useState } from "react";
+import { identityOptions } from "../../utils";
+import { useGuardianStore } from "../../utils/zustand/guardianstore";
 import { Identity } from "../../utils/interfaces";
+import toast from "react-hot-toast";
 
 const IdentityTab: React.FC<{
   onSubmitClick: (identity: Identity) => void;
 }> = ({ onSubmitClick }) => {
-  //Reset scroll on tab display
-  window.scrollTo({
-    top: 0,
-  });
+  const {
+    meansOfIdentification,
+    identificationNumber,
+    setMeansOfIdentification,
+    setIdentificationNumber,
+  } = useGuardianStore();
 
-  //Clear items in local storage before page is unloaded
-  window.onbeforeunload = function () {
-    localStorage.setItem("meansOfIdentification", "-- Select --");
-    localStorage.setItem("identificationNumber", "");
+  const [meansOfIdentificationError, setMeansOfIdentificationError] =
+    useState(false);
+  const [identificationNumberError, setIdentificationNumberError] =
+    useState(false);
+
+  const handleMeansOfIdentificationChange = (
+    event: SelectChangeEvent<string>,
+    child: React.ReactNode
+  ) => {
+    const value = event.target.value;
+    setMeansOfIdentification(value);
+    setMeansOfIdentificationError(false);
   };
 
-  const storedMeansOfIdentification = localStorage.getItem(
-    "meansOfIdentification"
-  );
-  const storedIdentificationNumber = localStorage.getItem(
-    "identificationNumber"
-  );
+  const sendDataToParent = () => {
+    let isValid = true;
+    if (!meansOfIdentification) {
+      setMeansOfIdentificationError(true);
+      isValid = false;
+    }
+    if (!identificationNumber) {
+      setIdentificationNumberError(true);
+      isValid = false;
+    }
 
-  const [meansOfIdentification, setMeansOfIdentification] = useState(
-    storedMeansOfIdentification
-  );
-  const [identificationNumber, setIdentificationNumber] = useState(
-    storedIdentificationNumber
-  );
+    if (!isValid) {
+      toast.error("Please fill in all required fields");
+    }
 
-  const sendDataToParent = (data: Identity) => {
-    onSubmitClick(data);
+    if (isValid) {
+      onSubmitClick({
+        meansOfIdentification: meansOfIdentification,
+        identificationNumber: identificationNumber,
+      });
+    }
   };
 
   return (
@@ -63,32 +78,27 @@ const IdentityTab: React.FC<{
               <Box sx={{ borderRadius: "10px" }}>
                 <Select
                   value={meansOfIdentification}
+                  onChange={handleMeansOfIdentificationChange}
                   sx={{
                     borderRadius: "10px",
                     width: "100%",
                   }}
-                  onChange={(e) => {
-                    setMeansOfIdentification(e.target.value);
-                    e.target.value
-                      ? localStorage.setItem(
-                          "meansOfIdentification",
-                          e.target.value
-                        )
-                      : null;
-                  }}
+                  displayEmpty
                 >
-                  {[
-                    "-- Select --",
-                    "NATIONAL_ID",
-                    "DRIVER_LICENCE",
-                    "VOTERS_CARD",
-                    "INTERNATIONAL_PASSPORT",
-                  ].map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item}
+                  <MenuItem value="" disabled>
+                    -- Select --
+                  </MenuItem>
+                  {identityOptions?.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      {option?.label}
                     </MenuItem>
                   ))}
                 </Select>
+                {meansOfIdentificationError && (
+                  <Typography component="p" color="error">
+                    Please select means of identification
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -110,20 +120,16 @@ const IdentityTab: React.FC<{
                   }}
                   placeholder="Enter ID Number"
                   value={identificationNumber}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setIdentificationNumber(event?.target.value);
-                    event.target.value
-                      ? localStorage.setItem(
-                          "identificationNumber",
-                          event.target.value
-                        )
-                      : null;
+                  onChange={(event: React.ChangeEvent<{ value: string }>) => {
+                    setIdentificationNumber(event.target.value);
+                    setIdentificationNumberError(false);
                   }}
                 />
+                {identificationNumberError && (
+                  <Typography component="p" color="error">
+                    Please enter identification number
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -172,12 +178,7 @@ const IdentityTab: React.FC<{
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    onClick={() =>
-                      sendDataToParent({
-                        meansOfIdentification: meansOfIdentification,
-                        identificationNumber: identificationNumber,
-                      })
-                    }
+                    onClick={sendDataToParent}
                     variant="contained"
                     sx={{
                       boxShadow: "none",

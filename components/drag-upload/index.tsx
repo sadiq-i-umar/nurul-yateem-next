@@ -1,16 +1,17 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import PhotoIcon from '@mui/icons-material/Photo';
-import { Container } from '@mui/material';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import DeleteIcon from "@mui/icons-material/Delete";
+import PhotoIcon from "@mui/icons-material/Photo";
+import { Container } from "@mui/material";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Image from "next/image";
+import React, { useState } from "react";
+import { useAddOrphanStore } from "../../utils/zustand/addOrphanstore"; // Import the zustand store
 
 const DragUpload = ({
   title,
   subtitle,
-  onFileUpload
+  onFileUpload,
 }: {
   title: string;
   subtitle: string;
@@ -18,6 +19,7 @@ const DragUpload = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(false);
+  const addOrphanStore = useAddOrphanStore(); // Access the zustand store
 
   const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
@@ -41,9 +43,18 @@ const DragUpload = ({
 
     if (files.length > 0) {
       const file = files[0];
+      const reader = new FileReader();
 
-      onFileUpload && onFileUpload(title, file); // Pass both title and file
-      setUploadedFile(true);
+      reader.onload = () => {
+        const url = reader.result;
+        const affidavitData = { file, url };
+
+        onFileUpload && onFileUpload(title, file); // Pass both title and file
+        setUploadedFile(true);
+        addOrphanStore.setAffidavit(affidavitData); // Save file and URL to affidavit state
+      };
+
+      reader.readAsDataURL(file);
     }
   };
 
@@ -51,28 +62,39 @@ const DragUpload = ({
     const file = e.target.files[0];
 
     if (file) {
-      onFileUpload && onFileUpload(title, file); // Pass both title and file
-      setUploadedFile(true);
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const url = reader.result;
+        const affidavitData = { file, url };
+
+        onFileUpload && onFileUpload(title, file); // Pass both title and file
+        setUploadedFile(true);
+        addOrphanStore.setAffidavit(affidavitData); // Save file and URL to affidavit state
+      };
+
+      reader.readAsDataURL(file);
     }
   };
 
   const handleDeleteFile = () => {
     setUploadedFile(false);
+    addOrphanStore.setAffidavit(null); // Clear affidavit state when file is deleted
   };
 
   return (
     <Box
       sx={{
-        borderRadius: '10px',
-        width: "100%"
+        borderRadius: "10px",
+        width: "100%",
       }}
     >
       <Typography
         variant="h6"
         sx={{
-          fontWeight: '400',
-          pt: { xs: '.5rem', md: '.5rem' },
-          textAlign: 'left'
+          fontWeight: "400",
+          pt: { xs: ".5rem", md: ".5rem" },
+          textAlign: "left",
         }}
       >
         {title}
@@ -80,17 +102,17 @@ const DragUpload = ({
       <label
         htmlFor="fileInput"
         style={{
-          cursor: 'pointer',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          marginTop: '1rem',
-          marginBottom: '1rem',
-          border: `3px dashed ${isDragging ? '#519E33' : 'lightgray'}`,
-          borderRadius: '10px',
-          padding: "50px 0px"
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          marginTop: "1rem",
+          marginBottom: "1rem",
+          border: `3px dashed ${isDragging ? "#519E33" : "lightgray"}`,
+          borderRadius: "10px",
+          padding: "50px 0px",
         }}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
@@ -104,7 +126,7 @@ const DragUpload = ({
           sx={{
             fontSize: "14px",
             color: "#B4B3B3",
-            marginTop: "10px"
+            marginTop: "10px",
           }}
         >
           {subtitle}
@@ -116,29 +138,29 @@ const DragUpload = ({
         id="fileInput"
         type="file"
         accept=".jpg, .jpeg, .png"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         onChange={handleFileInputChange}
       />
 
       {uploadedFile && (
         <Box
           sx={{
-            border: '1px solid lightgray',
-            borderRadius: '10px',
-            py: { xs: '1rem', md: '.5rem' },
-            px: { xs: '0px', md: '2rem' },
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mt: '2.5rem'
+            border: "1px solid lightgray",
+            borderRadius: "10px",
+            py: { xs: "1rem", md: ".5rem" },
+            px: { xs: "0px", md: "2rem" },
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mt: "2.5rem",
           }}
         >
           <Container
             sx={{
-              display: 'flex',
-              justifyContent: 'start',
-              alignItems: 'center',
-              gap: '.5rem'
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "center",
+              gap: ".5rem",
             }}
           >
             <PhotoIcon style={{ fontSize: 40 }} />
@@ -146,9 +168,9 @@ const DragUpload = ({
               <Typography
                 variant="h6"
                 sx={{
-                  fontWeight: '400',
-                  pt: { xs: '.5rem', md: '.5rem' },
-                  textAlign: 'left'
+                  fontWeight: "400",
+                  pt: { xs: ".5rem", md: ".5rem" },
+                  textAlign: "left",
                 }}
               >
                 Logo.png
@@ -156,17 +178,22 @@ const DragUpload = ({
               <Typography
                 variant="h6"
                 sx={{
-                  fontWeight: '200',
-                  pt: { xs: '.5rem', md: '.5rem' },
-                  px: { xs: '0px', md: '1rem' },
-                  textAlign: 'left'
+                  fontWeight: "200",
+                  pt: { xs: ".5rem", md: ".5rem" },
+                  px: { xs: "0px", md: "1rem" },
+                  textAlign: "left",
                 }}
               >
                 2.5MB
               </Typography>
             </Box>
           </Container>
-          <IconButton aria-label="delete" size="large" color="error" onClick={handleDeleteFile}>
+          <IconButton
+            aria-label="delete"
+            size="large"
+            color="error"
+            onClick={handleDeleteFile}
+          >
             <DeleteIcon fontSize="inherit" />
           </IconButton>
         </Box>
