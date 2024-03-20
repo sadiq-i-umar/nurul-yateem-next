@@ -64,7 +64,7 @@ const PersonalInformationTab: React.FC<{
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage({ file, url: reader?.result as string });
+        setImage({ file, url: reader.result as string }); 
       };
       reader.readAsDataURL(file);
       setImageError(false);
@@ -72,48 +72,48 @@ const PersonalInformationTab: React.FC<{
       setImageError(true);
     }
   };
-
-  if (image.url?.indexOf("data:image") != undefined) {
-    if (image.url?.indexOf("data:image") > -1) {
-      // TODO: Upload image to google bucket and store response
-    }
+  
+  if (image.url && image.url.startsWith("data:image")) {
+    // Conditionally upload image to Google bucket and store response
+    // You can call your upload function here
   }
+  
 
   const [dob, setDob] = useState<Dayjs | null | any>(null);
 
   const sendDataToParent = () => {
     let isValid = true;
-    if (!phoneNumber && phoneNumber.trim() === "") {
+    if (!phoneNumber) {
       setPhoneNumberError(true);
       isValid = false;
     }
-    if (!maritalStatus && maritalStatus.trim() === "") {
+    if (!maritalStatus) {
       setMaritalStatusError(true);
       isValid = false;
     }
-    if (!stateOfOrigin && stateOfOrigin.trim() === "") {
+    if (!stateOfOrigin) {
       setStateOfOriginError(true);
       isValid = false;
     }
-    if (!localGovernmentArea || localGovernmentArea.trim() === "") {
+    if (!localGovernmentArea) {
       setLocalGovernmentAreaError(true);
       isValid = false;
     }
 
-    if (!dob && dob?.format("DD/MM/YYYY") === "") {
+    if (!dob) {
       setDobError(true);
       isValid = false;
     }
-    if (!gender && gender.trim() === "") {
+    if (!gender) {
       setGenderError(true);
       isValid = false;
     }
-    if (!image.url && image.url.trim() === "") {
+    if (!image.url) {
       setImageError(true);
       isValid = false;
     }
 
-    if (!homeAddress && homeAddress.trim() === "") {
+    if (!homeAddress) {
       setHomeAddressError(true);
       isValid = false;
     }
