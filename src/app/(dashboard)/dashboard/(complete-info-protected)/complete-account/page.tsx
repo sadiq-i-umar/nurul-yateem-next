@@ -1,5 +1,5 @@
 import React from "react";
-import CompleteAccount from "../../../../../../components/complete-account/complete-account";
+import CompleteAccount from "../../../../../../components/complete-profile/completeProfile";
 
 const page = () => {
   return (

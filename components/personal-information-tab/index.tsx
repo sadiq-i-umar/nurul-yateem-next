@@ -79,13 +79,7 @@ const PersonalInformationTab: React.FC<{
     }
   }
 
-  let storedDob: Dayjs | null;
-  if (localStorage.getItem("dob") == "") {
-    storedDob = null;
-  } else {
-    storedDob = dayjs(localStorage.getItem("dob"));
-  }
-  const [dob, setDob] = useState<Dayjs | null | any>(storedDob);
+  const [dob, setDob] = useState<Dayjs | null | any>(null);
 
   const sendDataToParent = () => {
     let isValid = true;
