@@ -33,7 +33,7 @@ const AddOrphanSuccess: React.FC = () => {
           <Box sx={{ marginBottom: { xs: "5px", sm: "0px" }, marginX: "25px" }}>
             <Typography sx={{ fontSize: "16px", textAlign: "center" }}>
               While you await approval, feel free to explore our dashboard. Once
-              approved, you'll have full access to your portal.
+              approved, you&apos;ll have full access to your portal.
             </Typography>
           </Box>
         </Box>
