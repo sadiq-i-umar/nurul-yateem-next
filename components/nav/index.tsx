@@ -1,5 +1,7 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
+import { ImageFrame40 } from "../common/image-frames";
+import { MoreVert } from "@mui/icons-material";
 
 const Nav: React.FC = () => {
 
@@ -7,12 +9,42 @@ const Nav: React.FC = () => {
   const router = useRouter();
 
   return (
-    <Box sx={{ paddingLeft: "5px", paddingTop: "50px" }}>
+    <Box sx={{ paddingLeft: "5px", paddingTop: "50px", position: "relative", height: "80%" }}>
       {navConfig.map((item) => (
         <Box key={item.title} sx={{ mb: "40px", mr: "20px" }}>
           <Box onClick={() => router.replace(item.path)}><NavItem key={item.title} icon={item.icon} title={item.title} isActive={path === item.path ? (true) : (false)} /></Box>
         </Box>
       ))}
+      <Box sx={{ display: 'flex', alignItems: 'center', position: "absolute", bottom: 0, width: {xs: "70%", sm: "90%"}, flexWrap: {xs: "wrap", sm: "no-wrap"} }}>
+      <Box sx={{ marginRight: '12px' }}>
+        <ImageFrame40 image={"image"} />
+      </Box>
+      <Box sx={{ flexGrow: 1, mr: '20px' }}>
+        <Box>
+          <Typography
+            sx={{
+              fontSize: '16px',
+              fontWeight: 600,
+              color: 'black',
+              mb: { xs: '5px', sm: '0px' },
+              wordBreak: "break-all"
+            }}
+          >
+            {"Nazih Ajanah"}
+          </Typography>
+        </Box>
+        <Box>
+          <Typography
+            sx={{ fontSize: '12px', color: '#908E8F', fontWeight: 500, wordBreak: "break-all" }}
+          >
+            {"Guardian"}
+          </Typography>
+        </Box>
+      </Box>
+      <Box sx={{ position: "absolute", right: {xs: -40, sm: 0} }}>
+        <MoreVert />
+      </Box>
+    </Box>
     </Box>
   );
 };

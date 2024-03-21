@@ -18,6 +18,7 @@ const Layout: React.FC = () => {
             width: "280px",
             display: { xs: "none", md: "block" },
             paddingLeft: "20px",
+            position: "fixed",
           }}
         >
           <Box
@@ -155,7 +156,7 @@ const Layout: React.FC = () => {
             </Box>
           </Box>
         </Box>
-        <Box sx={{ height: "100vh", backgroundColor: "#F5F5F5" }}>
+        <Box sx={{ height: "100vh", backgroundColor: "#F5F5F5", ...(openNav && {marginLeft: {xs: "0px", md: "300px"}}) }}>
           Main Content
         </Box>
       </Box>
