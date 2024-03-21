@@ -1,12 +1,12 @@
 "use client";
 
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ImageFrameRectangular117By53 } from "../../../../../components/common/image-frames";
 import Image from "next/image";
-import { useState } from "react";
-import Nav from "../../../../../components/nav";
+import { ReactNode, useState } from "react";
+import Nav, { NavIcon } from "../../../../../components/nav";
 
-const Layout: React.FC = () => {
+const Layout: React.FC<{children: ReactNode}> = ({children}) => {
   const [openNav, setOpenNav] = useState(true);
   const [openSmallNav, setOpenSmallNav] = useState(false);
 
@@ -36,7 +36,7 @@ const Layout: React.FC = () => {
                 flexGrow: 1,
                 display: "flex",
                 justifyContent: "flex-end",
-                cursor: "pointer",
+                cursor: "pointer"
               }}
             >
               <Image
@@ -111,6 +111,7 @@ const Layout: React.FC = () => {
               ...(openNav == false
                 ? { display: { xs: "none", md: "block" } }
                 : { display: "none" }),
+                paddingLeft: "25px"
             }}
           >
             <Image src={"/menu.svg"} width={24} height={24} alt={"Menu Icon"} />
@@ -123,6 +124,7 @@ const Layout: React.FC = () => {
               ...(openSmallNav == false
                 ? { display: { xs: "block", md: "none" } }
                 : { display: "none" }),
+                paddingLeft: "20px"
             }}
           >
             <Image src={"/menu.svg"} width={24} height={24} alt={"Menu Icon"} />
@@ -130,7 +132,8 @@ const Layout: React.FC = () => {
           <Box
             sx={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}
           >
-            <Box>
+            <Box sx={{ display: "flex" }}>
+            <Box sx={{ marginRight: "40px" }}>
               <Image
                 alt={"Search Icon"}
                 width={24}
@@ -138,7 +141,7 @@ const Layout: React.FC = () => {
                 src={"/search_icon.svg"}
               />
             </Box>
-            <Box>
+            <Box sx={{ marginRight: "40px" }}>
               <Image
                 alt={"Message Icon"}
                 width={24}
@@ -146,7 +149,7 @@ const Layout: React.FC = () => {
                 src={"/message.svg"}
               />
             </Box>
-            <Box>
+            <Box sx={{ marginRight: "40px" }}>
               <Image
                 alt={"Bell Icon"}
                 width={24}
@@ -154,10 +157,26 @@ const Layout: React.FC = () => {
                 src={"/bell.svg"}
               />
             </Box>
+            </Box>
+          </Box>
+          <Box sx={{ display: {xs: "none", sm: "flex"}, marginRight: "30px" }}>
+            <Box sx={{ padding: "5px 20px 5px 20px", color: "#237A00", backgroundColor: "#E9F3E6", borderRadius: "10px", marginRight: "-15px", paddingRight: "40px" }}>
+              <NavIcon icon={"/moon.svg"} />
+            </Box>
+            <Box sx={{ padding: "5px 20px 5px 20px", color: "#FFFFFF", backgroundColor: "#237A00", borderRadius: "10px" }}>
+              <NavIcon icon={"/sun.svg"} />
+            </Box>
           </Box>
         </Box>
-        <Box sx={{ height: "100vh", backgroundColor: "#F5F5F5", ...(openNav && {marginLeft: {xs: "0px", md: "300px"}}) }}>
-          Main Content
+        <Box>
+        <Box>
+        <Box sx={{ height: "100vh", backgroundColor: "#F5F5F5", ...(openNav && {marginLeft: {xs: "0px", md: "300px"}}), padding: "5px 30px 0px 25px" }}>
+          {children}
+        </Box>
+        <Box sx={{ position: "sticky", bottom: 0, ...(openNav && {marginLeft: {xs: "0px", md: "300px"}}), backgroundColor: "white", display: "flex", justifyContent: "center", paddingY: "20px" }}>
+          <Typography sx={{ textAlign: "center" }}>&copy; Copyright 2024 Nurul Yateem Foundation</Typography>
+        </Box>
+        </Box>
         </Box>
       </Box>
     </Box>

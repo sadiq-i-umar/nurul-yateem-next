@@ -64,7 +64,7 @@ const NavItem: React.FC<{ icon: string; title: string, isActive: boolean }> = ({
   );
 };
 
-const NavIcon: React.FC<{ icon: string }> = ({icon}) => {
+export const NavIcon: React.FC<{ icon: string }> = ({icon}) => {
   return (
     <Box
       component="span"
