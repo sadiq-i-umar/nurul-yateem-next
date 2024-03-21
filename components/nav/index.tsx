@@ -15,7 +15,7 @@ const Nav: React.FC = () => {
           <Box onClick={() => router.replace(item.path)}><NavItem key={item.title} icon={item.icon} title={item.title} isActive={path === item.path ? (true) : (false)} /></Box>
         </Box>
       ))}
-      <Box sx={{ display: 'flex', alignItems: 'center', position: "absolute", bottom: 0, width: {xs: "70%", sm: "90%"}, flexWrap: {xs: "wrap", sm: "no-wrap"} }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', position: "absolute", bottom: {xs: 20, md: 0}, width: {xs: "70%", sm: "90%"}, flexWrap: {xs: "wrap", sm: "no-wrap"} }}>
       <Box sx={{ marginRight: '12px' }}>
         <ImageFrame40 image={"image"} />
       </Box>

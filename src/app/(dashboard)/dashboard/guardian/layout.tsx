@@ -26,7 +26,7 @@ const Layout: React.FC = () => {
               display: "flex",
               alignItems: "center",
               height: "90px",
-              paddingRight: "15px",
+              paddingRight: "5px",
             }}
           >
             <ImageFrameRectangular117By53 image="/nurul_yateem_logo.png" />
@@ -47,7 +47,7 @@ const Layout: React.FC = () => {
               />
             </Box>
           </Box>
-          <Box sx={{ height: "100vh" }}>
+          <Box sx={{ height: "100vh", overflow: "auto" }}>
             <Nav />
           </Box>
         </Box>
@@ -102,7 +102,7 @@ const Layout: React.FC = () => {
         </Box>
       )}
       <Box sx={{ flexGrow: 1 }}>
-        <Box sx={{ height: "90px", display: "flex", alignItems: "center" }}>
+        <Box sx={{ height: "90px", display: "flex", alignItems: "center", position: "sticky", top: 0, backgroundColor: "white", ...(openNav && {marginLeft: {xs: "0px", md: "300px"}}) }}>
           <Box
             onClick={() => setOpenNav(!openNav)}
             sx={{
