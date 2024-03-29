@@ -15,6 +15,35 @@ export const LogoImageFrame: React.FC<{ image: string }> = ({ image }) => {
   );
 };
 
+export const ImageFrameRectangular117By53: React.FC<{image:string}> = ({image}) => {
+
+    return (
+        <Box
+            sx={{ 
+            backgroundImage: `url(${image})`,
+            backgroundSize: "100% 100%",
+            width: "117px",
+            height: "53px"
+            }}
+        />
+    )
+}
+
+export const ImageFrame40: React.FC<{ image: string }> = ({ image }) => {
+  return (
+    <Box
+      sx={{
+        backgroundImage: `url(${image})`,
+        backgroundSize: '100% 100%',
+        borderRadius: '50%',
+        width: '40px',
+        height: '40px',
+        backgroundColor: '#E7E7E7',
+      }}
+    />
+  );
+};
+
 export const HeroImageFrame: React.FC<{ image: string }> = ({ image }) => {
   return (
     <Box
