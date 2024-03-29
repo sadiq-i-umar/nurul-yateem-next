@@ -105,27 +105,31 @@ const Login: React.FC = () => {
 
                 // Check if the user has added any orphans
                 if (orphans?.length === 0) {
-                  toast.success("Please complete your profile first. You have no orphans.");
+                  toast.success(
+                    "Please complete your profile first. You have no orphans."
+                  );
                   router.push("/dashboard/add-an-orphan");
                   router.refresh();
                 } else {
                   toast.success("Login successful!");
-                  router.push("/dashboard/home");
+                  router.push("/dashboard/guardian");
                   router.refresh();
                 }
               } catch (error: any) {
-                // Handle errors during profile fetching
                 if (
                   error.response &&
                   error.response.data &&
-                  error.response.data.error === "Guardian profile not found for this user."
+                  error.response.data.error ===
+                    "Guardian profile not found for this user."
                 ) {
                   toast.success("Please complete your profile first.");
                   router.push("/dashboard/complete-account");
                   router.refresh();
                 } else {
                   console.error("Error during fetching user profile:", error);
-                  toast.error("An unexpected error occurred. Please try again.");
+                  toast.error(
+                    "An unexpected error occurred. Please try again."
+                  );
                 }
               }
             }
@@ -144,7 +148,6 @@ const Login: React.FC = () => {
       }
     }
   };
-
 
   return (
     <>

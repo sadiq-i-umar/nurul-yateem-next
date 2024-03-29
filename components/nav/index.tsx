@@ -1,3 +1,4 @@
+"use client";
 import { Box } from "@mui/material";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -5,6 +6,7 @@ import { ImageFrameRectangular117By53 } from "../common/image-frames";
 import { navConfig } from "./config";
 import { NavItem } from "./item";
 import UserAccount from "./user-account";
+import { useSession } from "next-auth/react";
 
 const Nav: React.FC<{
   large: boolean;
@@ -14,6 +16,11 @@ const Nav: React.FC<{
 }> = ({ large, small, closeLargeNav, closeSmallNav }) => {
   const path = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
+  const firstName = session?.user?.firstName;
+  const lastName = session?.user?.lastName;
+  const account = session?.user?.account; 
+
 
   return (
     <Box
@@ -127,7 +134,7 @@ const Nav: React.FC<{
                 </Box>
               </Box>
             ))}
-            <UserAccount image="" name="Nazih Ajanah" role="Guardian" />
+            <UserAccount image="" name={`${firstName} ${lastName}`} role={account} />
           </Box>
         </Box>
       </Box>

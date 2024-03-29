@@ -2,7 +2,11 @@ import { Box, Typography } from "@mui/material";
 import { ImageFrame40 } from "../../common/image-frames";
 import { MoreVert } from "@mui/icons-material";
 
-const UserAccount: React.FC<{ image: string; name: string; role: string }> = ({ image, name, role }) => {
+const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
+  image,
+  name,
+  role,
+}) => {
   return (
     <Box
       sx={{
@@ -26,6 +30,7 @@ const UserAccount: React.FC<{ image: string; name: string; role: string }> = ({ 
               color: "black",
               mb: { xs: "5px", sm: "0px" },
               wordBreak: "break-all",
+              textTransform: "capitalize",
             }}
           >
             {name}
@@ -34,6 +39,7 @@ const UserAccount: React.FC<{ image: string; name: string; role: string }> = ({ 
         <Box>
           <Typography
             sx={{
+              textTransform: "capitalize",
               fontSize: "12px",
               color: "#908E8F",
               fontWeight: 500,
@@ -44,7 +50,9 @@ const UserAccount: React.FC<{ image: string; name: string; role: string }> = ({ 
           </Typography>
         </Box>
       </Box>
-      <Box sx={{ position: "absolute", right: { xs: -40, sm: 0 }, top: {md: 0} }}>
+      <Box
+        sx={{ position: "absolute", right: { xs: -40, sm: 0 }, top: { md: 0 } }}
+      >
         <MoreVert />
       </Box>
     </Box>
