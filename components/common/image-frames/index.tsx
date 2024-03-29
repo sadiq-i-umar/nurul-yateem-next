@@ -2,19 +2,18 @@ import { Box } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 
-export const LogoImageFrame: React.FC<{image:string}> = ({image}) => {
-
-    return (
-        <Box 
-            sx={{ 
-                backgroundImage: `url(${image})`,
-                backgroundSize: "100% 100%",
-                width: "154px",
-                height: "70px"
-             }}
-        />
-    );
-}
+export const LogoImageFrame: React.FC<{ image: string }> = ({ image }) => {
+  return (
+    <Box
+      sx={{
+        backgroundImage: `url(${image})`,
+        backgroundSize: "100% 100%",
+        width: "154px",
+        height: "70px",
+      }}
+    />
+  );
+};
 
 export const ImageFrameRectangular117By53: React.FC<{image:string}> = ({image}) => {
 
