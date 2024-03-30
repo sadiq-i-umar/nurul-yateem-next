@@ -1,14 +1,19 @@
-import { Box, Typography } from "@mui/material";
+"use client";
+
+import { Box, CircularProgress, Skeleton, Typography } from "@mui/material";
 import { ExportPDFButton, TimePeriodButton } from "../buttons";
 import { MonthsSelectOnlyInputBox } from "../input-boxes";
 import { SimpleLineChart, BasicPie } from "../charts";
 import { MoreVert } from "@mui/icons-material";
+import { useSession } from "next-auth/react";
 
 export const SummaryCard: React.FC<{ title: string; number: number; icon: string }> = ({
     title,
     number,
     icon
   }) => {
+
+    const { data: session } = useSession();
   
     return (
       <Box
@@ -24,7 +29,11 @@ export const SummaryCard: React.FC<{ title: string; number: number; icon: string
         </Box>
         <Box sx={{ display: 'flex' }}>
           <Box sx={{ flexGrow: 1 }}>
-            <Typography sx={{ fontSize: '21px', fontWeight: 'bold' }}>{number}</Typography>
+            {session ? 
+              (<Typography sx={{ fontSize: '21px', fontWeight: 'bold' }}>{number}</Typography>) 
+              : 
+              (<Skeleton variant="text" width={40} height={25 } sx={{ mt: 1, display: "block" }}/>)
+            }
           </Box>
           <Box>
             <img src={icon} width="30px" height="30px" />
@@ -35,6 +44,9 @@ export const SummaryCard: React.FC<{ title: string; number: number; icon: string
   };
 
   export const SponsorshipsCard: React.FC = () => {
+
+    const { data: session } = useSession();
+
     return (
       <Box
         sx={{
@@ -106,15 +118,19 @@ export const SummaryCard: React.FC<{ title: string; number: number; icon: string
             mt: '20px',
             ml: { xs: '-10px', sm: '0px' },
             mr: { xs: '-30px', sm: '0px' },
+            display: "flex",
+            justifyContent: "center"
           }}
         >
-          <SimpleLineChart />
+          {session ? (<SimpleLineChart />) : (<CircularProgress sx={{ mt: {xs: '20px', lg: '100px'}, mb: {xs: '30px' } }} />)}
         </Box>
       </Box>
     );
   };
 
   export const GenderPieChartCard: React.FC = () => {
+
+    const { data: session } = useSession();
 
     return (
       <Box
@@ -125,7 +141,7 @@ export const SummaryCard: React.FC<{ title: string; number: number; icon: string
           border: '1px solid #E4E4E7',
           position: "relative",
           minHeight: "100%",
-          paddingTop: '30px'
+          paddingTop: '25px'
         }}
       >
         <Box sx={{ display: 'flex'}}>
@@ -143,10 +159,12 @@ export const SummaryCard: React.FC<{ title: string; number: number; icon: string
         <Box
           sx={{
             display: "flex",
-            marginTop: {xs: '0px', sm: '25px', md: '25px', lg: '40px'}
+            marginTop: {xs: '0px', sm: '25px', md: '25px', lg: '40px'},
+            justifyContent: "center",
+            alignItems: "center"
           }}
         >
-          <BasicPie />
+          {session ? (<BasicPie />) : (<CircularProgress sx={{ mt: {xs: '20px', lg: '79px'}, mb: {xs: '30px', lg: '128px' } }} />)}
         </Box>
       </Box>
     );

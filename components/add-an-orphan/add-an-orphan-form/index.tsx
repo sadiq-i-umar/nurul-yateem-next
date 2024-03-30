@@ -152,6 +152,7 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
           flexDirection: { xs: "column", md: "row" },
         }}
       >
+       
         <Box
           sx={{
             display: "flex",
@@ -164,6 +165,7 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
             marginRight: "30px",
           }}
         >
+          
           <Box sx={{ marginBottom: "10px" }}>
             <Typography>Avatar</Typography>
           </Box>

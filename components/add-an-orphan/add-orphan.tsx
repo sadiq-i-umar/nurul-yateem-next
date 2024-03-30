@@ -127,6 +127,16 @@ const AddAnOrphan: React.FC = () => {
               md={8}
               lg={9}
             >
+              <Box
+                sx={{
+                  my: 2,
+                }}
+              >
+                <Typography variant="h1" sx={{ fontSize: "20px" }}>
+                  Create an Orphan Account
+                </Typography>
+                <Typography sx={{}}>Simply fill in the detail below</Typography>
+              </Box>
               <AddAnOrphanForm
                 onClick={() => {
                   setShowDialog(true);

@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PillWithDot } from '../../pills';
 import { ImageNameEmailCell } from '../cells';
+import { MoreVert } from '@mui/icons-material';
 
 function createData(
   image: string,
@@ -53,15 +54,15 @@ export default function OrphanListTable() {
                 <Box sx={{ marginLeft: '20px' }}>
                   <Checkbox />
                 </Box>
-                <Box>Name of startup</Box>
+                <Box>Name of orphan</Box>
               </Box>
             </TableCell>
             {[
-              'Industry',
-              'Date of Application',
-              'Application Deadline',
+              'Date of Birth',
+              'School Status',
+              'Status of Origin',
               'Status',
-              'Action',
+              '',
             ].map((heading, index) => (
               <TableCell
                 key={index}
@@ -138,13 +139,24 @@ export default function OrphanListTable() {
                       </Typography>
                     </Link>
                   </Box>
-                  <Box sx={{ cursor: 'pointer' }}>
+                  <Box sx={{ cursor: 'pointer', mr: '20px' }}>
                     <Image
                       width={21}
                       height={21}
                       alt={'Trash Icon'}
                       src={'/trash.svg'}
                     />
+                  </Box>
+                  <Box sx={{ cursor: 'pointer', mr: "20px" }}>
+                    <Image
+                      width={21}
+                      height={21}
+                      alt={'Edit Icon'}
+                      src={'/edit.svg'}
+                    />
+                  </Box>
+                  <Box sx={{ cursor: 'pointer' }}>
+                    <MoreVert />
                   </Box>
                 </Box>
               </TableCell>
