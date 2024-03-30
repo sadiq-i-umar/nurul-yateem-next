@@ -19,8 +19,7 @@ const Nav: React.FC<{
   const { data: session } = useSession();
   const firstName = session?.user?.firstName;
   const lastName = session?.user?.lastName;
-  const account = session?.user?.account; 
-
+  const account = session?.user?.account;
 
   return (
     <Box
@@ -28,7 +27,8 @@ const Nav: React.FC<{
         ...(large
           ? {
               ...(small
-                ? {//Styles applied when both the large and small navs are open
+                ? {
+                    //Styles applied when both the large and small navs are open
                     position: { xs: "fixed", md: "static" },
                     zIndex: { xs: 10000, md: 0 },
                     backgroundColor: {
@@ -39,11 +39,14 @@ const Nav: React.FC<{
                     minHeight: { xs: "100vh", md: 0 },
                     display: { xs: "block", md: "block" },
                   }
-                : {/**No style applied when large nav is open but small nav is closed */}),
+                : {
+                    /**No style applied when large nav is open but small nav is closed */
+                  }),
             }
           : {
               ...(small
-                ? {//Styles applied when small nav is opened but large nav is closed
+                ? {
+                    //Styles applied when small nav is opened but large nav is closed
                     position: "fixed",
                     zIndex: 10000,
                     backgroundColor: "rgba(0, 0, 0, 0.3)",
@@ -51,7 +54,9 @@ const Nav: React.FC<{
                     minHeight: "100vh",
                     display: { xs: "block", md: "none" },
                   }
-                : {/**No style applied when both navs are closed */}),
+                : {
+                    /**No style applied when both navs are closed */
+                  }),
             }),
       }}
     >
@@ -60,7 +65,8 @@ const Nav: React.FC<{
           ...(large
             ? {
                 ...(small
-                  ? {//Styles applied when both the large and small navs are open
+                  ? {
+                      //Styles applied when both the large and small navs are open
                       width: { xs: "200px", sm: "250px", md: "280px" },
                       display: "block",
                       paddingLeft: "20px",
@@ -68,7 +74,8 @@ const Nav: React.FC<{
                       backgroundColor: { xs: "white", md: "transparent" },
                       minHeight: { xs: "100vh", md: 0 },
                     }
-                  : {/**Styles applied when large nav is open but small nav is closed */
+                  : {
+                      /**Styles applied when large nav is open but small nav is closed */
                       width: "280px",
                       display: { xs: "none", md: "block" },
                       paddingLeft: "20px",
@@ -77,14 +84,16 @@ const Nav: React.FC<{
               }
             : {
                 ...(small
-                  ? {//Styles applied when small nav is open but large nav is closed
+                  ? {
+                      //Styles applied when small nav is open but large nav is closed
                       width: { xs: "200px", sm: "250px" },
                       display: { xs: "block", md: "none" },
                       paddingLeft: "20px",
                       backgroundColor: "white",
                       minHeight: "100vh",
                     }
-                  : {/**Style applied when both navs are closed */
+                  : {
+                      /**Style applied when both navs are closed */
                       display: "none",
                     }),
               }),
@@ -134,7 +143,11 @@ const Nav: React.FC<{
                 </Box>
               </Box>
             ))}
-            <UserAccount image="" name={`${firstName} ${lastName}`} role={account} />
+            <UserAccount
+              image=""
+              name={`${firstName} ${lastName}`}
+              role={account}
+            />
           </Box>
         </Box>
       </Box>
@@ -142,4 +155,4 @@ const Nav: React.FC<{
   );
 };
 
-export default Nav
+export default Nav;
