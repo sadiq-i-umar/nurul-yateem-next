@@ -24,7 +24,6 @@ import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
 import toast from "react-hot-toast";
 
 const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
-
   const {
     firstName,
     lastName,
@@ -174,6 +173,7 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
               component="label"
               variant="contained"
               sx={{
+                backgroundColor: "#3863FA",
                 boxShadow: "none",
                 width: "100%",
                 borderRadius: "6px",
@@ -182,6 +182,7 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
                 paddingX: "70px",
                 position: "relative",
                 textAlign: "center",
+                "&:hover": { backgroundColor: "#3863FA" },
               }}
             >
               Choose file
