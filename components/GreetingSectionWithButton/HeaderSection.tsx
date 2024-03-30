@@ -2,8 +2,10 @@
 import { Box, Button, Skeleton, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function HeaderSection() {
+  const router = useRouter();
   const { data: session } = useSession();
   const firstName = session?.user?.firstName;
   const lastName = session?.user?.lastName;
@@ -60,7 +62,14 @@ export default function HeaderSection() {
             borderRadius: "30px",
             paddingX: "20px",
             paddingY: "10px",
+            backgroundColor: "#3863FA",
             zIndex: 0,
+            "&:hover": {
+              backgroundColor: "#3863FA",
+            },
+          }}
+          onClick={() => {
+            router.push("/dashboard/guardian/add-an-orphan");
           }}
         >
           <Image src="/plus.svg" width={20} height={20} alt={"Plus Icon"} />

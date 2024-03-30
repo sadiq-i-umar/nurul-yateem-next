@@ -23,7 +23,7 @@ import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { baseUrl } from "../../utils/constant";
-import { Loader } from "../common/loader";
+import LoaderBackdrop from "../common/loader";
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -151,7 +151,7 @@ const Login: React.FC = () => {
 
   return (
     <>
-      {loading && <Loader />}
+      {loading && <LoaderBackdrop />}
       <Box sx={{ height: "100vh", overflow: "hidden" }}>
         <Grid container>
           <Grid item xs={12} lg={6} sx={{ backgroundColor: "#F5F5F5" }}>

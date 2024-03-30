@@ -40,7 +40,34 @@ const theme = createTheme({
         h1: {
             fontSize: "28px",
             fontWeight: "600"
+        },
+        h2: {
+            fontSize: "24px",
+            fontWeight: "600"
+        },
+        h3: {
+            fontSize: "20px",
+            fontWeight: "600"
+        },
+        h4: {
+            fontSize: "16px",
+            fontWeight: "600"
+        },
+        h5: {
+            fontSize: "14px",
+            fontWeight: "600"
+        },
+        h6: {
+            fontSize: "12px",
+            fontWeight: "600"
+        },
+        body1: {
+            fontSize: "14px"
+        },
+        body2: {
+            fontSize: "12px"
         }
+        
     }
 });
 

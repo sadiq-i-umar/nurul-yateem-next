@@ -12,9 +12,9 @@ export const NavItem: React.FC<{
         display: "flex",
         alignItems: "center",
         cursor: "pointer",
-        "&:hover": { color: "#237A00" },
+        "&:hover": { color: "#3863FA" },
         ...(isActive == true && {
-          backgroundColor: "#237A00",
+          backgroundColor: "#3863FA",
           color: "#FFFFFF",
           "&:hover": { color: "#FFFFFF" },
         }),

@@ -1,20 +1,16 @@
-import { Box, CircularProgress } from "@mui/material";
+import React from "react";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
-export const Loader: React.FC = () => {
+const LoaderBackdrop = () => {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "fixed",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        zIndex: "2",
-      }}
+    <Backdrop
+      sx={{ color: "#3863FA", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      open={true}
     >
-      <CircularProgress color="success" />
-    </Box>
+      <CircularProgress color="inherit" />
+    </Backdrop>
   );
 };
+
+export default LoaderBackdrop;
