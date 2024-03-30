@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import { ImageFrame40 } from "../../common/image-frames";
 import { MoreVert } from "@mui/icons-material";
 
@@ -23,7 +23,7 @@ const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
       </Box>
       <Box sx={{ flexGrow: 1, mr: "20px" }}>
         <Box>
-          <Typography
+          {role ? (<Typography
             sx={{
               fontSize: "16px",
               fontWeight: 600,
@@ -34,10 +34,12 @@ const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
             }}
           >
             {name}
-          </Typography>
+          </Typography>)
+        : (<Skeleton variant="rectangular" width={100} height={15} sx={{ mb: 0.7 }}/>)  
+        }
         </Box>
         <Box>
-          <Typography
+          {role ? (<Typography
             sx={{
               textTransform: "capitalize",
               fontSize: "12px",
@@ -47,7 +49,8 @@ const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
             }}
           >
             {role}
-          </Typography>
+          </Typography>)
+          : (<Skeleton variant="rectangular" width={50} height={10} sx={{ mb: 0.5 }}/>)}
         </Box>
       </Box>
       <Box

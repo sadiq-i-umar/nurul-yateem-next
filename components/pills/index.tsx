@@ -25,3 +25,28 @@ export const PillWithDot: React.FC<{
     </Typography>
   );
 };
+
+export const TextOnlyPill: React.FC<{
+  text: string;
+  bgColor: string;
+  color: string;
+  border?: string;
+}> = ({ text, bgColor, color, border }) => {
+  return (
+    <Typography
+      sx={{
+        backgroundColor: bgColor,
+        color: color,
+        display: 'inline-block',
+        paddingX: '10px',
+        borderRadius: '10px',
+        fontWeight: '400',
+        fontSize: '14px',
+        width: 'fit-content',
+        border: border,
+      }}
+    >
+      {text}
+    </Typography>
+  );
+};
