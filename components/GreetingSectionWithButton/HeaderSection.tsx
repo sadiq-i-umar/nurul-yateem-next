@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Skeleton, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
@@ -30,9 +30,20 @@ export default function HeaderSection() {
     >
       <Box sx={{ flexGrow: 1, marginBottom: { xs: "20px", sm: "0px" } }}>
         <Box>
-          <Typography
-            sx={{ fontSize: "18px", textTransform: "capitalize" }}
-          >{`${greeting}, ${firstName} ${lastName}`}</Typography>
+          <Typography sx={{ fontSize: "18px", textTransform: "capitalize" }}>
+            {`${greeting},`}{" "}
+            {firstName ? (
+              <span>{`${firstName} ${lastName}`}</span>
+            ) : (
+              <Skeleton
+                sx={{ display: "inline-block" }}
+                variant="text"
+                animation="pulse"
+                width={140}
+                height={24}
+              />
+            )}
+          </Typography>
         </Box>
         <Box>
           <Typography sx={{ fontSize: "14px" }}>
