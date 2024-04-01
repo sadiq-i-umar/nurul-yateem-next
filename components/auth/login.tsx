@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   HeroImageFramePlaceHolder,
@@ -28,12 +28,12 @@ import LoaderBackdrop from "../common/loader";
 const Login: React.FC = () => {
   const router = useRouter();
   const [emailAddress, setEmailAddress] = useState("");
-  const [loading, setLoading] = useState(false); // Define loading state
+  const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [emailAddressError, setEmailAddressError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Define showPassword state
-  const [passwordError2, setPasswordError2] = useState(false); // Define passwordError2 state
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError2, setPasswordError2] = useState(false);
 
   function clearEmailAddressError() {
     setEmailAddressError(false);
@@ -85,10 +85,12 @@ const Login: React.FC = () => {
           if (user !== undefined) {
             // Check user account type and redirect accordingly
             if (user?.user?.account === "ADMIN") {
+              handleLoginSuccess();
               toast.success("Login successful!");
               router.push("/dashboard/admin");
               router.refresh();
             } else if (user?.user?.account === "SPONSOR") {
+              handleLoginSuccess();
               toast.success("Login successful!");
               router.push("/dashboard/home");
               router.refresh();
@@ -105,12 +107,14 @@ const Login: React.FC = () => {
 
                 // Check if the user has added any orphans
                 if (orphans?.length === 0) {
+                  handleLoginSuccess();
                   toast.success(
                     "Please complete your profile first. You have no orphans."
                   );
                   router.push("/dashboard/add-an-orphan");
                   router.refresh();
                 } else {
+                  handleLoginSuccess();
                   toast.success("Login successful!");
                   router.push("/dashboard/guardian");
                   router.refresh();
@@ -122,6 +126,7 @@ const Login: React.FC = () => {
                   error.response.data.error ===
                     "Guardian profile not found for this user."
                 ) {
+                  handleLoginSuccess();
                   toast.success("Please complete your profile first.");
                   router.push("/dashboard/complete-account");
                   router.refresh();
@@ -147,6 +152,21 @@ const Login: React.FC = () => {
         setLoading(false); // Set loading state to false when login process finishes
       }
     }
+  };
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(loginSuccessTimeout);
+    };
+  });
+
+  let loginSuccessTimeout: string | number | NodeJS.Timeout | undefined;
+
+  const handleLoginSuccess = () => {
+    clearTimeout(loginSuccessTimeout);
+    loginSuccessTimeout = setTimeout(() => {
+      localStorage.setItem("isLogin", "true");
+    }, 5000);
   };
 
   return (
@@ -232,8 +252,25 @@ const Login: React.FC = () => {
                 </Box>
               </Box>
               <Box sx={{ marginBottom: "21.5px" }}>
-                <Box sx={{ marginBottom: "11.5px" }}>
+                <Box
+                  sx={{
+                    marginBottom: "11.5px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <Typography>Password</Typography>
+                  <Typography
+                    sx={{
+                      color: "#335AE4",
+                      fontSize: "12px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => router.push("/forgot-password")}
+                  >
+                    Can't remember password?
+                  </Typography>
                 </Box>
                 <Grid container>
                   <Grid item xs={12}>
@@ -289,9 +326,13 @@ const Login: React.FC = () => {
                   variant="contained"
                   sx={{
                     width: "100%",
-                    borderRadius: "6px",
+                    borderRadius: "1rem",
                     textTransform: "none",
                     paddingY: "10px",
+                    backgroundColor: "#335AE4",
+                    "&:hover": {
+                      backgroundColor: "#335AE4",
+                    },
                   }}
                 >
                   Login
@@ -300,7 +341,7 @@ const Login: React.FC = () => {
               <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Typography>
                   You don&apos;t have an account?{" "}
-                  <Link href="/register" style={{ color: "#268600" }}>
+                  <Link href="/register" style={{ color: "#335AE4" }}>
                     Create an account
                   </Link>
                 </Typography>

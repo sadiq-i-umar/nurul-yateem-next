@@ -24,6 +24,7 @@ const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
   };
 
   const handleLogout = () => {
+    localStorage.clear();
     signOut();
   };
 
