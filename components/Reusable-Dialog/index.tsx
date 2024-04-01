@@ -39,6 +39,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      sx={{ zIndex: 10000 }}
     >
       <Box
         sx={{

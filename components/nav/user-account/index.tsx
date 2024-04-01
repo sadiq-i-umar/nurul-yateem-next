@@ -107,6 +107,7 @@ const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
             vertical: "bottom",
             horizontal: "left",
           }}
+          sx={{ zIndex: 10000 }}
         >
           <Box sx={{ p: 2 }}>
             <Box
