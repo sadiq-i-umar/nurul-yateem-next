@@ -1,6 +1,8 @@
 import { Box } from "@mui/material";
 import Image from "next/image";
 import React from "react";
+import HeroImage from "../../../public/Account Signup/Login/Group 8.svg";
+import EmailImage from "../../../public/Account Signup/Login/Group 28.svg";
 
 export const LogoImageFrame: React.FC<{ image: string }> = ({ image }) => {
   return (
@@ -15,30 +17,31 @@ export const LogoImageFrame: React.FC<{ image: string }> = ({ image }) => {
   );
 };
 
-export const ImageFrameRectangular117By53: React.FC<{image:string}> = ({image}) => {
-
-    return (
-        <Box
-            sx={{ 
-            backgroundImage: `url(${image})`,
-            backgroundSize: "100% 100%",
-            width: "117px",
-            height: "53px"
-            }}
-        />
-    )
-}
+export const ImageFrameRectangular117By53: React.FC<{ image: string }> = ({
+  image,
+}) => {
+  return (
+    <Box
+      sx={{
+        backgroundImage: `url(${image})`,
+        backgroundSize: "100% 100%",
+        width: "117px",
+        height: "53px",
+      }}
+    />
+  );
+};
 
 export const ImageFrame40: React.FC<{ image: string }> = ({ image }) => {
   return (
     <Box
       sx={{
         backgroundImage: `url(${image})`,
-        backgroundSize: '100% 100%',
-        borderRadius: '50%',
-        width: '40px',
-        height: '40px',
-        backgroundColor: '#E7E7E7',
+        backgroundSize: "100% 100%",
+        borderRadius: "50%",
+        width: "40px",
+        height: "40px",
+        backgroundColor: "#E7E7E7",
       }}
     />
   );
@@ -61,11 +64,19 @@ export const HeroImageFramePlaceHolder: React.FC = () => {
   return (
     <Box
       sx={{
-        backgroundColor: "#519E33",
         width: "300px",
         height: "300px",
       }}
-    />
+    >
+      <img src={HeroImage.src} alt="Hero Image" />
+    </Box>
+  );
+};
+export const EmailImageFramePlaceHolder: React.FC = () => {
+  return (
+    <Box>
+      <img src={EmailImage.src} alt="Email Image" />
+    </Box>
   );
 };
 

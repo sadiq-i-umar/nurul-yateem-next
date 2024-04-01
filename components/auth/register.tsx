@@ -25,9 +25,9 @@ import Link from "next/link";
 import { toast } from "react-hot-toast";
 import React, { useEffect, useState } from "react";
 import RegistrationSuccessMessage from "../registration-success-message";
-import { Loader } from "../common/loader";
 import { RegisterUser } from "../../service/register";
 import { useMutation } from "@tanstack/react-query";
+import LoaderBackdrop from "../common/loader";
 
 const Register: React.FC = () => {
   const {
@@ -228,7 +228,7 @@ const Register: React.FC = () => {
 
   return (
     <>
-      {status === "pending" && <Loader />}
+      {status === "pending" && <LoaderBackdrop />}
       <Box>
         <Box>
           <Grid container>
@@ -600,9 +600,10 @@ const Register: React.FC = () => {
                           variant="contained"
                           sx={{
                             width: "100%",
-                            borderRadius: "6px",
+                            borderRadius: "1rem",
                             textTransform: "none",
                             paddingY: "10px",
+                            backgroundColor: "#335AE4",
                           }}
                         >
                           Create Account
@@ -619,7 +620,7 @@ const Register: React.FC = () => {
                           You already have an account?{" "}
                           <Link
                             href="/login"
-                            style={{ color: "#268600", textDecoration: "none" }}
+                            style={{ color: "#335AE4", textDecoration: "none" }}
                           >
                             Login
                           </Link>
