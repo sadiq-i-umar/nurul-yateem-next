@@ -12,31 +12,9 @@ import { PillWithDot } from '../../pills';
 import { ImageNameEmailCell } from '../cells';
 import { MoreVert } from '@mui/icons-material';
 
-function createData(
-  image: string,
-  name: string,
-  email: string,
-  industry: string,
-  dateOfApplication: string,
-  founder: string,
-  status: string,
-) {
-  return { image, name, email, industry, dateOfApplication, founder, status };
-}
-
-const rows = Array(8).fill(
-  createData(
-    '/assets/images/avatar.png',
-    'Dinko Concept LTD',
-    'dinkoconcept@tech.com',
-    'Technology',
-    '22 Jan 2022',
-    '20 Dec 2022',
-    'Approved',
-  ),
-);
-
-export default function OrphanListTable() {
+const OrphanListTable: React.FC<{
+  orphanData: any[]
+}> = ({orphanData}) => {
   return (
     <TableContainer sx={{ backgroundColor: 'white' }}>
       <Table sx={{ minWidth: 650}} aria-label="simple table">
@@ -75,9 +53,9 @@ export default function OrphanListTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {orphanData?.map((orphan) => (
             <TableRow
-              key={row.name}
+              key={`${orphan?.id}`}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
@@ -88,9 +66,9 @@ export default function OrphanListTable() {
                     <Checkbox />
                   </Box>
                   <ImageNameEmailCell
-                    image={row.image}
-                    name={row.name}
-                    email={row.email}
+                    image={orphan?.profile_photo}
+                    name={`${orphan?.first_name} ${orphan?.last_name}`}
+                    email={orphan.gender}
                   />
                 </Box>
               </TableCell>
@@ -98,26 +76,26 @@ export default function OrphanListTable() {
                 <Typography
                   sx={{ fontSize: '14px', fontWeight: 600, color: '#3D3B3C' }}
                 >
-                  {row.industry}
+                  {orphan?.date_of_birth}
                 </Typography>
               </TableCell>
               <TableCell align="left">
                 <Typography
                   sx={{ fontSize: '14px', fontWeight: '400', color: '#667085' }}
                 >
-                  {row.dateOfApplication}
+                  {orphan?.in_school}
                 </Typography>
               </TableCell>
               <TableCell align="left">
                 <Typography
                   sx={{ fontSize: '14px', fontWeight: '400', color: '#667085' }}
                 >
-                  {row.founder}
+                  {orphan?.state_of_origin}
                 </Typography>
               </TableCell>
               <TableCell align="left">
                 <PillWithDot
-                  text={row.status}
+                  text={orphan?.account_status}
                   bgColor={'#ECFDF3'}
                   dotColor={'#12B76A'}
                   textColor={'#12B76A'}
@@ -167,3 +145,5 @@ export default function OrphanListTable() {
     </TableContainer>
   );
 }
+
+export default OrphanListTable

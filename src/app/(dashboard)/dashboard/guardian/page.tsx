@@ -1,5 +1,4 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
-import Image from "next/image";
+import { Box, Grid } from "@mui/material";
 import {
   GenderPieChartCard,
   SponsorshipsCard,
