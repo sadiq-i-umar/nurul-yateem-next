@@ -269,7 +269,7 @@ const Login: React.FC = () => {
                     }}
                     onClick={() => router.push("/forgot-password")}
                   >
-                    Can't remember password?
+                    Can&apos;t remember password?
                   </Typography>
                 </Box>
                 <Grid container>

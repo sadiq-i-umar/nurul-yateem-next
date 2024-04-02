@@ -11,10 +11,14 @@ import Link from 'next/link';
 import { PillWithDot } from '../../pills';
 import { ImageNameEmailCell } from '../cells';
 import { MoreVert } from '@mui/icons-material';
+import ViewOrphanDetailsSideModal from '../../side-modals/view-orphan-details';
 
 const OrphanListTable: React.FC<{
   orphanData: any[]
 }> = ({orphanData}) => {
+
+  const [ openViewDetailsModal, setOpenViewDetailsModal ] = React.useState(false)
+
   return (
     <TableContainer sx={{ backgroundColor: 'white' }}>
       <Table sx={{ minWidth: 650}} aria-label="simple table">
@@ -103,7 +107,7 @@ const OrphanListTable: React.FC<{
               </TableCell>
               <TableCell align="left">
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box sx={{ mr: '20px', cursor: 'pointer', mt: '-5px' }}>
+                  <Box onClick={() => setOpenViewDetailsModal(true)} sx={{ mr: '20px', cursor: 'pointer', mt: '-5px' }}>
                     <Link href="#">
                       <Typography
                         sx={{
@@ -117,6 +121,7 @@ const OrphanListTable: React.FC<{
                       </Typography>
                     </Link>
                   </Box>
+                  <ViewOrphanDetailsSideModal orphanData={orphan} open={openViewDetailsModal} close={() => setOpenViewDetailsModal(false)}/>
                   <Box sx={{ cursor: 'pointer', mr: '20px' }}>
                     <Image
                       width={21}

@@ -60,7 +60,7 @@ const passwordSent = () => {
               >
                 johndoe@test.com.
               </span>{" "}
-              If it doesn't show up soon, you can check your spam inbox.
+              If it doesn&apos;t show up soon, you can check your spam inbox.
             </Typography>
           </Box>
           <Box
@@ -77,7 +77,7 @@ const passwordSent = () => {
                 textAlign: "center",
               }}
             >
-              If you didn't receive any email, click on{" "}
+              If you didn&apos;t receive any email, click on{" "}
               <span
                 style={{
                   color: "#3863FA",
