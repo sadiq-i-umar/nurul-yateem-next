@@ -6,12 +6,12 @@ import { SessionProvider } from "next-auth/react";
 const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
-  useEffect(() => {
-    const isLogin = localStorage.getItem("isLogin");
-    if (isLogin === "true") {
-      router.back();
-    }
-  });
+  // useEffect(() => {
+  //   const isLogin = localStorage.getItem("isLogin");
+  //   if (isLogin === "true") {
+  //     router.back();
+  //   }
+  // });
 
   return <main>{children}</main>;
 };
