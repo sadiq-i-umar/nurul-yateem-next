@@ -133,12 +133,14 @@ const Nav: React.FC<{
           >
             {navConfig.map((item: any) => (
               <Box key={item.title} sx={{ mb: "40px", mr: "20px" }}>
-                <Box onClick={() => router.replace(item.path)}>
+                <Box onClick={() => router.push(item.path)}>
                   <NavItem
                     key={item.title}
                     icon={item.icon}
                     title={item.title}
-                    isActive={path === item.path ? true : false}
+                    isActive={
+                    path.startsWith(item.path) || path === item.path
+                  }
                   />
                 </Box>
               </Box>

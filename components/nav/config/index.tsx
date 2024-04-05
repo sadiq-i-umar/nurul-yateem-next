@@ -2,7 +2,7 @@ export const navConfig = [
   {
     title: "Dashboard",
     icon: "/category.svg",
-    path: "/dashboard/guardian",
+    path: "/dashboard/guardian/home",
   },
   {
     title: "Orphan List",

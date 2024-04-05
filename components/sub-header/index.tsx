@@ -86,8 +86,11 @@ const SubHeader: React.FC<Props> = ({
                 sx={{ mr: { xs: '6px', sm: '12px' } }}
               >
                 <ActionButtonTwo
+                  
                   icon={buttonTwoIcon ? buttonTwoIcon : ''}
                   text={buttonTwoText ? buttonTwoText : ''}
+                  
+                  
                 />
               </Box>
             )}

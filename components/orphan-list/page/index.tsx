@@ -7,8 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const OrphanListPage: React.FC = () => {
+  const router = useRouter();
   const { data: session } = useSession();
   const token = session?.token;
 
@@ -17,6 +19,9 @@ const OrphanListPage: React.FC = () => {
     queryFn: () => getOrphans(token),
     enabled: !!token,
   });
+  const handleButtonTwoClick = () => {
+    router.push("/dashboard/guardian/orphan-list/add-an-orphan"); // Programmatically navigate to the specified URL
+  };
 
   useEffect(() => {
     if (data) {
@@ -37,6 +42,7 @@ const OrphanListPage: React.FC = () => {
           buttonTwoText={"Add Orphans"}
           buttonTwoIcon="/plus.svg"
           itemCountLabel={""}
+          buttonTwoClick={handleButtonTwoClick}
           pageHasTable={true}
         />
       </Box>

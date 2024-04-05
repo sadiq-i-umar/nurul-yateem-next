@@ -3,16 +3,16 @@ import {
   GenderPieChartCard,
   SponsorshipsCard,
   SummaryCard,
-} from "../../../../../components/cards";
-import { summaryCardData } from "../../../../../data/summary-card";
-import HeaderSection from "../../../../../components/GreetingSectionWithButton/HeaderSection";
+} from "../../../../../../components/cards";
+import { summaryCardData } from "../../../../../../data/summary-card";
+import HeaderSection from "../../../../../../components/GreetingSectionWithButton/HeaderSection";
 
 export default function GuardianDashboard() {
   return (
     <Box>
-     <Box>
-     <HeaderSection />
-     </Box>
+      <Box>
+        <HeaderSection />
+      </Box>
       <Box sx={{ marginBottom: "31px" }}>
         <Grid container spacing={3}>
           {summaryCardData.map((card, index) => (

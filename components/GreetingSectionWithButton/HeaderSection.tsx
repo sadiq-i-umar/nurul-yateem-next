@@ -69,7 +69,7 @@ export default function HeaderSection() {
             },
           }}
           onClick={() => {
-            router.push("/dashboard/guardian/add-an-orphan");
+            router.push("/dashboard/guardian/orphan-list/add-an-orphan");
           }}
         >
           <Image src="/plus.svg" width={20} height={20} alt={"Plus Icon"} />
