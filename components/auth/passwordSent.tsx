@@ -60,7 +60,8 @@ const passwordSent = () => {
               >
                 johndoe@test.com.
               </span>{" "}
-              If it doesn&apos;t show up soon, you can check your spam inbox.            </Typography>
+              If it doesn&apos;t show up soon, you can check your spam inbox.
+            </Typography>
           </Box>
           <Box
             sx={{
