@@ -87,12 +87,12 @@ const Login: React.FC = () => {
             if (user?.user?.account === "ADMIN") {
               handleLoginSuccess();
               toast.success("Login successful!");
-              router.push("/dashboard/admin");
+              router.push("/dashboard/admin/home");
               router.refresh();
             } else if (user?.user?.account === "SPONSOR") {
               handleLoginSuccess();
               toast.success("Login successful!");
-              router.push("/dashboard/home");
+              router.push("/dashboard/sponsor/home");
               router.refresh();
             } else if (user?.user?.account === "GUARDIAN") {
               try {
@@ -116,7 +116,7 @@ const Login: React.FC = () => {
                 } else {
                   handleLoginSuccess();
                   toast.success("Login successful!");
-                  router.push("/dashboard/guardian");
+                  router.push("/dashboard/guardian/home");
                   router.refresh();
                 }
               } catch (error: any) {
