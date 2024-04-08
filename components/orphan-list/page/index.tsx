@@ -8,29 +8,25 @@ import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import LoaderBackdrop from "../../common/loader";
 
 const OrphanListPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const token = session?.token;
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["orphans"],
     queryFn: () => getOrphans(token),
     enabled: !!token,
   });
   const handleButtonTwoClick = () => {
-    router.push("/dashboard/guardian/orphan-list/add-an-orphan"); // Programmatically navigate to the specified URL
+    router.push("/dashboard/guardian/orphan-list/add-an-orphan");
   };
-
-  useEffect(() => {
-    if (data) {
-      console.log(JSON.stringify(data.orphans));
-    }
-  }, [data]);
 
   return (
     <Box>
+      {isLoading && <LoaderBackdrop />}
       <Box>
         <h1>Orphan List</h1>
       </Box>

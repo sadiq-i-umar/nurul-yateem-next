@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Box, Paper, Typography } from '@mui/material';
-import { TextOnlyPill } from '../pills';
-import { ActionButtonOne, ActionButtonTwo, FilterButton } from '../buttons';
-import { SearchBar } from '../search-bar/one';
+import { Box, Button, Paper, Typography } from "@mui/material";
+import { TextOnlyPill } from "../pills";
+import { ActionButtonOne, ActionButtonTwo, FilterButton } from "../buttons";
+import { SearchBar } from "../search-bar/one";
 
 interface Props {
   title: string;
@@ -35,63 +35,81 @@ const SubHeader: React.FC<Props> = ({
   return (
     <Paper
       sx={{
-        backgroundColor: 'white',
-        marginX: '-30px',
-        paddingX: '30px',
-        paddingTop: '20px',
+        backgroundColor: "white",
+        marginX: "-30px",
+        paddingX: "30px",
+        paddingTop: "20px",
         ...(pageHasTable
-          ? { paddingBottom: '10px' }
-          : { paddingBottom: '30px' }),
+          ? { paddingBottom: "10px" }
+          : { paddingBottom: "30px" }),
       }}
     >
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' } }}>
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } }}>
         <Box sx={{ flexGrow: 1 }}>
           <Box
-            sx={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}
+            sx={{ display: "flex", alignItems: "center", marginBottom: "4px" }}
           >
-            <Box sx={{ marginRight: '8px' }}>
+            <Box sx={{ marginRight: "8px" }}>
               <Typography
-                sx={{ fontSize: '18px', fontWeight: 600, color: 'black' }}
+                sx={{ fontSize: "18px", fontWeight: 600, color: "black" }}
               >
                 {title}
               </Typography>
             </Box>
             <Box>
-              {itemCount && <TextOnlyPill
-                text={itemCount?.toString() + ' ' + itemCountLabel}
-                bgColor="#F1F7E8"
-                color="#007A27"
-              />}
+              {itemCount && (
+                <TextOnlyPill
+                  text={itemCount?.toString() + " " + itemCountLabel}
+                  bgColor="#F1F7E8"
+                  color="#007A27"
+                />
+              )}
             </Box>
           </Box>
-          <Box sx={{ marginBottom: { xs: '10px', sm: '21px' } }}>
-            <Typography sx={{ color: '#667085' }}>{subtitle}</Typography>
+          <Box sx={{ marginBottom: { xs: "10px", sm: "21px" } }}>
+            <Typography sx={{ color: "#667085" }}>{subtitle}</Typography>
           </Box>
         </Box>
-        <Box sx={{ display: 'flex', paddingTop: '10px' }}>
+        <Box sx={{ display: "flex", paddingTop: "10px" }}>
           {buttonOneText && buttonOneIcon && (
-            <Box sx={{ mr: { xs: '6px', sm: '12px' } }}>
+            <Box sx={{ mr: { xs: "6px", sm: "12px" } }}>
               <ActionButtonOne
-                icon={buttonOneIcon ? buttonOneIcon : ''}
-                text={buttonOneText ? buttonOneText : ''}
+                icon={buttonOneIcon ? buttonOneIcon : ""}
+                text={buttonOneText ? buttonOneText : ""}
               />
             </Box>
           )}
           <Box
-            sx={{ mt: { xs: '0px', sm: '0px' }, mb: { xs: '20px', sm: '0px' } }}
+            sx={{ mt: { xs: "0px", sm: "0px" }, mb: { xs: "20px", sm: "0px" } }}
           >
             {buttonTwoText && buttonTwoIcon && (
               <Box
                 onClick={() => buttonTwoClick && buttonTwoClick()}
-                sx={{ mr: { xs: '6px', sm: '12px' } }}
+                sx={{ mr: { xs: "6px", sm: "12px" } }}
               >
-                <ActionButtonTwo
-                  
-                  icon={buttonTwoIcon ? buttonTwoIcon : ''}
-                  text={buttonTwoText ? buttonTwoText : ''}
-                  
-                  
-                />
+                <Button
+                  variant="contained"
+                  disableElevation
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: "30px",
+                    paddingX: "20px",
+                    paddingY: "10px",
+                    backgroundColor: "#3863FA",
+                    zIndex: 0,
+                    "&:hover": {
+                      backgroundColor: "#3863FA",
+                    },
+                  }}
+                  startIcon={
+                    buttonTwoIcon ? (
+                      <img src={buttonTwoIcon} alt="Button Icon" />
+                    ) : null
+                  }
+                  onClick={() => buttonTwoClick && buttonTwoClick()}
+                >
+                  {buttonTwoText}
+                </Button>
               </Box>
             )}
           </Box>
@@ -99,18 +117,18 @@ const SubHeader: React.FC<Props> = ({
       </Box>
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          mt: '15px',
-          mb: '-25px',
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+          mt: "15px",
+          mb: "-25px",
         }}
       >
         <Box
           sx={{
-            marginRight: '12px',
-            width: '400px',
-            marginBottom: { xs: '15px', sm: '10px' },
+            marginRight: "12px",
+            width: "400px",
+            marginBottom: { xs: "15px", sm: "10px" },
           }}
         >
           <SearchBar
@@ -118,9 +136,9 @@ const SubHeader: React.FC<Props> = ({
           />
         </Box>
         <Box
-          sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+          sx={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
         >
-          <FilterButton initialFilter={'Filters'} />
+          <FilterButton initialFilter={"Filters"} />
         </Box>
       </Box>
     </Paper>

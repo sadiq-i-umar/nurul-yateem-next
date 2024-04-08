@@ -54,10 +54,10 @@ export const ImageFrameCircular70: React.FC<{ image: string }> = ({
     <Box
       sx={{
         backgroundImage: `url(${image})`,
-        backgroundSize: '100% 100%',
-        width: '70px',
-        height: '70px',
-        borderRadius: '50%',
+        backgroundSize: "100% 100%",
+        width: "70px",
+        height: "70px",
+        borderRadius: "50%",
       }}
     />
   );
@@ -70,10 +70,10 @@ export const ImageFrameCircular80: React.FC<{ image: string }> = ({
     <Box
       sx={{
         backgroundImage: `url(${image})`,
-        backgroundSize: '100% 100%',
-        width: '80px',
-        height: '80px',
-        borderRadius: '50%',
+        backgroundSize: "100% 100%",
+        width: "80px",
+        height: "80px",
+        borderRadius: "50%",
       }}
     />
   );
@@ -134,12 +134,22 @@ export const ProfileImageFrame: React.FC<{ initials: string }> = ({
     </Box>
   );
 };
+export const PhotoUploadFrame: React.FC<{
+  image: string | { url: string };
+  url?: string;
+}> = ({ image }) => {
+  let imageUrl: string | undefined;
 
-export const PhotoUploadFrame: React.FC<{ image: string }> = ({ image }) => {
+  if (typeof image === "string") {
+    imageUrl = image;
+  } else if (image && image.url) {
+    imageUrl = image.url;
+  }
+
   return (
     <Box
       sx={{
-        backgroundImage: `url(${image})`,
+        backgroundImage: `url(${imageUrl || ""})`,
         backgroundSize: "100% 100%",
         marginBottom: "10px",
         display: "flex",
@@ -150,15 +160,6 @@ export const PhotoUploadFrame: React.FC<{ image: string }> = ({ image }) => {
         width: "110px",
         height: "110px",
       }}
-    >
-      {image == "" && (
-        <Image
-          src={"/camera.svg"}
-          width={30}
-          height={30}
-          alt={"Upload Camera Icon"}
-        />
-      )}
-    </Box>
+    ></Box>
   );
 };

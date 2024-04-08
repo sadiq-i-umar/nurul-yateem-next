@@ -5,8 +5,9 @@ import dayjs from "dayjs";
 export const useAddOrphanStore = create<AddOrphanState>((set) => ({
   firstName: "",
   lastName: "",
-  image: '',
-  affidavit: '',
+  image:
+    "https://t3.ftcdn.net/jpg/05/16/27/58/360_F_516275801_f3Fsp17x6HQK0xQgDQEELoTuERO4SsWV.jpg",
+  affidavit: "",
   gender: "MALE",
   dateOfBirth: "",
   stateOfOrigin: "",
@@ -17,6 +18,7 @@ export const useAddOrphanStore = create<AddOrphanState>((set) => ({
   schoolContact: "",
   phoneNumberOfSchool: "",
   class_: "",
+  uniqueCode: "",
   setFirstName: (firstName) => set((state) => ({ ...state, firstName })),
   setLastName: (lastName) => set((state) => ({ ...state, lastName })),
   setImage: (image) => set((state) => ({ ...state, image })), // Added setImage
@@ -40,4 +42,5 @@ export const useAddOrphanStore = create<AddOrphanState>((set) => ({
   setPhoneNumberOfSchool: (phoneNumberOfSchool) =>
     set((state) => ({ ...state, phoneNumberOfSchool })),
   setClass: (class_) => set((state) => ({ ...state, class_ })),
+  setUniqueCode: (uniqueCode) => set((state) => ({ ...state, uniqueCode })),
 }));
