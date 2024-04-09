@@ -41,7 +41,8 @@ export interface AddOrphanState {
   schoolContact: string;
   phoneNumberOfSchool: string;
   class_: string;
-
+  uniqueCode: any
+  
   setFirstName: (firstName: string) => void;
   setLastName: (lastName: string) => void;
   setImage: (image: any) => void;
@@ -56,6 +57,7 @@ export interface AddOrphanState {
   setSchoolContact: (schoolContact: string) => void;
   setPhoneNumberOfSchool: (phoneNumberOfSchool: string) => void;
   setClass: (class_: string) => void;
+  setUniqueCode: (uniqueCode: any) => void;
 }
 
 export interface GuardianState {

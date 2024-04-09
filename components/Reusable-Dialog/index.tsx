@@ -10,11 +10,12 @@ import { Box, Typography } from "@mui/material";
 export interface AlertDialogProps {
   open: boolean;
   onClose: () => void;
-  onAgree?: () => void; // Function to trigger on "Agree"
+  onAgree?: () => void;
   title: string;
   content: string;
   disagreeText?: string;
   agreeText?: string;
+  deleteColor?: boolean;
 }
 
 const AlertDialog: React.FC<AlertDialogProps> = ({
@@ -25,6 +26,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
   content,
   disagreeText,
   agreeText,
+  deleteColor,
 }) => {
   const handleAgree = () => {
     if (onAgree) {
@@ -102,11 +104,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
             sx={{
               borderRadius: "1rem",
               textTransform: "capitalize",
-              backgroundColor: "#3863FA",
+              backgroundColor: deleteColor ? "#FF0000" : "#4F46E5",
               color: "white",
               px: "20px",
               "&:hover": {
-                backgroundColor: "#4F46E5",
+                backgroundColor: deleteColor ? "#FF0000" : "#4F46E5",
               },
             }}
           >

@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Box,
   Button,
@@ -22,6 +21,8 @@ import { VisuallyHiddenInput } from "../../common/input";
 import DragUpload from "../../drag-upload";
 import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
 import toast from "react-hot-toast";
+import AlertDialog from "../../Reusable-Dialog";
+import { usePathname, useRouter } from "next/navigation";
 
 const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
   const {
@@ -52,6 +53,7 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
     setPhoneNumberOfSchool,
     setClass,
   } = useAddOrphanStore();
+  const router = useRouter();
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
   const [dateOfBirthError, setDateOfBirthError] = useState(false);
@@ -142,6 +144,24 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
     }
   };
 
+  //cancel modal
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const pathname = usePathname();
+
+  const handleClickClose = () => {
+    setOpenDialog(false);
+  };
+  const handleCancel = () => {
+    setOpenDialog(false);
+    if (pathname === "/dashboard/guardian/orphan-list/add-an-orphan") {
+      router.push("/dashboard/guardian/orphan-list");
+    } else if (pathname === "/dashboard/add-an-orphan") {
+      router.push("/dashboard/complete-account");
+    }
+  };
+
   return (
     <Box>
       <Box
@@ -152,7 +172,6 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
           flexDirection: { xs: "column", md: "row" },
         }}
       >
-       
         <Box
           sx={{
             display: "flex",
@@ -165,7 +184,6 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
             marginRight: "30px",
           }}
         >
-          
           <Box sx={{ marginBottom: "10px" }}>
             <Typography>Avatar</Typography>
           </Box>
@@ -703,13 +721,14 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
                     sx={{
                       boxShadow: "none",
                       width: "100%",
-                      borderRadius: "6px",
+                      borderRadius: "2rem",
                       textTransform: "none",
                       paddingY: "10px",
                       paddingX: "70px",
                       background: "#000",
                       ":hover": { backgroundColor: "#000" },
                     }}
+                    onClick={() => setOpenDialog(true)}
                   >
                     Cancel
                   </Button>
@@ -723,10 +742,12 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
                     sx={{
                       boxShadow: "none",
                       width: "100%",
-                      borderRadius: "6px",
+                      borderRadius: "2rem",
                       textTransform: "none",
                       paddingY: "10px",
                       paddingX: "70px",
+                      backgroundColor: "#3863FA",
+                      ":hover": { backgroundColor: "#3863FA" },
                     }}
                   >
                     Submit
@@ -737,6 +758,17 @@ const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
           </Grid>
         </Grid>
       </Box>
+      <AlertDialog
+        open={openDialog}
+        onClose={handleClickClose}
+        onAgree={handleCancel}
+        title={"Cancel"}
+        content={
+          "Do you wish to cancel your information that has already been started?"
+        }
+        disagreeText={"No"}
+        agreeText={"Yes, continue"}
+      />
     </Box>
   );
 };

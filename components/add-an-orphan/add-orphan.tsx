@@ -132,11 +132,7 @@ const AddAnOrphan: React.FC = () => {
                   my: 2,
                 }}
               >
-                <Typography
-                  variant="h1"
-                >
-                  Create an Orphan Account
-                </Typography>
+                <Typography variant="h1">Create an Orphan Account</Typography>
                 <Typography sx={{}}>Simply fill in the detail below</Typography>
               </Box>
               <AddAnOrphanForm
