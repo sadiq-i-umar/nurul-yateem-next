@@ -26,7 +26,6 @@ const ReasonForDeleteOrphan: React.FC<ReasonForDeleteOrphanProps> = ({
 }) => {
   const submitReason = () => {
     setOpenDeleteReason(false);
-    console.log("Reason for delete orphan submitted", SelectedOrphan);
   };
 
   const ButtonOne = styled(Button)({

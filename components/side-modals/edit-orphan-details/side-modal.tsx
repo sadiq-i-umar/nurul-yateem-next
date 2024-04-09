@@ -28,8 +28,8 @@ import { TextOnlyPill } from "../../pills";
 import EditPic from "../../../public/ediitProfile.svg";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { EditOphanApi } from "../../../service/update-account";
+import { EditOrphanApi } from "../../../service/update-account";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const EditOrphanSideModal: React.FC<{
   openSideModal: boolean;
@@ -38,8 +38,7 @@ const EditOrphanSideModal: React.FC<{
 }> = ({ openSideModal, setOpenSideModal, SelectedOrphan }) => {
   const { data: session } = useSession();
   const token = session?.token;
-  console.log(SelectedOrphan);
-  const queryClient = useQueryClient();
+
   const {
     firstName,
     lastName,
@@ -106,11 +105,26 @@ const EditOrphanSideModal: React.FC<{
   const [classError, setClassError] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [orphanId, setOrphanId] = useState(SelectedOrphan?.id || 0);
+  const queryClient = useQueryClient();
+  const orphanId = SelectedOrphan?.id;
 
-  // Mutation function
-  const { mutateAsync, status, data } = useMutation({
-    mutationFn: (payload: any) => EditOphanApi(payload, token, orphanId),
+  const mutation = useMutation({
+    mutationFn: (payload: any) => EditOrphanApi(payload, token, orphanId),
+    onSuccess: (data) => {
+      setIsLoading(true);
+      if (data.error) {
+        toast.error(data.error);
+        setIsLoading(false);
+      } else {
+        toast.success("Orphan details updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["orphans"] });
+        setIsLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Error occurred while creating the user");
+      setIsLoading(false);
+    },
   });
 
   const handleImageSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -234,7 +248,8 @@ const EditOrphanSideModal: React.FC<{
       };
 
       // Make the API call with the payload
-      await mutateAsync(payload);
+      await mutation.mutateAsync(payload);
+
       setOpenSideModal(false);
     } catch (error) {
       toast.error("An error occurred. Please try again later");
@@ -242,14 +257,6 @@ const EditOrphanSideModal: React.FC<{
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (data?.status === true) {
-      toast.success("Orphan details updated successfully");
-      console.log("Orphan details updated successfully");
-      mutateAsync(null);
-    }
-  }, [status]);
 
   return (
     <>

@@ -26,7 +26,7 @@ export const AddOphanApi = async (Data: any, token: any) => {
   return res;
 };
 
-export const EditOphanApi = async (Data: any, token: any, id: number) => {
+export const EditOrphanApi = async (Data: any, token: any, id: number) => {
   const res = await request("PUT", `${baseUrl}/guardian/edit-orphan/${id}`, {
     headers: {
       "Content-Type": "application/json",

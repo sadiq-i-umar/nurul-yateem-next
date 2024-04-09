@@ -108,7 +108,6 @@ const Register: React.FC = () => {
     setPasswordError2(false);
     setConfirmPasswordError(false);
     setConfirmPasswordError2(false);
-    console.log(firstName, lastName, emailAddress, password, confirmPassword);
 
     if (firstName.length < 1) {
       setFirstNameError(true);
