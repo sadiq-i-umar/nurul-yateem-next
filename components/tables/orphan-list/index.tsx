@@ -133,9 +133,33 @@ const OrphanListTable: React.FC<{
                 <TableCell align="left">
                   <PillWithDot
                     text={orphan?.account_status}
-                    bgColor={"#ECFDF3"}
-                    dotColor={"#12B76A"}
-                    textColor={"#12B76A"}
+                    bgColor={
+                      orphan?.account_status == "APPROVED"
+                        ? "#ECFDF3"
+                        : orphan?.account_status == "PENDING"
+                        ? "#FFF8E4"
+                        : orphan?.account_status == "REJECTED"
+                        ? "#FFEFEF"
+                        : ""
+                    }
+                    dotColor={
+                      orphan?.account_status == "APPROVED"
+                        ? "#007A27"
+                        : orphan?.account_status == "PENDING"
+                        ? "#FFA800"
+                        : orphan?.account_status == "REJECTED"
+                        ? "#FF0000"
+                        : ""
+                    }
+                    textColor={
+                      orphan?.account_status == "APPROVED"
+                        ? "#007A27"
+                        : orphan?.account_status == "PENDING"
+                        ? "#FFA800"
+                        : orphan?.account_status == "REJECTED"
+                        ? "#FF0000"
+                        : ""
+                    }
                   />
                 </TableCell>
                 <TableCell align="left">
@@ -181,7 +205,8 @@ const OrphanListTable: React.FC<{
                         width={21}
                         height={21}
                         alt={"Edit Icon"}
-                        src={"/edit.svg"}
+                        src={"/editPen.svg"}
+                        color="red"
                       />
                     </Button>
                     <Box sx={{ cursor: "pointer" }}>

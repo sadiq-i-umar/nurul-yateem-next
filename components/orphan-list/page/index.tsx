@@ -14,7 +14,7 @@ const OrphanListPage: React.FC = () => {
   const { data: session } = useSession();
   const token = session?.token;
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, status } = useQuery({
     queryKey: ["orphans"],
     queryFn: () => getOrphans(token),
     enabled: !!token,
