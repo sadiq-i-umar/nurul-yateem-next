@@ -74,6 +74,7 @@ export const ImageFrameCircular80: React.FC<{ image: string }> = ({
         width: "80px",
         height: "80px",
         borderRadius: "50%",
+        backgroundColor: "#E7E7E7",
       }}
     />
   );

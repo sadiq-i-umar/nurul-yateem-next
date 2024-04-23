@@ -1,35 +1,24 @@
-import { Close, MoreVert } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import {
   Box,
   Button,
   Dialog,
-  FormControlLabel,
   Grid,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Typography,
 } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AlertDialog from "../../Reusable-Dialog";
 import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
-import { PhotoUploadFrame } from "../../common/image-frames";
-import { VisuallyHiddenInput } from "../../common/input";
 import { states_in_nigeria_dropdown } from "../../../utils";
-import DragUpload from "../../drag-upload";
-import dayjs from "dayjs";
-import { TextOnlyPill } from "../../pills";
-import EditPic from "../../../public/ediitProfile.svg";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
 import { EditOrphanApi } from "../../../service/update-account";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ImageNameGenderIdCell } from "../../tables/cells";
 
 const AddSponsorshipRequestSideModal: React.FC<{
   openSideModal: boolean;
@@ -287,432 +276,61 @@ const AddSponsorshipRequestSideModal: React.FC<{
               pt: "20px",
               pb: "20px",
               mb: "20px",
+              justifyContent: "center",
+              position: "relative",
             }}
           >
-            <Box sx={{ flexGrow: 1, display: "flex" }}>
-              <Box>
-                <PhotoUploadFrame image={image} />
-              </Box>
-              <Box>
-                <Box
-                  sx={{
-                    marginLeft: "-20px",
-                  }}
-                >
-                  <Button component="label" htmlFor="image-upload-button">
-                    <VisuallyHiddenInput
-                      id="image-upload-button"
-                      type="file"
-                      accept=".png, .jpg, .jpeg"
-                      onChange={handleImageSelection}
-                    />
-                    <img src={EditPic.src} alt="Hero Image" />
-                  </Button>
-                </Box>
-
-                <Box>
-                  <TextOnlyPill text={uniqueCode} bgColor={""} color={""} />
-                </Box>
-              </Box>
+            <Box>
+              <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>Add Sponsorship Request</Typography>
             </Box>
-            <Box sx={{ display: "flex", gap: ".5rem" }}>
-              {/* <Box>
-                <MoreVert />
-              </Box> */}
-              <Box onClick={handleCloseSideModal}>
-                <Close />
-              </Box>
+            <Box
+              sx={{ position: "absolute", right: 0, top: 15 }}
+              onClick={handleCloseSideModal}
+            >
+              <Close />
             </Box>
           </Box>
           <Box sx={{ paddingY: "30px" }}>
             <Box>
-              <Box sx={{}}>
-                <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
-                  <Typography>Gender</Typography>
-                </Box>
-                <RadioGroup
-                  value={gender}
-                  sx={{ display: "flex", flexDirection: "row" }}
-                >
-                  <Box
-                    onClick={() => setGender("MALE")}
-                    sx={{
-                      flexShrink: 1,
-                      cursor: "pointer",
-                      border: "2px solid",
-                      paddingY: "10px",
-                      paddingX: "15px",
-                      borderRadius: "10px",
-                      marginRight: "40px",
-                      ...(gender == "MALE"
-                        ? { borderColor: "#268500" }
-                        : { borderColor: "#D2D2D2" }),
-                      marginBottom: "30px",
-                    }}
-                  >
-                    <FormControlLabel
-                      onClick={() => setGender("MALE")}
-                      value="MALE"
-                      control={<Radio />}
-                      label="Male"
-                    />
-                  </Box>
-                  <Box
-                    onClick={() => setGender("FEMALE")}
-                    sx={{
-                      cursor: "pointer",
-                      border: "2px solid",
-                      paddingY: "10px",
-                      paddingX: "15px",
-                      borderRadius: "10px",
-                      ...(gender == "FEMALE"
-                        ? { borderColor: "#268500" }
-                        : { borderColor: "#D2D2D2" }),
-                      marginBottom: "30px",
-                    }}
-                  >
-                    <FormControlLabel
-                      onClick={(e) => setGender("FEMALE")}
-                      value="FEMALE"
-                      control={<Radio />}
-                      label="Female"
-                    />
-                  </Box>
-                </RadioGroup>
-              </Box>
               <Box sx={{ marginBottom: "30px" }}>
-                <Grid container spacing={5}>
-                  <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
-                        <Typography>First Name</Typography>
-                      </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
-                        <TextField
-                          sx={{
-                            width: "100%",
-                            borderRadius: "50px",
-                          }}
-                          inputProps={{
-                            sx: {
-                              borderRadius: "10px",
-                            },
-                          }}
-                          placeholder="Enter First Name"
-                          value={firstName}
-                          onChange={(event: {
-                            target: {
-                              value: string;
-                            };
-                          }) => {
-                            setFirstName(event?.target.value);
-                            setFirstNameError(false);
-                          }}
-                        />
-                        {firstNameError && (
-                          <Typography component="p" color="error">
-                            First Name is required
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
-                        <Typography>Last Name</Typography>
-                      </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
-                        <TextField
-                          sx={{
-                            width: "100%",
-                            borderRadius: "50px",
-                          }}
-                          inputProps={{
-                            sx: {
-                              borderRadius: "10px",
-                            },
-                          }}
-                          placeholder="Enter Last Name"
-                          value={lastName}
-                          onChange={(event: {
-                            target: {
-                              value: string;
-                            };
-                          }) => {
-                            setLastName(event?.target.value);
-                            setLastNameError(false);
-                          }}
-                        />
-                        {lastNameError && (
-                          <Typography component="p" color="error">
-                            Last Name is required
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-              <Box sx={{ marginBottom: "60px", width: "100%" }}>
-                <DragUpload
-                  title={"Affidavit of Guardianship"}
-                  subtitle={"Drag and Drop Document"}
-                />
-              </Box>
-              <Box sx={{ marginBottom: "10px" }}>
-                <Grid container spacing={5}>
-                  <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
-                        <Typography>State of Origin</Typography>
-                      </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
-                        <Select
-                          value={stateOfOrigin}
-                          sx={{
-                            borderRadius: "10px",
-                            width: "100%",
-                          }}
-                          onChange={(e) => {
-                            setStateOfOrigin(e.target.value);
-                            setStateOfOriginError(false);
-                          }}
-                          displayEmpty
-                        >
-                          <MenuItem value="" disabled>
-                            -- Select --
-                          </MenuItem>
-                          {[...states_in_nigeria_dropdown].map(
-                            (item, index) => (
-                              <MenuItem key={index} value={item}>
-                                {item}
-                              </MenuItem>
-                            )
-                          )}
-                        </Select>
-                        {stateOfOriginError && (
-                          <Typography component="p" color="error">
-                            State of Origin is required
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
-                        <Typography>LGA</Typography>
-                      </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
-                        <TextField
-                          sx={{
-                            width: "100%",
-                            borderRadius: "50px",
-                          }}
-                          inputProps={{
-                            sx: {
-                              borderRadius: "10px",
-                            },
-                          }}
-                          placeholder={"Enter LGA"}
-                          value={localGovernmentArea}
-                          onChange={(event: {
-                            target: {
-                              value: string;
-                            };
-                          }) => {
-                            setLocalGovernmentArea(event?.target.value);
-                            setLocalGovernmentAreaError(false);
-                          }}
-                        />
-                        {localGovernmentAreaError && (
-                          <Typography component="p" color="error">
-                            Local governmnet area is required
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-              <Box sx={{ marginBottom: "50px" }}>
-                <Grid container spacing={5}>
-                  <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
-                      <Typography>Date of Birth</Typography>
-                    </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          value={
-                            dateOfBirth
-                              ? dayjs(dateOfBirth, "DD-MM-YYYY").format(
-                                  "DD/MM/YYYY"
-                                )
-                              : null
-                          }
-                          onChange={(newDate) => {
-                            setDateOfBirth(
-                              newDate
-                                ? dayjs(newDate, "DD/MM/YYYY").format(
-                                    "YYYY-MM-DD"
-                                  )
-                                : ""
-                            );
-                            setDateOfBirthError(false);
-                          }}
-                          format="DD/MM/YYYY"
-                          sx={{ width: "100%" }}
-                        />
-                      </LocalizationProvider>
-                      {dateOfBirthError && (
-                        <Typography component="p" color="error">
-                          Date of birth is required
-                        </Typography>
-                      )}
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-              <Box sx={{ marginBottom: "50px" }}>
-                <Typography variant={"h1"} sx={{ fontWeight: 400 }}>
-                  School Information
-                </Typography>
-              </Box>
-              <Box sx={{ marginBottom: "10px" }}>
-                <Grid container spacing={5}>
-                  <Grid item lg={6}>
-                    <Box sx={{}}>
-                      <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
-                        <Typography>Is he/she in school?</Typography>
-                      </Box>
-                      <RadioGroup
-                        value={InSchool}
-                        sx={{ display: "flex", flexDirection: "row" }}
-                      >
-                        <Box
-                          onClick={() => setInSchool("YES")}
-                          sx={{
-                            flexShrink: 1,
-                            cursor: "pointer",
-                            border: "2px solid",
-                            paddingY: "10px",
-                            paddingX: "15px",
-                            borderRadius: "10px",
-                            marginRight: "40px",
-                            ...(InSchool == "YES"
-                              ? { borderColor: "#268500" }
-                              : { borderColor: "#D2D2D2" }),
-                            marginBottom: "30px",
-                          }}
-                        >
-                          <FormControlLabel
-                            onClick={() => setInSchool("YES")}
-                            value="YES"
-                            control={<Radio />}
-                            label="Yes"
-                          />
-                        </Box>
-                        <Box
-                          onClick={() => setInSchool("NO")}
-                          sx={{
-                            cursor: "pointer",
-                            border: "2px solid",
-                            paddingY: "10px",
-                            paddingX: "15px",
-                            borderRadius: "10px",
-                            ...(InSchool == "NO"
-                              ? { borderColor: "#268500" }
-                              : { borderColor: "#D2D2D2" }),
-                            marginBottom: "30px",
-                          }}
-                        >
-                          <FormControlLabel
-                            onClick={(e) => setInSchool("NO")}
-                            value="NO"
-                            control={<Radio />}
-                            label="NO"
-                          />
-                        </Box>
-                      </RadioGroup>
-                    </Box>
-                  </Grid>
-                  <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
-                        <Typography>School Name</Typography>
-                      </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
-                        <TextField
-                          sx={{
-                            width: "100%",
-                            borderRadius: "50px",
-                          }}
-                          inputProps={{
-                            sx: {
-                              borderRadius: "10px",
-                            },
-                          }}
-                          placeholder={"Enter School Name"}
-                          value={schoolName}
-                          onChange={(event: {
-                            target: {
-                              value: string;
-                            };
-                          }) => {
-                            setSchoolName(event?.target.value);
-                            setSchoolNameError(false);
-                          }}
-                        />
-                        {schoolNameError && (
-                          <Typography component="p" color="error">
-                            School Name is required
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-                <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "21.5px" }}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
-                      <Typography>Class</Typography>
-                    </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
-                      <TextField
-                        sx={{
-                          width: "100%",
-                          borderRadius: "50px",
-                        }}
-                        inputProps={{
-                          sx: {
-                            borderRadius: "10px",
-                          },
-                        }}
-                        placeholder={"Enter Class Level"}
-                        value={class_}
-                        onChange={(event: {
-                          target: {
-                            value: string;
-                          };
-                        }) => {
-                          setClass(event?.target.value);
-                          setClassError(false);
-                        }}
-                      />
-                      {classError && (
-                        <Typography component="p" color="error">
-                          Class is required
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
-                </Grid>
+                <ImageNameGenderIdCell image="" name="Bashir Salisu" gender="Male" id="2098132" />
               </Box>
               <Box sx={{ marginBottom: "40px" }}>
                 <Box sx={{ marginBottom: "11.5px" }}>
-                  <Typography>School Address</Typography>
+                  <Typography>Your needs?</Typography>
+                </Box>
+                <Box sx={{ borderRadius: "10px" }}>
+                  <Select
+                    value={stateOfOrigin}
+                    sx={{
+                      borderRadius: "10px",
+                      width: "100%",
+                    }}
+                    onChange={(e) => {
+                      setStateOfOrigin(e.target.value);
+                      setStateOfOriginError(false);
+                    }}
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      -- Select --
+                    </MenuItem>
+                    {[...states_in_nigeria_dropdown].map((item, index) => (
+                      <MenuItem key={index} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {stateOfOriginError && (
+                    <Typography component="p" color="error">
+                      Your needs is a required field
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+              <Box sx={{ marginBottom: "40px" }}>
+                <Box sx={{ marginBottom: "11.5px" }}>
+                  <Typography>Description of Sponsorship Request</Typography>
                 </Box>
                 <Box sx={{ borderRadius: "10px" }}>
                   <TextField
@@ -740,17 +358,17 @@ const AddSponsorshipRequestSideModal: React.FC<{
                   />
                   {schoolAddressError && (
                     <Typography component="p" color="error">
-                      School Address is required
+                      Request description is required
                     </Typography>
                   )}
                 </Box>
               </Box>
               <Box sx={{ marginBottom: "30px" }}>
                 <Grid container spacing={5}>
-                  <Grid item lg={6}>
+                  <Grid item xs={12} sm={6} lg={6}>
                     <Box sx={{ marginBottom: "21.5px" }}>
                       <Box sx={{ marginBottom: "11.5px" }}>
-                        <Typography>School Contact Person</Typography>
+                        <Typography>Amount Needed</Typography>
                       </Box>
                       <Box sx={{ borderRadius: "10px" }}>
                         <TextField
@@ -776,16 +394,16 @@ const AddSponsorshipRequestSideModal: React.FC<{
                         />
                         {schoolContactError && (
                           <Typography component="p" color="error">
-                            School Contact Person is required
+                            Amount needed is required
                           </Typography>
                         )}
                       </Box>
                     </Box>
                   </Grid>
-                  <Grid item lg={6}>
+                  <Grid item xs={12} sm={6} lg={6}>
                     <Box sx={{ marginBottom: "21.5px" }}>
                       <Box sx={{ marginBottom: "11.5px" }}>
-                        <Typography>Phone Number of Contact Person</Typography>
+                        <Typography>Current Amount Gotten</Typography>
                       </Box>
                       <Box sx={{ borderRadius: "10px" }}>
                         <TextField
@@ -811,7 +429,7 @@ const AddSponsorshipRequestSideModal: React.FC<{
                         />
                         {phoneNumberOfSchoolError && (
                           <Typography component="p" color="error">
-                            Phone Number of Contact Person is required
+                            Current Amount Gotten is required
                           </Typography>
                         )}
                       </Box>
@@ -822,9 +440,9 @@ const AddSponsorshipRequestSideModal: React.FC<{
 
               <Box sx={{ marginBottom: "100px" }}>
                 <Grid container spacing={5}>
-                  <Grid item lg={6}>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
                     <Grid container spacing={4}>
-                      <Grid item lg={6}>
+                      <Grid item xs={6}>
                         <Box>
                           <Button
                             variant="contained"
@@ -844,7 +462,7 @@ const AddSponsorshipRequestSideModal: React.FC<{
                           </Button>
                         </Box>
                       </Grid>
-                      <Grid item lg={6}>
+                      <Grid item xs={6}>
                         <Box>
                           <Button
                             onClick={sendDataToParent}
