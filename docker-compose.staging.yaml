@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  nsp-frontend:
+    build:
+      context: ./
+    image: nsp-frontend:latest
+    container_name: nsp-frontend
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.local
+    restart: always
