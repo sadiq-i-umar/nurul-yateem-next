@@ -15,6 +15,8 @@ import ViewOrphanDetailsSideModal from "../../side-modals/view-orphan-details";
 import AlertDialog from "../../Reusable-Dialog";
 import ReasonForDeleteOrphan from "../../reasons-for-removal";
 import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
+import AddSponsorshipRequest from "../../side-modals/add-sponsorship-request";
+import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
 
 const OrphanListTable: React.FC<{
   orphanData: any[];
@@ -24,6 +26,7 @@ const OrphanListTable: React.FC<{
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDeleteReason, setOpenDeleteReason] = React.useState(false);
   const [openEditSideModal, setEditOpenSideModal] = React.useState(false);
+  const [openSponsorshipSideModal, setOpenSponsorshipSideModal] = React.useState(false);
 
   const handleOpenDelete = (data: any) => {
     setSelectedOrphan(data);
@@ -42,6 +45,11 @@ const OrphanListTable: React.FC<{
     setEditOpenSideModal(true);
     setSelectedOrphan(data);
   };
+
+  const handleSponsorshipRequest = (data: any) => {
+    setOpenSponsorshipSideModal(true);
+    setSelectedOrphan(data)
+  }
 
   return (
     <>
@@ -209,7 +217,7 @@ const OrphanListTable: React.FC<{
                         color="red"
                       />
                     </Button>
-                    <Box sx={{ cursor: "pointer" }}>
+                    <Box onClick={() => handleSponsorshipRequest(orphan)} sx={{ cursor: "pointer" }}>
                       <MoreVert />
                     </Box>
                   </Box>
@@ -239,6 +247,11 @@ const OrphanListTable: React.FC<{
       <EditOrphanSideModal
         openSideModal={openEditSideModal}
         setOpenSideModal={setEditOpenSideModal}
+        SelectedOrphan={SelectedOrphan}
+      />
+      <AddSponsorshipRequestSideModal
+        openSideModal={openSponsorshipSideModal}
+        setOpenSideModal={setOpenSponsorshipSideModal}
         SelectedOrphan={SelectedOrphan}
       />
     </>

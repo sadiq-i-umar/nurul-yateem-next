@@ -21,7 +21,6 @@
     "dayjs": "^1.11.10",
     "next": "14.1.0",
     "next-auth": "^4.24.7",
-    "query": "github:tanstack/react-query",
     "react": "^18",
     "react-datepicker": "^6.1.0",
     "react-dom": "^18",
