@@ -545,13 +545,7 @@ const EditOrphanSideModal: React.FC<{
                     <Box sx={{ borderRadius: "10px" }}>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
-                          value={
-                            dateOfBirth
-                              ? dayjs(dateOfBirth, "DD-MM-YYYY").format(
-                                  "DD/MM/YYYY"
-                                )
-                              : null
-                          }
+                          value={dayjs(dateOfBirth)}
                           onChange={(newDate) => {
                             setDateOfBirth(
                               newDate

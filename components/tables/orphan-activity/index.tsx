@@ -17,7 +17,7 @@ import ReasonForDeleteOrphan from "../../reasons-for-removal";
 import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
 import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
 
-const OrphanListTable: React.FC<{
+const OrphanActivityTable: React.FC<{
   orphanData: any[];
 }> = ({ orphanData }) => {
   const [openViewDetailsModal, setOpenViewDetailsModal] = React.useState(false);
@@ -25,7 +25,8 @@ const OrphanListTable: React.FC<{
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDeleteReason, setOpenDeleteReason] = React.useState(false);
   const [openEditSideModal, setEditOpenSideModal] = React.useState(false);
-  const [openSponsorshipSideModal, setOpenSponsorshipSideModal] = React.useState(false);
+  const [openSponsorshipSideModal, setOpenSponsorshipSideModal] =
+    React.useState(false);
 
   const handleOpenDelete = (data: any) => {
     setSelectedOrphan(data);
@@ -47,8 +48,8 @@ const OrphanListTable: React.FC<{
 
   const handleSponsorshipRequest = (data: any) => {
     setOpenSponsorshipSideModal(true);
-    setSelectedOrphan(data)
-  }
+    setSelectedOrphan(data);
+  };
 
   return (
     <>
@@ -72,9 +73,11 @@ const OrphanListTable: React.FC<{
                 </Box>
               </TableCell>
               {[
-                "Date of Birth",
+                "Age",
                 "School Status",
-                "Status of Origin",
+                "Sponsor",
+                "Class",
+                "Needs",
                 "Status",
                 "",
               ].map((heading, index) => (
@@ -216,7 +219,10 @@ const OrphanListTable: React.FC<{
                         color="red"
                       />
                     </Button>
-                    <Box onClick={() => handleSponsorshipRequest(orphan)} sx={{ cursor: "pointer" }}>
+                    <Box
+                      onClick={() => handleSponsorshipRequest(orphan)}
+                      sx={{ cursor: "pointer" }}
+                    >
                       <MoreVert />
                     </Box>
                   </Box>
@@ -257,4 +263,4 @@ const OrphanListTable: React.FC<{
   );
 };
 
-export default OrphanListTable;
+export default OrphanActivityTable;

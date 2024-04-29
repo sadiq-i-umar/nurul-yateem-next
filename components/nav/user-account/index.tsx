@@ -58,34 +58,49 @@ const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
       </Box>
       <Box sx={{ flexGrow: 1, mr: "20px" }}>
         <Box>
-          {role ? (<Typography
-            sx={{
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "black",
-              mb: { xs: "5px", sm: "0px" },
-              wordBreak: "break-all",
-              textTransform: "capitalize",
-            }}
-          >
-            {name}
-          </Typography>)
-        : (<Skeleton variant="rectangular" width={100} height={15} sx={{ mb: 0.7 }}/>)  
-        }
+          {role ? (
+            <Typography
+              sx={{
+                fontSize: "16px",
+                fontWeight: 600,
+                color: "black",
+                mb: { xs: "5px", sm: "0px" },
+                wordBreak: "break-all",
+                textTransform: "capitalize",
+              }}
+            >
+              {name}
+            </Typography>
+          ) : (
+            <Skeleton
+              variant="rectangular"
+              width={100}
+              height={15}
+              sx={{ mb: 0.7 }}
+            />
+          )}
         </Box>
         <Box>
-          {role ? (<Typography
-            sx={{
-              textTransform: "capitalize",
-              fontSize: "12px",
-              color: "#908E8F",
-              fontWeight: 500,
-              wordBreak: "break-all",
-            }}
-          >
-            {role}
-          </Typography>)
-          : (<Skeleton variant="rectangular" width={50} height={10} sx={{ mb: 0.5 }}/>)}
+          {role ? (
+            <Typography
+              sx={{
+                textTransform: "capitalize",
+                fontSize: "12px",
+                color: "#908E8F",
+                fontWeight: 500,
+                wordBreak: "break-all",
+              }}
+            >
+              {role}
+            </Typography>
+          ) : (
+            <Skeleton
+              variant="rectangular"
+              width={50}
+              height={10}
+              sx={{ mb: 0.5 }}
+            />
+          )}
         </Box>
       </Box>
       <Box

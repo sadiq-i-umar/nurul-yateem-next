@@ -1,4 +1,10 @@
 //For validating email inputs
+
+import Education from "../public/educational.svg";
+import Feeding from "../public/Feeding.svg";
+import Clothing from "../public/Clothing.svg";
+import Health from "../public/Health.svg";
+
 export const emailValidationRegexp =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -45,6 +51,8 @@ export const states_in_nigeria_dropdown = [
   "Federal Capital Territory (FCT)",
 ];
 
+export const FeedingFormularData = [" 1 Meal", "2 Meals", "3 Meals"];
+
 export const identityOptions = [
   { value: "NATIONAL_ID", label: "National ID" },
   { value: "DRIVER_LICENCE", label: "Driver's Licence" },
@@ -63,4 +71,31 @@ export const maritalStatusOptions = [
   { value: "MARRIED", label: "Married" },
   { value: "DIVORCED", label: "Divorced" },
   { value: "WIDOWED", label: "Widowed" },
+];
+
+export const ActivityData = [
+  {
+    title: "Education",
+    content: "Enroll / populate existing orphan information",
+    image: Education,
+    link: "/dashboard/guardian/activity/education",
+  },
+  {
+    title: "Feeding",
+    content: "Add orphans to feeding  schedules.",
+    image: Feeding,
+    link: "/dashboard/guardian/activity/feeding",
+  },
+  {
+    title: "Clothing",
+    content: "For orphans having clothing needs",
+    image: Clothing,
+    link: "/dashboard/guardian/activity/clothing",
+  },
+  {
+    title: "Health",
+    content: "For orphans having health cares.",
+    image: Health,
+    link: "/dashboard/guardian/activity/health",
+  },
 ];
