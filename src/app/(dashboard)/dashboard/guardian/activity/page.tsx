@@ -1,9 +1,9 @@
 import { Box } from "@mui/material";
-
+import OrphanActivity from "../../../../../../components/orphan-activity/page";
 export default function Activity() {
-    return (
-        <Box>
-            <h1>Activity Page</h1>
-        </Box>
-    );
+  return (
+    <Box>
+      <OrphanActivity />
+    </Box>
+  );
 }

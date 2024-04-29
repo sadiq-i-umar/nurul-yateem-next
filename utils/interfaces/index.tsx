@@ -33,6 +33,7 @@ export interface AddOrphanState {
   affidavit: any;
   gender: string;
   dateOfBirth: string | null | any;
+  dateOfEnrollment: string | null | any;
   stateOfOrigin: string;
   localGovernmentArea: string;
   InSchool: string;
@@ -49,6 +50,7 @@ export interface AddOrphanState {
   setAffidavit: (affidavit: any) => void;
   setGender: (gender: string) => void;
   setDateOfBirth: (dateOfBirth: string) => void;
+  setDateOfEnrollment: (dateOfEnrollment: string) => void;
   setStateOfOrigin: (stateOfOrigin: string) => void;
   setLocalGovernmentArea: (localGovernmentArea: string) => void;
   setInSchool: (InSchool: string) => void;

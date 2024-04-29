@@ -10,6 +10,7 @@ export const useAddOrphanStore = create<AddOrphanState>((set) => ({
   affidavit: "",
   gender: "MALE",
   dateOfBirth: "",
+  dateOfEnrollment: "",
   stateOfOrigin: "",
   localGovernmentArea: "",
   InSchool: "YES",
@@ -28,6 +29,11 @@ export const useAddOrphanStore = create<AddOrphanState>((set) => ({
     set((state) => ({
       ...state,
       dateOfBirth: dayjs(dateOfBirth).format("YYYY-MM-DD"),
+    })),
+  setDateOfEnrollment: (dateOfEnrollment) =>
+    set((state) => ({
+      ...state,
+      dateOfEnrollment: dayjs(dateOfEnrollment).format("YYYY-MM-DD"),
     })),
   setStateOfOrigin: (stateOfOrigin) =>
     set((state) => ({ ...state, stateOfOrigin })),

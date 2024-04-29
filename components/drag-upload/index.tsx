@@ -1,12 +1,7 @@
+import React, { useState } from "react";
+import { Box, Typography, IconButton, Container } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PhotoIcon from "@mui/icons-material/Photo";
-import { Container } from "@mui/material";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Image from "next/image";
-import React, { useState } from "react";
-import { useAddOrphanStore } from "../../utils/zustand/addOrphanstore"; // Import the zustand store
 
 const DragUpload = ({
   title,
@@ -18,8 +13,7 @@ const DragUpload = ({
   onFileUpload?: (id: string, file: any) => void;
 }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState(false);
-  const addOrphanStore = useAddOrphanStore(); // Access the zustand store
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
 
   const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
@@ -42,44 +36,44 @@ const DragUpload = ({
     const files = e.dataTransfer.files;
 
     if (files.length > 0) {
-      const file = files[0];
-      const reader = new FileReader();
+      Array.from(files).forEach((file: any) => {
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        const url = reader.result;
-        const affidavitData = { file, url };
+        reader.onload = () => {
+          const url = reader.result;
+          const affidavitData = { file, url };
 
-        onFileUpload && onFileUpload(title, file); // Pass both title and file
-        setUploadedFile(true);
-        addOrphanStore.setAffidavit(affidavitData); // Save file and URL to affidavit state
-      };
+          onFileUpload && onFileUpload(title, file); // Pass both title and file
+          setUploadedFiles((prevFiles) => [...prevFiles, affidavitData]); // Store uploaded file information
+        };
 
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      });
     }
+  };
+
+  const handleDeleteFile = (index: number) => {
+    setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); // Remove the file at the specified index
   };
 
   const handleFileInputChange = (e: any) => {
-    const file = e.target.files[0];
+    const files = e.target.files;
 
-    if (file) {
-      const reader = new FileReader();
+    if (files && files.length > 0) {
+      Array.from(files).forEach((file: any) => {
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        const url = reader.result;
-        const affidavitData = { file, url };
+        reader.onload = () => {
+          const url = reader.result;
+          const affidavitData = { file, url };
 
-        onFileUpload && onFileUpload(title, file); // Pass both title and file
-        setUploadedFile(true);
-        addOrphanStore.setAffidavit(affidavitData); // Save file and URL to affidavit state
-      };
+          onFileUpload && onFileUpload(title, file); 
+          setUploadedFiles((prevFiles) => [...prevFiles, affidavitData]); // Store uploaded file information
+        };
 
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      });
     }
-  };
-
-  const handleDeleteFile = () => {
-    setUploadedFile(false);
-    addOrphanStore.setAffidavit(null); // Clear affidavit state when file is deleted
   };
 
   return (
@@ -119,8 +113,7 @@ const DragUpload = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        {/* <PhotoIcon style={{ fontSize: 50 }} /> */}
-        <Image src={"/file.svg"} width="51" height="51" alt={"File icon"} />
+        <PhotoIcon style={{ fontSize: 50 }} />
 
         <Typography
           sx={{
@@ -133,17 +126,18 @@ const DragUpload = ({
         </Typography>
       </label>
 
-      {/* Hidden file input */}
       <input
         id="fileInput"
         type="file"
-        accept=".jpg, .jpeg, .png"
+        multiple
+        accept=".jpg, .jpeg, .png, .pdf, .doc, .docx"
         style={{ display: "none" }}
         onChange={handleFileInputChange}
       />
 
-      {uploadedFile && (
+      {uploadedFiles.map((uploadedFile, index) => (
         <Box
+          key={index}
           sx={{
             border: "1px solid lightgray",
             borderRadius: "10px",
@@ -173,7 +167,7 @@ const DragUpload = ({
                   textAlign: "left",
                 }}
               >
-                Logo.png
+                {uploadedFile.file.name}
               </Typography>
               <Typography
                 variant="h6"
@@ -184,7 +178,7 @@ const DragUpload = ({
                   textAlign: "left",
                 }}
               >
-                2.5MB
+                {`${(uploadedFile.file.size / 1024).toFixed(2)} KB`}
               </Typography>
             </Box>
           </Container>
@@ -192,12 +186,12 @@ const DragUpload = ({
             aria-label="delete"
             size="large"
             color="error"
-            onClick={handleDeleteFile}
+            onClick={() => handleDeleteFile(index)}
           >
             <DeleteIcon fontSize="inherit" />
           </IconButton>
         </Box>
-      )}
+      ))}
     </Box>
   );
 };
