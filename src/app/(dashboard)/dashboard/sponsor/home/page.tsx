@@ -1,12 +1,14 @@
 import { Box, Grid } from "@mui/material";
-import {
+import BannerCarousel, {
   GenderPieChartCard,
   SponsorshipsCard,
   SummaryCard,
+  TopGuardian,
 } from "../../../../../../components/cards";
 import { summaryCardData } from "../../../../../../data/summary-card";
 import HeaderSection from "../../../../../../components/GreetingSectionWithButton/HeaderSection";
 import Activities from "../../../../../../components/cards/activities";
+import Image from "next/image";
 
 export default function GuardianDashboard() {
   return (
@@ -25,6 +27,20 @@ export default function GuardianDashboard() {
               />
             </Grid>
           ))}
+        </Grid>
+      </Box>
+      {/* banner */}
+      <Box sx={{ mb: "20px" }}>
+        <Grid container spacing={4}>
+          <Grid sx={{ minHeight: "100%" }} item xs={12} md={12} lg={12}>
+            <Box sx={{ height: "100%", overflow: "hidden" }}>
+              <BannerCarousel />
+            
+            </Box>
+          </Grid>
+          <Grid sx={{ minHeight: "100%" }} item xs={12} lg={3}>
+            <Box sx={{ height: "100%", overflow: "hidden" }}></Box>
+          </Grid>
         </Grid>
       </Box>
       <Box sx={{ mb: "20px" }}>
@@ -69,9 +85,20 @@ export default function GuardianDashboard() {
                 },
               ]}
             />
-            {/* <Box sx={{ height: "100%", overflow: "hidden" }}>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box sx={{ mb: "20px" }}>
+        <Grid container spacing={4}>
+          <Grid sx={{ minHeight: "100%" }} item xs={12} lg={5}>
+            <Box sx={{ height: "100%", overflow: "hidden" }}>
+              <TopGuardian />
+            </Box>
+          </Grid>
+          <Grid sx={{ minHeight: "100%" }} item xs={12} lg={3}>
+            <Box sx={{ height: "100%", overflow: "hidden" }}>
               <GenderPieChartCard />
-            </Box> */}
+            </Box>
           </Grid>
         </Grid>
       </Box>
