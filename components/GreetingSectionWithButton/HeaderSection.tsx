@@ -9,6 +9,7 @@ export default function HeaderSection() {
   const { data: session } = useSession();
   const firstName = session?.user?.firstName;
   const lastName = session?.user?.lastName;
+  const accountType = session?.user?.accountType;
 
   // Get current hour
   const currentHour = new Date().getHours();
@@ -69,11 +70,21 @@ export default function HeaderSection() {
             },
           }}
           onClick={() => {
-            router.push("/dashboard/guardian/orphan-list/add-an-orphan");
+            if (accountType === "SPONSOR") {
+              router.push("/dashboard");
+            } else {
+              router.push("/dashboard/guardian/orphan-list/add-an-orphan");
+            }
           }}
         >
-          <Image src="/plus.svg" width={20} height={20} alt={"Plus Icon"} />
-          <Typography>Add an Orphan</Typography>
+          {accountType == "SPONSOR" ? (
+            <Typography>Donate to an orphan</Typography>
+          ) : (
+            <>
+              <Image src="/plus.svg" width={20} height={20} alt={"Plus Icon"} />
+              <Typography>Add an Orphan</Typography>
+            </>
+          )}
         </Button>
       </Box>
     </Box>

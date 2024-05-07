@@ -261,7 +261,7 @@ const EditOrphanSideModal: React.FC<{
   return (
     <>
       {isLoading && <LoaderBackdrop />}
-      <Dialog open={openSideModal}>
+      <Dialog open={openSideModal} onClose={() => setOpenSideModal(false)}>
         <Box
           sx={{
             display: "flex",

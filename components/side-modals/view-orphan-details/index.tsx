@@ -9,8 +9,9 @@ const ViewOrphanDetailsSideModal: React.FC<{
   close: () => void;
   orphanData: Orphan;
 }> = ({ open, close, orphanData }) => {
+
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onClose={close} >
       <Box
         sx={{
           display: "flex",
@@ -42,15 +43,17 @@ const ViewOrphanDetailsSideModal: React.FC<{
             <Box>
               <ImageFrameCircular80
                 image={
-                  orphanData.profile_photo == "https://example.com/profile.jpg"
-                    ? "/user.svg"
-                    : orphanData.profile_photo
+                  orphanData?.profile_photo
                 }
               />
             </Box>
             <Box>
               <Box>
-                <Typography>{`${orphanData?.first_name} ${orphanData?.last_name}`}</Typography>
+                <Typography
+                  sx={{
+                    textTransform: "capitalize",
+                  }}
+                >{`${orphanData?.first_name} ${orphanData?.last_name}`}</Typography>
               </Box>
               <Box>
                 <TextOnlyPill
@@ -84,8 +87,14 @@ const ViewOrphanDetailsSideModal: React.FC<{
           {
             groupTitle: "Personal Details",
             groupContent: [
-              { title: "State of Origin", content: orphanData?.state_of_origin },
-              { title: "Local Government Area", content: orphanData?.local_government },
+              {
+                title: "State of Origin",
+                content: orphanData?.state_of_origin,
+              },
+              {
+                title: "Local Government Area",
+                content: orphanData?.local_government,
+              },
               { title: "Date of Birth", content: orphanData?.date_of_birth },
             ],
           },
@@ -95,10 +104,16 @@ const ViewOrphanDetailsSideModal: React.FC<{
               { title: "Is he in school", content: orphanData?.in_school },
               { title: "School Name", content: orphanData?.school_name },
               { title: "School Address", content: orphanData?.school_address },
-              { title: "School Contact Person", content: orphanData?.school_contact_person },
-              { title: "Phone Number of Contact Person", content: orphanData?.phone_number_of_contact_person }
+              {
+                title: "School Contact Person",
+                content: orphanData?.school_contact_person,
+              },
+              {
+                title: "Phone Number of Contact Person",
+                content: orphanData?.phone_number_of_contact_person,
+              },
             ],
-          }
+          },
         ].map((item) => (
           <>
             <Box
@@ -116,18 +131,18 @@ const ViewOrphanDetailsSideModal: React.FC<{
               {/* <Box sx={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}> */}
               <Grid container>
                 {item.groupContent.map((item) => (
-                    <Grid key={item.title} item xs={12} sm={6} md={4}>
-                  <Box key={item.title} sx={{ mr: "20px" }}>
-                    <Box>
-                      <Typography>{item.title}</Typography>
+                  <Grid key={item.title} item xs={12} sm={6} md={4}>
+                    <Box key={item.title} sx={{ mr: "20px" }}>
+                      <Box>
+                        <Typography>{item.title}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="h4">{item.content}</Typography>
+                      </Box>
                     </Box>
-                    <Box>
-                      <Typography variant="h4">{item.content}</Typography>
-                    </Box>
-                  </Box>
                   </Grid>
                 ))}
-                </Grid>
+              </Grid>
               {/* </Box> */}
             </Box>
             <Divider sx={{ mb: "20px" }} />

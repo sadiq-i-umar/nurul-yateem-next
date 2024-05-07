@@ -20,3 +20,25 @@ export const navConfig = [
     path: "/dashboard/guardian/settings",
   },
 ];
+export const navConfigSponsor = [
+  {
+    title: "Dashboard",
+    icon: "/category.svg",
+    path: "/dashboard/sponsor/home",
+  },
+  {
+    title: "Orphan List",
+    icon: "/users.svg",
+    path: "/dashboard/sponsor/orphan-list",
+  },
+  {
+    title: "Donations",
+    icon: "/wallet-money.svg",
+    path: "/dashboard/sponsor/donation",
+  },
+  {
+    title: "Settings",
+    icon: "/gear.svg",
+    path: "/dashboard/sponsor/settings",
+  },
+];

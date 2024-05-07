@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from 'react';
-import { LineChart } from '@mui/x-charts/LineChart';
-import { PieChart } from '@mui/x-charts/PieChart';
+import * as React from "react";
+import { LineChart } from "@mui/x-charts/LineChart";
+import { PieChart } from "@mui/x-charts/PieChart";
 
 const uData = [
   4000, 3000, 2000, 2780, 1890, 2390, 3490, 2000, 2780, 1890, 2390, 3490,
@@ -14,30 +14,30 @@ const pData = [
 // const pData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 const xLabels = [
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sept',
-  'Oct',
-  'Nov',
-  'Dec',
-  'Jan',
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sept",
+  "Oct",
+  "Nov",
+  "Dec",
+  "Jan",
 ];
 
 export function SimpleLineChart() {
   return (
     <LineChart
-      sx={{ width: '100%', strokeWidth: '0.2', stroke: '#5D5B5C' }}
+      sx={{ width: "100%", strokeWidth: "0.2", stroke: "#5D5B5C" }}
       height={265}
       series={[
-        { data: pData, color: '#72B01D' },
-        { data: uData, color: '#D3E7B9' },
+        { data: pData, color: "#72B01D" },
+        { data: uData, color: "#D3E7B9" },
       ]}
-      xAxis={[{ scaleType: 'point', data: xLabels }]}
+      xAxis={[{ scaleType: "point", data: xLabels }]}
       yAxis={[{ disableLine: true }]}
     />
   );
@@ -49,8 +49,8 @@ export function BasicPie() {
       series={[
         {
           data: [
-            { id: 0, value: 31, label: 'Male' },
-            { id: 1, value: 69, label: 'Female' },
+            { id: 0, value: 31, label: "Male" },
+            { id: 1, value: 69, label: "Female" },
           ],
         },
       ]}

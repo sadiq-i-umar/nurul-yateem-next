@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { ImageFrameRectangular117By53 } from "../common/image-frames";
-import { navConfig } from "./config";
+import { navConfig, navConfigSponsor } from "./config";
 import { NavItem } from "./item";
 import UserAccount from "./user-account";
 import { useSession } from "next-auth/react";
@@ -20,6 +20,14 @@ const Nav: React.FC<{
   const firstName = session?.user?.firstName;
   const lastName = session?.user?.lastName;
   const account = session?.user?.account;
+
+
+  const navDatats =
+    account === "SPONSOR"
+      ? navConfigSponsor
+      : account === "GUARDIAN"
+      ? navConfig
+      : [];
 
   return (
     <Box
@@ -131,16 +139,14 @@ const Nav: React.FC<{
               height: "80%",
             }}
           >
-            {navConfig.map((item: any) => (
+            {navDatats.map((item: any) => (
               <Box key={item.title} sx={{ mb: "40px", mr: "20px" }}>
                 <Box onClick={() => router.push(item.path)}>
                   <NavItem
                     key={item.title}
                     icon={item.icon}
                     title={item.title}
-                    isActive={
-                    path.startsWith(item.path) || path === item.path
-                  }
+                    isActive={path.startsWith(item.path) || path === item.path}
                   />
                 </Box>
               </Box>
