@@ -293,7 +293,7 @@ const OrphanListTable: React.FC<{
                               color: "black",
                               backgroundColor: "white",
                               ":hover": {
-                                color: "black",
+                                color: "#3863FA",
                                 backgroundColor: "white",
                               },
                             }}

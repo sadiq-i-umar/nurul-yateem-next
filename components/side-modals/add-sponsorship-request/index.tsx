@@ -114,8 +114,7 @@ const AddSponsorshipRequestSideModal: React.FC<{
 
     // Assemble the data required by the backend API
     const payload = {
-      guardian_id: SelectedOrphan?.
-      guardians_id,
+      guardian_id: SelectedOrphan?.guardians_id,
       orphan_id: SelectedOrphan?.id,
       need: orphansNeed,
       description: SponsorshipDecs,
@@ -143,6 +142,10 @@ const AddSponsorshipRequestSideModal: React.FC<{
 
       // Close the side modal
       setOpenSideModal(false);
+      setAmountNeeded("");
+      setOrphansNeed("");
+      setSponsorshipDecs("");
+      setCurrentAmountGotten("");
     } catch (error) {
       // Show error message if API call fails
       toast.error("An error occurred. Please try again later");
