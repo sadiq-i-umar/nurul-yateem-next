@@ -38,3 +38,18 @@ export const EditOrphanApi = async (Data: any, token: any, id: number) => {
 
   return res;
 };
+export const AddSponsorshipRequestApi = async (
+  Data: any,
+  token: any,
+) => {
+  const res = await request("POST", `${baseUrl}/guardian/sponsorship-request`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+
+    data: Data,
+  });
+
+  return res;
+};

@@ -19,13 +19,13 @@ const Nav: React.FC<{
   const { data: session } = useSession();
   const firstName = session?.user?.firstName;
   const lastName = session?.user?.lastName;
-  // const account = session?.user?.account;
-  const account = "sponsor";
+  const account = session?.user?.account;
+
 
   const navDatats =
-    account === "sponsor"
+    account === "SPONSOR"
       ? navConfigSponsor
-      : account === "guardian"
+      : account === "GUARDIAN"
       ? navConfig
       : [];
 

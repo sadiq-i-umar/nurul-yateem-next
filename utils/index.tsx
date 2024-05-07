@@ -51,6 +51,8 @@ export const states_in_nigeria_dropdown = [
   "Federal Capital Territory (FCT)",
 ];
 
+export const OrphansNeedData = ["CLOTHING", "EDUCATION", "FEEDING", "HEALTH"];
+
 export const FeedingFormularData = [" 1 Meal", "2 Meals", "3 Meals"];
 
 export const identityOptions = [

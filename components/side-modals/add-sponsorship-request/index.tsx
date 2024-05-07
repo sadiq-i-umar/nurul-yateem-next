@@ -9,14 +9,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import AlertDialog from "../../Reusable-Dialog";
-import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
-import { states_in_nigeria_dropdown } from "../../../utils";
+import { OrphansNeedData } from "../../../utils";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { EditOrphanApi } from "../../../service/update-account";
+import { AddSponsorshipRequestApi } from "../../../service/update-account";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ImageNameGenderIdCell } from "../../tables/cells";
 
@@ -27,85 +26,37 @@ const AddSponsorshipRequestSideModal: React.FC<{
 }> = ({ openSideModal, setOpenSideModal, SelectedOrphan }) => {
   const { data: session } = useSession();
   const token = session?.token;
-
-  const {
-    firstName,
-    lastName,
-    image,
-    gender,
-    dateOfBirth,
-    stateOfOrigin,
-    localGovernmentArea,
-    InSchool,
-    schoolName,
-    schoolAddress,
-    schoolContact,
-    phoneNumberOfSchool,
-    class_,
-    uniqueCode,
-    setFirstName,
-    setLastName,
-    setImage,
-    setGender,
-    setDateOfBirth,
-    setStateOfOrigin,
-    setLocalGovernmentArea,
-    setInSchool,
-    setSchoolName,
-    setSchoolAddress,
-    setSchoolContact,
-    setPhoneNumberOfSchool,
-    setClass,
-    setUniqueCode,
-  } = useAddOrphanStore();
-
-  useEffect(() => {
-    if (openSideModal && SelectedOrphan) {
-      setFirstName(SelectedOrphan?.first_name || "");
-      setLastName(SelectedOrphan?.last_name || "");
-      setImage(SelectedOrphan?.profile_photo || "");
-      setGender(SelectedOrphan?.gender || "");
-      setDateOfBirth(SelectedOrphan?.date_of_birth || "");
-      setStateOfOrigin(SelectedOrphan?.state_of_origin || "");
-      setLocalGovernmentArea(SelectedOrphan?.local_government || "");
-      setInSchool(SelectedOrphan?.in_school || "");
-      setSchoolName(SelectedOrphan?.school_name || "");
-      setSchoolAddress(SelectedOrphan?.school_address || "");
-      setSchoolContact(SelectedOrphan?.school_contact_person || "");
-      setPhoneNumberOfSchool(
-        SelectedOrphan?.phone_number_of_contact_person || ""
-      );
-      setClass(SelectedOrphan?.class || "");
-      setUniqueCode(SelectedOrphan?.unique_code || "");
-    }
-  }, [openSideModal, SelectedOrphan]);
-
-  const [firstNameError, setFirstNameError] = useState(false);
-  const [lastNameError, setLastNameError] = useState(false);
-  const [dateOfBirthError, setDateOfBirthError] = useState(false);
-  const [stateOfOriginError, setStateOfOriginError] = useState(false);
-  const [localGovernmentAreaError, setLocalGovernmentAreaError] =
+  const [orphansNeed, setOrphansNeed] = useState("");
+  const [SponsorshipDecs, setSponsorshipDecs] = useState("");
+  const [AmountNeeded, setAmountNeeded] = useState("");
+  const [CurrentAmountGotten, setCurrentAmountGotten] = useState("");
+  const [orphansNeedError, setOrphansNeedError] = useState(false);
+  const [SponsorshipDecsError, setSponsorshipDecsError] = useState(false);
+  const [AmountNeededError, setAmountNeededError] = useState(false);
+  const [CurrentAmountGottenError, setCurrentAmountGottenError] =
     useState(false);
-  const [schoolNameError, setSchoolNameError] = useState(false);
-  const [schoolAddressError, setSchoolAddressError] = useState(false);
-  const [schoolContactError, setSchoolContactError] = useState(false);
-  const [phoneNumberOfSchoolError, setPhoneNumberOfSchoolError] =
-    useState(false);
-  const [classError, setClassError] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   const orphanId = SelectedOrphan?.id;
 
+  const formatAmount = (value: string) => {
+    // Remove non-numeric characters
+    let amount = value.replace(/\D/g, "");
+    // Add commas for thousands, millions, etc.
+    amount = amount.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+    return amount;
+  };
+
   const mutation = useMutation({
-    mutationFn: (payload: any) => EditOrphanApi(payload, token, orphanId),
+    mutationFn: (payload: any) => AddSponsorshipRequestApi(payload, token),
     onSuccess: (data) => {
       setIsLoading(true);
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);
       } else {
-        toast.success("Orphan details updated successfully");
+        toast.success("Sponsorship request added successfully");
         queryClient.invalidateQueries({ queryKey: ["orphans"] });
         setIsLoading(false);
       }
@@ -115,24 +66,6 @@ const AddSponsorshipRequestSideModal: React.FC<{
       setIsLoading(false);
     },
   });
-
-  const handleImageSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage({ file, url: reader?.result as string });
-      };
-      reader.readAsDataURL(file);
-    } else {
-    }
-  };
-
-  if (image.url?.indexOf("data:image") != undefined) {
-    if (image.url?.indexOf("data:image") > -1) {
-      // TODO: Upload image to google bucket and store response
-    }
-  }
 
   const handleCloseSideModal = () => {
     setOpenSideModal(false);
@@ -144,45 +77,21 @@ const AddSponsorshipRequestSideModal: React.FC<{
 
   const sendDataToParent = () => {
     let isValid = true;
-    if (!firstName) {
-      setFirstNameError(true);
-      isValid = false;
-    }
-    if (!lastName) {
-      setLastNameError(true);
-      isValid = false;
-    }
-    if (!dateOfBirth) {
-      setDateOfBirthError(true);
-      isValid = false;
-    }
-    if (!stateOfOrigin) {
-      setStateOfOriginError(true);
-      isValid = false;
-    }
-    if (!localGovernmentArea) {
-      setLocalGovernmentAreaError(true);
-      isValid = false;
-    }
 
-    if (!schoolName) {
-      setSchoolNameError(true);
+    if (!orphansNeed) {
+      setOrphansNeedError(true);
       isValid = false;
     }
-    if (!schoolAddress) {
-      setSchoolAddressError(true);
+    if (!SponsorshipDecs) {
+      setSponsorshipDecsError(true);
       isValid = false;
     }
-    if (!schoolContact) {
-      setSchoolContactError(true);
+    if (!AmountNeeded) {
+      setAmountNeededError(true);
       isValid = false;
     }
-    if (!phoneNumberOfSchool) {
-      setPhoneNumberOfSchoolError(true);
-      isValid = false;
-    }
-    if (!class_) {
-      setClassError(true);
+    if (!CurrentAmountGotten) {
+      setCurrentAmountGottenError(true);
       isValid = false;
     }
 
@@ -196,53 +105,49 @@ const AddSponsorshipRequestSideModal: React.FC<{
   };
 
   const handleYesClick = async () => {
-    const {
-      firstName,
-      lastName,
-      image,
-      gender,
-      dateOfBirth,
-      stateOfOrigin,
-      localGovernmentArea,
-      InSchool,
-      schoolName,
-      schoolAddress,
-      schoolContact,
-      phoneNumberOfSchool,
-      class_,
-      uniqueCode,
-    } = useAddOrphanStore.getState();
+    // Convert strings to numbers
+    const amountNeededNumber = parseInt(AmountNeeded.replace(/,/g, ""), 10);
+    const currentAmountNumber = parseInt(
+      CurrentAmountGotten.replace(/,/g, ""),
+      10
+    );
 
+    // Assemble the data required by the backend API
+    const payload = {
+      guardian_id: SelectedOrphan?.
+      guardians_id,
+      orphan_id: SelectedOrphan?.id,
+      need: orphansNeed,
+      description: SponsorshipDecs,
+      amount_needed: amountNeededNumber,
+      current_amount: currentAmountNumber,
+      request_status: SelectedOrphan?.account_status,
+    };
+
+    console.log(payload);
+
+    // Check if the token is available
     if (!token) {
       return;
     }
+
+    // Close the dialog
     setOpenDialog(false);
+
+    // Set loading state to true
     setIsLoading(true);
 
     try {
-      const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        profile_photo: "https://example.com/profile.jpg",
-        gender: gender,
-        date_of_birth: dateOfBirth,
-        state_of_origin: stateOfOrigin,
-        local_government: localGovernmentArea,
-        in_school: InSchool,
-        school_name: schoolName,
-        school_address: schoolAddress,
-        school_contact_person: schoolContact,
-        phone_number_of_contact_person: phoneNumberOfSchool,
-        class: class_,
-      };
-
       // Make the API call with the payload
       await mutation.mutateAsync(payload);
 
+      // Close the side modal
       setOpenSideModal(false);
     } catch (error) {
+      // Show error message if API call fails
       toast.error("An error occurred. Please try again later");
     } finally {
+      // Reset loading state
       setIsLoading(false);
     }
   };
@@ -250,7 +155,7 @@ const AddSponsorshipRequestSideModal: React.FC<{
   return (
     <>
       {isLoading && <LoaderBackdrop />}
-      <Dialog open={openSideModal}>
+      <Dialog open={openSideModal} onClose={handleCloseSideModal}>
         <Box
           sx={{
             display: "flex",
@@ -281,7 +186,9 @@ const AddSponsorshipRequestSideModal: React.FC<{
             }}
           >
             <Box>
-              <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>Add Sponsorship Request</Typography>
+              <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>
+                Add Sponsorship Request
+              </Typography>
             </Box>
             <Box
               sx={{ position: "absolute", right: 0, top: 15 }}
@@ -293,7 +200,12 @@ const AddSponsorshipRequestSideModal: React.FC<{
           <Box sx={{ paddingY: "30px" }}>
             <Box>
               <Box sx={{ marginBottom: "30px" }}>
-                <ImageNameGenderIdCell image="" name="Bashir Salisu" gender="Male" id="2098132" />
+                <ImageNameGenderIdCell
+                  image=""
+                  name={`${SelectedOrphan?.first_name} ${SelectedOrphan?.last_name}`}
+                  gender={SelectedOrphan?.gender}
+                  id={SelectedOrphan?.unique_code}
+                />
               </Box>
               <Box sx={{ marginBottom: "40px" }}>
                 <Box sx={{ marginBottom: "11.5px" }}>
@@ -301,27 +213,27 @@ const AddSponsorshipRequestSideModal: React.FC<{
                 </Box>
                 <Box sx={{ borderRadius: "10px" }}>
                   <Select
-                    value={stateOfOrigin}
+                    value={orphansNeed}
                     sx={{
                       borderRadius: "10px",
                       width: "100%",
                     }}
                     onChange={(e) => {
-                      setStateOfOrigin(e.target.value);
-                      setStateOfOriginError(false);
+                      setOrphansNeed(e.target.value);
+                      setOrphansNeedError(false);
                     }}
                     displayEmpty
                   >
                     <MenuItem value="" disabled>
                       -- Select --
                     </MenuItem>
-                    {[...states_in_nigeria_dropdown].map((item, index) => (
+                    {[...OrphansNeedData].map((item, index) => (
                       <MenuItem key={index} value={item}>
                         {item}
                       </MenuItem>
                     ))}
                   </Select>
-                  {stateOfOriginError && (
+                  {orphansNeedError && (
                     <Typography component="p" color="error">
                       Your needs is a required field
                     </Typography>
@@ -344,19 +256,19 @@ const AddSponsorshipRequestSideModal: React.FC<{
                         borderRadius: "10px",
                       },
                     }}
-                    value={schoolAddress}
+                    value={SponsorshipDecs}
                     onChange={(event: {
                       target: {
                         value: string;
                       };
                     }) => {
-                      setSchoolAddress(event?.target.value);
-                      setSchoolAddressError(false);
+                      setSponsorshipDecs(event?.target.value);
+                      setSponsorshipDecsError(false);
                     }}
                     multiline
                     rows={4}
                   />
-                  {schoolAddressError && (
+                  {SponsorshipDecsError && (
                     <Typography component="p" color="error">
                       Request description is required
                     </Typography>
@@ -380,19 +292,22 @@ const AddSponsorshipRequestSideModal: React.FC<{
                             sx: {
                               borderRadius: "10px",
                             },
+                            inputMode: "numeric",
+                            pattern: "[0-9]*",
+                            type: "text",
                           }}
-                          placeholder="Enter full name"
-                          value={schoolContact}
+                          value={"₦ " + formatAmount(AmountNeeded)}
                           onChange={(event: {
                             target: {
                               value: string;
                             };
                           }) => {
-                            setSchoolContact(event?.target.value);
-                            setSchoolContactError(false);
+                            const value = event?.target.value;
+                            setAmountNeeded(formatAmount(value));
+                            setAmountNeededError(false);
                           }}
                         />
-                        {schoolContactError && (
+                        {AmountNeededError && (
                           <Typography component="p" color="error">
                             Amount needed is required
                           </Typography>
@@ -406,28 +321,34 @@ const AddSponsorshipRequestSideModal: React.FC<{
                         <Typography>Current Amount Gotten</Typography>
                       </Box>
                       <Box sx={{ borderRadius: "10px" }}>
-                        <TextField
-                          sx={{
-                            width: "100%",
-                            borderRadius: "50px",
-                          }}
-                          inputProps={{
-                            sx: {
-                              borderRadius: "10px",
-                            },
-                          }}
-                          placeholder="Enter phone number"
-                          value={phoneNumberOfSchool}
-                          onChange={(event: {
-                            target: {
-                              value: string;
-                            };
-                          }) => {
-                            setPhoneNumberOfSchool(event?.target.value);
-                            setPhoneNumberOfSchoolError(false);
-                          }}
-                        />
-                        {phoneNumberOfSchoolError && (
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <TextField
+                            sx={{
+                              width: "100%",
+                              borderRadius: "50px",
+                            }}
+                            inputProps={{
+                              sx: {
+                                borderRadius: "10px",
+                              },
+                              inputMode: "numeric",
+                              pattern: "[0-9]*",
+                              type: "text",
+                            }}
+                            value={"₦ " + formatAmount(CurrentAmountGotten)}
+                            onChange={(event: {
+                              target: {
+                                value: string;
+                              };
+                            }) => {
+                              const value = event?.target.value;
+
+                              setCurrentAmountGotten(formatAmount(value));
+                              setCurrentAmountGottenError(false);
+                            }}
+                          />
+                        </Box>
+                        {CurrentAmountGottenError && (
                           <Typography component="p" color="error">
                             Current Amount Gotten is required
                           </Typography>
@@ -478,7 +399,7 @@ const AddSponsorshipRequestSideModal: React.FC<{
                               ":hover": { backgroundColor: "#3863FA" },
                             }}
                           >
-                            Submit
+                            Add
                           </Button>
                         </Box>
                       </Grid>
@@ -490,7 +411,7 @@ const AddSponsorshipRequestSideModal: React.FC<{
                 open={openDialog}
                 onClose={handleClickClose}
                 onAgree={handleYesClick}
-                title={"Edit Orphan Details"}
+                title={"Confirm Submission"}
                 content={
                   "Before submitting your Application, Make sure to verify every data is correct."
                 }

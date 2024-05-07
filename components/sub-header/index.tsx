@@ -1,21 +1,29 @@
 "use client";
-
+import { usePathname } from "next/navigation";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { TextOnlyPill } from "../pills";
 import { ActionButtonOne, ActionButtonTwo, FilterButton } from "../buttons";
 import { SearchBar } from "../search-bar/one";
+import {
+  CloudUploadOutlined,
+  LocalPrintshopOutlined,
+} from "@mui/icons-material";
+import path from "path";
 
 interface Props {
-  title: string;
-  subtitle: string;
-  itemCount: number | undefined;
-  itemCountLabel: string;
+  title?: string;
+  subtitle?: string;
+  itemCount?: number | undefined;
+  itemCountLabel?: string;
   buttonOneIcon?: string;
   buttonOneText?: string;
+  filterButton?: () => any;
   buttonTwoClick?: (data?: any) => any;
+  printButton?: (data?: any) => any;
+  exportButton?: (data?: any) => any;
   buttonTwoIcon?: string;
   buttonTwoText?: string;
-  pageHasTable: boolean;
+  pageHasTable?: boolean;
   searchQuery?: (data: string) => void;
 }
 
@@ -27,11 +35,15 @@ const SubHeader: React.FC<Props> = ({
   buttonOneIcon,
   buttonOneText,
   buttonTwoClick,
+  exportButton,
+  printButton,
+  filterButton = () => {},
   buttonTwoIcon,
   buttonTwoText,
   pageHasTable,
   searchQuery,
 }) => {
+  const pathname = usePathname();
   return (
     <Paper
       sx={{
@@ -40,7 +52,7 @@ const SubHeader: React.FC<Props> = ({
         paddingX: "30px",
         paddingTop: "20px",
         ...(pageHasTable
-          ? { paddingBottom: "10px" }
+          ? { paddingBottom: "30px" }
           : { paddingBottom: "30px" }),
       }}
     >
@@ -79,40 +91,120 @@ const SubHeader: React.FC<Props> = ({
               />
             </Box>
           )}
-          <Box
-            sx={{ mt: { xs: "0px", sm: "0px" }, mb: { xs: "20px", sm: "0px" } }}
-          >
-            {buttonTwoText && buttonTwoIcon && (
-              <Box
-                onClick={() => buttonTwoClick && buttonTwoClick()}
-                sx={{ mr: { xs: "6px", sm: "12px" } }}
-              >
-                <Button
-                  variant="contained"
-                  disableElevation
-                  sx={{
-                    textTransform: "none",
-                    borderRadius: "30px",
-                    paddingX: "20px",
-                    paddingY: "10px",
-                    backgroundColor: "#3863FA",
-                    zIndex: 0,
-                    "&:hover": {
-                      backgroundColor: "#3863FA",
-                    },
-                  }}
-                  startIcon={
-                    buttonTwoIcon ? (
-                      <img src={buttonTwoIcon} alt="Button Icon" />
-                    ) : null
-                  }
+          {pathname == "/dashboard/guardian/orphan-list" && (
+            <Box
+              sx={{
+                mt: { xs: "0px", sm: "0px" },
+                mb: { xs: "20px", sm: "0px" },
+              }}
+            >
+              {buttonTwoText && buttonTwoIcon && (
+                <Box
                   onClick={() => buttonTwoClick && buttonTwoClick()}
+                  sx={{ mr: { xs: "6px", sm: "12px" } }}
                 >
-                  {buttonTwoText}
-                </Button>
+                  <Button
+                    variant="contained"
+                    disableElevation
+                    sx={{
+                      textTransform: "none",
+                      borderRadius: "30px",
+                      paddingX: "20px",
+                      paddingY: "10px",
+                      backgroundColor: "#3863FA",
+                      zIndex: 0,
+                      "&:hover": {
+                        backgroundColor: "#3863FA",
+                      },
+                    }}
+                    startIcon={
+                      buttonTwoIcon ? (
+                        <img src={buttonTwoIcon} alt="Button Icon" />
+                      ) : null
+                    }
+                    onClick={() => buttonTwoClick && buttonTwoClick()}
+                  >
+                    {buttonTwoText}
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          )}
+
+          {/* export and save */}
+          {pathname == "/dashboard/sponsor/orphan-list" && (
+            <>
+              <Box
+                sx={{
+                  mt: { xs: "0px", sm: "0px" },
+                  mb: { xs: "20px", sm: "0px" },
+                }}
+              >
+                {exportButton && (
+                  <Box
+                    onClick={() => exportButton()}
+                    sx={{ mr: { xs: "6px", sm: "12px" } }}
+                  >
+                    <Button
+                      variant="outlined"
+                      disableElevation
+                      sx={{
+                        textTransform: "none",
+                        borderRadius: "10px",
+                        paddingX: "20px",
+                        color: "black",
+                        paddingY: "10px",
+                        backgroundColor: "white",
+                        borderColor: "black",
+                        zIndex: 0,
+                        "&:hover": {
+                          backgroundColor: "#EBEFFF",
+                          borderColor: "#3863FA",
+                        },
+                      }}
+                      startIcon={<CloudUploadOutlined />}
+                      onClick={() => exportButton()}
+                    >
+                      Export
+                    </Button>
+                  </Box>
+                )}
               </Box>
-            )}
-          </Box>
+              <Box
+                sx={{
+                  mt: { xs: "0px", sm: "0px" },
+                  mb: { xs: "20px", sm: "0px" },
+                }}
+              >
+                {printButton && (
+                  <Box
+                    onClick={() => printButton()}
+                    sx={{ mr: { xs: "6px", sm: "12px" } }}
+                  >
+                    <Button
+                      variant="contained"
+                      disableElevation
+                      sx={{
+                        textTransform: "none",
+                        borderRadius: "30px",
+                        paddingX: "20px",
+                        paddingY: "10px",
+                        backgroundColor: "#3863FA",
+                        zIndex: 0,
+                        "&:hover": {
+                          backgroundColor: "#3863FA",
+                        },
+                      }}
+                      startIcon={<LocalPrintshopOutlined />}
+                      onClick={() => printButton()}
+                    >
+                      Print
+                    </Button>
+                  </Box>
+                )}
+              </Box>
+            </>
+          )}
         </Box>
       </Box>
       <Box
@@ -138,7 +230,7 @@ const SubHeader: React.FC<Props> = ({
         <Box
           sx={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
         >
-          <FilterButton initialFilter={"Filters"} />
+          <FilterButton initialFilter={"Filters"} onClick={filterButton} />
         </Box>
       </Box>
     </Paper>

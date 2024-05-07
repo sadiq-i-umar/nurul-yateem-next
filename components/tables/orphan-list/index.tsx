@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Popover, Typography } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -20,12 +20,16 @@ import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-re
 const OrphanListTable: React.FC<{
   orphanData: any[];
 }> = ({ orphanData }) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
   const [openViewDetailsModal, setOpenViewDetailsModal] = React.useState(false);
   const [SelectedOrphan, setSelectedOrphan] = React.useState<any>();
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDeleteReason, setOpenDeleteReason] = React.useState(false);
   const [openEditSideModal, setEditOpenSideModal] = React.useState(false);
-  const [openSponsorshipSideModal, setOpenSponsorshipSideModal] = React.useState(false);
+  const [openSponsorshipSideModal, setOpenSponsorshipSideModal] =
+    React.useState(false);
 
   const handleOpenDelete = (data: any) => {
     setSelectedOrphan(data);
@@ -44,11 +48,29 @@ const OrphanListTable: React.FC<{
     setEditOpenSideModal(true);
     setSelectedOrphan(data);
   };
+  const handleView = (data: any) => {
+    setOpenViewDetailsModal(true);
+    setSelectedOrphan(data);
+  };
 
-  const handleSponsorshipRequest = (data: any) => {
+  const handleOpenPopover = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    data: any
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedOrphan(data);
+  };
+
+  const handleSponsorshipRequest = () => {
     setOpenSponsorshipSideModal(true);
-    setSelectedOrphan(data)
-  }
+    setAnchorEl(null);
+  };
+
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <>
@@ -175,26 +197,35 @@ const OrphanListTable: React.FC<{
                       onClick={() => setOpenViewDetailsModal(true)}
                       sx={{ mr: "20px", cursor: "pointer", mt: "-5px" }}
                     >
-                      <Link href="#">
-                        <Typography
-                          sx={{
-                            textDecoration: "underline",
-                            color: "#007A27",
-                            fontSize: "15px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {"View"}
-                        </Typography>
-                      </Link>
+                      <Button
+                        sx={{
+                          textDecoration: "underline",
+                          color: "#007A27",
+                          fontSize: "15px",
+                          fontWeight: 600,
+                          ":hover": {
+                            borderColor: "#EBEFFF",
+                            color: "#3863FA",
+                            backgroundColor: "#EBEFFF",
+                          },
+                        }}
+                        onClick={() => handleView(orphan)}
+                      >
+                        {"View"}
+                      </Button>
                     </Box>
-                    <ViewOrphanDetailsSideModal
-                      orphanData={orphan}
-                      open={openViewDetailsModal}
-                      close={() => setOpenViewDetailsModal(false)}
-                    />
+
                     <Button
-                      sx={{ cursor: "pointer", mr: "20px" }}
+                      sx={{
+                        borderColor: "white",
+                        color: "#3863FA",
+                        backgroundColor: "white",
+                        ":hover": {
+                          borderColor: "#EBEFFF",
+                          color: "#3863FA",
+                          backgroundColor: "#EBEFFF",
+                        },
+                      }}
                       onClick={() => handleOpenDelete(orphan)}
                     >
                       <Image
@@ -205,7 +236,16 @@ const OrphanListTable: React.FC<{
                       />
                     </Button>
                     <Button
-                      sx={{ cursor: "pointer", mr: "20px" }}
+                      sx={{
+                        borderColor: "white",
+                        color: "#3863FA",
+                        backgroundColor: "white",
+                        ":hover": {
+                          borderColor: "#EBEFFF",
+                          color: "#3863FA",
+                          backgroundColor: "#EBEFFF",
+                        },
+                      }}
                       onClick={() => handleEdit(orphan)}
                     >
                       <Image
@@ -216,9 +256,54 @@ const OrphanListTable: React.FC<{
                         color="red"
                       />
                     </Button>
-                    <Box onClick={() => handleSponsorshipRequest(orphan)} sx={{ cursor: "pointer" }}>
-                      <MoreVert />
-                    </Box>
+
+                    <>
+                      <Button
+                        aria-describedby={id}
+                        variant="outlined"
+                        onClick={(event) => {
+                          handleOpenPopover(event, orphan);
+                        }}
+                        sx={{
+                          borderColor: "white",
+                          color: "#3863FA",
+                          backgroundColor: "white",
+                          ":hover": {
+                            borderColor: "#EBEFFF",
+                            color: "#3863FA",
+                            backgroundColor: "#EBEFFF",
+                          },
+                        }}
+                      >
+                        <MoreVert />
+                      </Button>
+                      <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClosePopover}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "left",
+                        }}
+                      >
+                        <Box sx={{ p: 1 }}>
+                          <Button
+                            sx={{
+                              color: "black",
+                              backgroundColor: "white",
+                              ":hover": {
+                                color: "black",
+                                backgroundColor: "white",
+                              },
+                            }}
+                            onClick={() => handleSponsorshipRequest()}
+                          >
+                            Add Sponsorship Request
+                          </Button>
+                        </Box>
+                      </Popover>
+                    </>
                   </Box>
                 </TableCell>
               </TableRow>
@@ -238,6 +323,12 @@ const OrphanListTable: React.FC<{
         disagreeText={"No"}
         agreeText={"Yes, Delete"}
       />
+      <ViewOrphanDetailsSideModal
+        orphanData={SelectedOrphan}
+        open={openViewDetailsModal}
+        close={() => setOpenViewDetailsModal(false)}
+      />
+
       <ReasonForDeleteOrphan
         openDeleteReason={openDeleteReason}
         setOpenDeleteReason={setOpenDeleteReason}
