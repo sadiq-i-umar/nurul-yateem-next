@@ -311,6 +311,7 @@ const OrphanListTable: React.FC<{
           </TableBody>
         </Table>
       </TableContainer>
+      
       <AlertDialog
         open={openDialog}
         onClose={handleClickClose}
