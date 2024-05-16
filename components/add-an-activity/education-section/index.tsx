@@ -15,7 +15,7 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { PhotoUploadFrame } from "../../common/image-frames";
 import DragUpload from "../../drag-upload";
@@ -26,6 +26,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetOphansDetails, getOrphans } from "../../../service/orphan-list";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AlertDialog from "../../Reusable-Dialog";
+import {
+  CreateOrphanActivities,
+} from "../../../service/update-account";
 
 interface MyData {
   orphan?: any;
@@ -78,7 +82,7 @@ const Education = () => {
   const [uniqueCode, setUniqueCode] = useState("");
   const [dateOfEnrollment, setDateOfEnrollment] = useState(null);
   const [orphanClass, setOrphanClass] = useState("");
-  const [data, setData] = useState<MyData>({});
+  const [singleData, setSingleData] = useState<MyData>({});
   const [loader, setLoader] = useState(false);
   const [getUploadFiles, setGetUploadedFiles] = useState<any[]>([]);
 
@@ -86,8 +90,7 @@ const Education = () => {
     setLoader(true);
     try {
       const response = await GetOphansDetails(token, uniqueCode);
-      setData(response);
-      console.log(response);
+      setSingleData(response);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -96,21 +99,23 @@ const Education = () => {
   };
 
   useEffect(() => {
-    if (data) {
-      setFirstName(data?.orphan?.first_name);
-      setLastName(data?.orphan?.last_name);
-      setImage({ url: data?.orphan?.profile_photo, file: "" });
-      setDateOfBirth(data?.orphan?.date_of_birth);
-      setGender(data?.orphan?.gender);
-      setInSchool(data?.orphan?.in_school);
-      setSchoolName(data?.orphan?.school_name);
-      setSchoolContact(data?.orphan?.school_contact_person);
-      setPhoneNumberOfSchool(data?.orphan?.phone_number_of_contact_person);
-      setOrphanClass(data?.orphan?.class);
-      setSponsorFirstName(data?.orphan?.sponsor_first_name);
-      setSponsorLastName(data?.orphan?.sponsor_last_name);
+    if (singleData) {
+      setFirstName(singleData?.orphan?.first_name);
+      setLastName(singleData?.orphan?.last_name);
+      setImage({ url: singleData?.orphan?.profile_photo, file: "" });
+      setDateOfBirth(singleData?.orphan?.date_of_birth);
+      setGender(singleData?.orphan?.gender);
+      setInSchool(singleData?.orphan?.in_school);
+      setSchoolName(singleData?.orphan?.school_name);
+      setSchoolContact(singleData?.orphan?.school_contact_person);
+      setPhoneNumberOfSchool(
+        singleData?.orphan?.phone_number_of_contact_person
+      );
+      setOrphanClass(singleData?.orphan?.class);
+      setSponsorFirstName(singleData?.orphan?.sponsor_first_name);
+      setSponsorLastName(singleData?.orphan?.sponsor_last_name);
     }
-  }, [data]);
+  }, [singleData]);
 
   const handleShowSponsor = () => {
     setShowSponsor(true);
@@ -133,24 +138,24 @@ const Education = () => {
   const queryClient = useQueryClient();
   // const orphanId = SelectedOrphan?.id;
 
-  // const mutation = useMutation({
-  //   mutationFn: (payload: any) => EditOrphanApi(payload, token, orphanId),
-  //   onSuccess: (data) => {
-  //     setIsLoading(true);
-  //     if (data.error) {
-  //       toast.error(data.error);
-  //       setIsLoading(false);
-  //     } else {
-  //       toast.success("Orphan details updated successfully");
-  //       queryClient.invalidateQueries({ queryKey: ["orphans"] });
-  //       setIsLoading(false);
-  //     }
-  //   },
-  //   onError: () => {
-  //     toast.error("Error occurred while creating the user");
-  //     setIsLoading(false);
-  //   },
-  // });
+  const mutation = useMutation({
+    mutationFn: (payload: any) => CreateOrphanActivities(payload, token),
+    onSuccess: (data) => {
+      setIsLoading(true);
+      if (data.error) {
+        toast.error(data.error);
+        setIsLoading(false);
+      } else {
+        toast.success("Orphan activity created successfully");
+        queryClient.invalidateQueries({ queryKey: ["orphans"] });
+        setIsLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Error occurred while creating the user");
+      setIsLoading(false);
+    },
+  });
 
   if (image.url?.indexOf("data:image") != undefined) {
     if (image.url?.indexOf("data:image") > -1) {
@@ -230,7 +235,7 @@ const Education = () => {
 
     try {
       // Check if there's an EDUCATION need in the SponsorshipRequest array
-      const hasEducationNeed = data?.SponsorshipRequest.some(
+      const hasEducationNeed = singleData?.SponsorshipRequest.some(
         (request: { need: string }) => request.need == "EDUCATION"
       );
 
@@ -242,25 +247,30 @@ const Education = () => {
 
       // EDUCATION need found, proceed with making the request
       const payload = {
-        guardian_id: data?.orphan?.guardian_id,
-        orphan_id: data?.orphan?.id,
+        guardian_id: singleData?.orphan?.guardians_id,
+        orphan_id: singleData?.orphan?.id,
         activity: "EDUCATION",
-        description: "educaiton",
+        description: "Educaiton",
         name_of_school_contact_person: schoolContact,
         phone_number_of_school_contact_person: phoneNumberOfSchool,
-        date_of_enrollment: dayjs(dateOfEnrollment).format("DD/MMM/YYYY"),
-        upload_document: getUploadFiles[0]?.url,
+        date_of_enrollment: dayjs(dateOfEnrollment).format("YYYY-MM-DD"), // Ensure date is in the correct format
+        // upload_document: getUploadFiles[0]?.url,
+        upload_document: "education.pdf", //for testing purposes
       };
 
       console.log(payload);
 
       // Make the API call with the payload
-      // await mutation.mutateAsync(payload);
+      await mutation.mutateAsync(payload);
     } catch (error) {
       toast.error("An error occurred. Please try again later");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCloseErrorModal = () => {
+    setErroModal(false);
   };
 
   return (
@@ -957,6 +967,14 @@ const Education = () => {
           </Box>
         </Box>
       </Box>
+      <AlertDialog
+        open={errorModal}
+        onClose={handleCloseErrorModal}
+        content={
+          "This Orphan currently lacks any sponsorship requests related to Educational needs."
+        }
+        disagreeText={"Close"}
+      />
     </>
   );
 };

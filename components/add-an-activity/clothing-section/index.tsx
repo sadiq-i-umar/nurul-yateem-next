@@ -17,24 +17,30 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
 import { PhotoUploadFrame } from "../../common/image-frames";
-import { FeedingFormularData } from "../../../utils";
 import DragUpload from "../../drag-upload";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { EditOrphanApi } from "../../../service/update-account";
+import {
+  CreateOrphanActivities
+} from "../../../service/update-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
+import { GetOphansDetails, getOrphans } from "../../../service/orphan-list";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AlertDialog from "../../Reusable-Dialog";
+
+interface MyData {
+  orphan?: any;
+  SponsorshipRequest?: any;
+}
 
 const Clothing = () => {
   const { data: session } = useSession();
   const token = session?.token;
   const {
-    data: SelectedOrphan,
+    data: OrphanDatas,
     isLoading,
     status,
   } = useQuery({
@@ -47,33 +53,18 @@ const Clothing = () => {
   const [shirtSize, setShirtSize] = useState("");
   const [trouserSize, setTrouserSize] = useState("");
   const [armsLength, setArmsLength] = useState("");
-
-  const {
-    firstName,
-    lastName,
-    image,
-    gender,
-    dateOfBirth,
-    uniqueCode,
-    setFirstName,
-    setLastName,
-    setImage,
-    setGender,
-    setDateOfBirth,
-    setUniqueCode,
-  } = useAddOrphanStore();
-
-  useEffect(() => {
-    if (SelectedOrphan) {
-      setFirstName(SelectedOrphan?.first_name || "");
-      setLastName(SelectedOrphan?.last_name || "");
-      setImage(SelectedOrphan?.profile_photo || "");
-      setGender(SelectedOrphan?.gender || "");
-      setDateOfBirth(SelectedOrphan?.date_of_birth || "");
-      setUniqueCode(SelectedOrphan?.unique_code || "");
-    }
-  }, [SelectedOrphan]);
-
+  const [getUploadedFiles, setGetUploadedFiles] = useState([]);
+  const [healthFacility, setHealthFacility] = useState("");
+  const [diseaseType, setDiseaseType] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [image, setImage] = useState({ url: "", file: "" });
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [gender, setGender] = useState("");
+  const [uniqueCode, setUniqueCode] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [singleData, setSingleData] = useState<MyData>({});
+  const [errorModal, setErroModal] = useState(false);
   const [Loading, setIsLoading] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -83,6 +74,28 @@ const Clothing = () => {
   const [trouserSizeError, setTrouserSizeError] = useState(false);
   const [armsLengthError, setArmsLengthError] = useState(false);
   const [uniqueCodeError, setUniqueCodeError] = useState(false);
+
+  const fetchData = async (token: any, uniqueCode: any) => {
+    setLoader(true);
+    try {
+      const response = await GetOphansDetails(token, uniqueCode);
+      setSingleData(response);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    if (singleData) {
+      setFirstName(singleData?.orphan?.first_name);
+      setLastName(singleData?.orphan?.last_name);
+      setImage({ url: singleData?.orphan?.profile_photo, file: "" });
+      setDateOfBirth(singleData?.orphan?.date_of_birth);
+      setGender(singleData?.orphan?.gender);
+    }
+  }, [singleData]);
 
   const addMoreLink = () => {
     setInsertLink((prevLinks) => [...prevLinks, ""]);
@@ -98,17 +111,17 @@ const Clothing = () => {
   };
 
   const queryClient = useQueryClient();
-  const orphanId = SelectedOrphan?.id;
+  // const orphanId = SelectedOrphan?.id;
 
   const mutation = useMutation({
-    mutationFn: (payload: any) => EditOrphanApi(payload, token, orphanId),
+    mutationFn: (payload: any) => CreateOrphanActivities(payload, token),
     onSuccess: (data) => {
       setIsLoading(true);
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);
       } else {
-        toast.success("Orphan details updated successfully");
+        toast.success("Orphan activity created successfully");
         queryClient.invalidateQueries({ queryKey: ["orphans"] });
         setIsLoading(false);
       }
@@ -170,17 +183,6 @@ const Clothing = () => {
   };
 
   const handleYesClick = async () => {
-    const {
-      firstName,
-      lastName,
-      image,
-      gender,
-      dateOfBirth,
-      phoneNumberOfSchool,
-      class_,
-      uniqueCode,
-    } = useAddOrphanStore.getState();
-
     if (!token) {
       return;
     }
@@ -188,15 +190,28 @@ const Clothing = () => {
     setIsLoading(true);
 
     try {
+      // Check if there's an Clothing need in the SponsorshipRequest array
+      const hasClothingNeed = singleData?.SponsorshipRequest.some(
+        (request: { need: string }) => request.need == "CLOTHING"
+      );
+
+      if (!hasClothingNeed) {
+        // No Clothing need found, handle accordingly (e.g., show a message)
+        setErroModal(true);
+        return;
+      }
       const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        profile_photo: "https://example.com/profile.jpg",
-        gender: gender,
-        date_of_birth: dateOfBirth,
-        uniqueCode: uniqueCode,
-        phone_number_of_contact_person: phoneNumberOfSchool,
-        class: class_,
+        guardian_id: singleData?.orphan?.guardians_id,
+        orphan_id: singleData?.orphan?.id,
+        activity: "CLOTHING",
+        description: "Clothing",
+        name_of_health_facility: healthFacility,
+        type_of_disease: diseaseType,
+        size_of_shirt: shirtSize,
+        size_of_trouser: trouserSize,
+        arms_length: armsLength,
+        // upload_document: getUploadFiles[0]?.url,
+        upload_document: "Clothing.pdf", //for testing purposes
       };
 
       // Make the API call with the payload
@@ -208,9 +223,13 @@ const Clothing = () => {
     }
   };
 
+  const handleCloseErrorModal = () => {
+    setErroModal(false);
+  };
+
   return (
     <>
-      {Loading || isLoading ? <LoaderBackdrop /> : null}
+      {Loading || isLoading || loader ? <LoaderBackdrop /> : null}
 
       <Box>
         <Box sx={{ py: 2 }}>
@@ -235,30 +254,41 @@ const Clothing = () => {
                   <Typography>Orphan ID</Typography>
                 </Box>
                 <Box sx={{ borderRadius: "10px" }}>
-                  <TextField
-                    sx={{
-                      width: "100%",
-                      borderRadius: "50px",
-                    }}
-                    inputProps={{
-                      sx: {
-                        borderRadius: "10px",
-                      },
-                    }}
-                    placeholder="#234565"
+                  <Select
                     value={uniqueCode}
-                    onChange={(event: {
-                      target: {
-                        value: string;
-                      };
-                    }) => {
-                      setUniqueCode(event?.target.value);
-                      setUniqueCodeError(false);
+                    sx={{
+                      borderRadius: "10px",
+                      width: "100%",
                     }}
-                  />
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      -- Select --
+                    </MenuItem>
+                    {OrphanDatas?.orphans?.map((item: any, index: any) => (
+                      <MenuItem
+                        key={index}
+                        value={item.unique_code}
+                        onClick={() => {
+                          setUniqueCode(item.unique_code);
+                          setUniqueCodeError(false);
+                          fetchData(token, item.unique_code);
+                        }}
+                        sx={{
+                          textTransform: "capitalize",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {item.first_name} {item.last_name} -{" "}
+                        <Typography component="span" fontWeight="bold">
+                          {item.unique_code}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </Select>
                   {uniqueCodeError && (
                     <Typography component="p" color="error">
-                      First Name is required
+                      Orphan ID is required
                     </Typography>
                   )}
                 </Box>
@@ -547,10 +577,13 @@ const Clothing = () => {
                   Additional Information
                 </Typography>
               </Box>
-              <DragUpload
-                title={"Upload Document here"}
-                subtitle={"Drag and Drop Document"}
-              />
+              <Box>
+                <DragUpload
+                  title={"Upload Document here"}
+                  subtitle={"Drag and Drop Document"}
+                  setGetUploadedFiles={setGetUploadedFiles}
+                />
+              </Box>
             </Box>
             <Box sx={{ marginBottom: "30px" }}>
               <Grid container spacing={5}>
@@ -581,6 +614,7 @@ const Clothing = () => {
                             const newLinks = [...insertLink];
                             newLinks[index] = event.target.value;
                             setInsertLink(newLinks);
+                            setLinkError(false);
                           }}
                         />
                         {/* Error message if needed */}
@@ -687,6 +721,14 @@ const Clothing = () => {
           </Box>
         </Box>
       </Box>
+      <AlertDialog
+        open={errorModal}
+        onClose={handleCloseErrorModal}
+        content={
+          "This Orphan currently lacks any sponsorship requests related to Clothing needs."
+        }
+        disagreeText={"Close"}
+      />
     </>
   );
 };

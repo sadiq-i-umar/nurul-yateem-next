@@ -11,8 +11,8 @@ export interface AlertDialogProps {
   open: boolean;
   onClose: () => void;
   onAgree?: () => void;
-  title: string;
-  content: string;
+  title?: string;
+  content?: string;
   disagreeText?: string;
   agreeText?: string;
   deleteColor?: boolean;
@@ -75,6 +75,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
                 textAlign: "center",
                 color: "black",
                 mb: { xs: "5px", sm: "0px" },
+                textTransform: "capitalize",
               }}
             >
               {content}
@@ -97,23 +98,24 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
           >
             {disagreeText}
           </Button>
-
-          <Button
-            onClick={handleAgree}
-            autoFocus
-            sx={{
-              borderRadius: "1rem",
-              textTransform: "capitalize",
-              backgroundColor: deleteColor ? "#FF0000" : "#4F46E5",
-              color: "white",
-              px: "20px",
-              "&:hover": {
+          {agreeText && (
+            <Button
+              onClick={handleAgree}
+              autoFocus
+              sx={{
+                borderRadius: "1rem",
+                textTransform: "capitalize",
                 backgroundColor: deleteColor ? "#FF0000" : "#4F46E5",
-              },
-            }}
-          >
-            {agreeText}
-          </Button>
+                color: "white",
+                px: "20px",
+                "&:hover": {
+                  backgroundColor: deleteColor ? "#FF0000" : "#4F46E5",
+                },
+              }}
+            >
+              {agreeText}
+            </Button>
+          )}
         </DialogActions>
       </Box>
     </Dialog>
