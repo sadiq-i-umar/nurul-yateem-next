@@ -18,27 +18,28 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AlertDialog from "../../Reusable-Dialog";
-import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
 import { PhotoUploadFrame } from "../../common/image-frames";
-import { VisuallyHiddenInput } from "../../common/input";
-import { states_in_nigeria_dropdown } from "../../../utils";
 import DragUpload from "../../drag-upload";
 import dayjs from "dayjs";
-import { TextOnlyPill } from "../../pills";
-import EditPic from "../../../public/ediitProfile.svg";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { EditOrphanApi } from "../../../service/update-account";
+import { CreateOrphanActivities } from "../../../service/update-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
+import { GetOphansDetails, getOrphans } from "../../../service/orphan-list";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+
+interface MyData {
+  orphan?: any;
+  SponsorshipRequest?: any;
+}
 
 const Health = () => {
   const { data: session } = useSession();
   const token = session?.token;
+  // to get all orphans id
   const {
-    data: SelectedOrphan,
+    data: OrphanDatas,
     isLoading,
     status,
   } = useQuery({
@@ -51,34 +52,13 @@ const Health = () => {
   const [cardID, setCardID] = useState("");
   const [diseaseType, setDiseaseType] = useState("");
   const [insertLink, setInsertLink] = useState([""]);
-
-  const {
-    firstName,
-    lastName,
-    image,
-    gender,
-    dateOfBirth,
-    uniqueCode,
-    setFirstName,
-    setLastName,
-    setImage,
-    setGender,
-    setDateOfBirth,
-
-    setUniqueCode,
-  } = useAddOrphanStore();
-
-  useEffect(() => {
-    if (SelectedOrphan) {
-      setFirstName(SelectedOrphan?.first_name || "");
-      setLastName(SelectedOrphan?.last_name || "");
-      setImage(SelectedOrphan?.profile_photo || "");
-      setGender(SelectedOrphan?.gender || "");
-      setDateOfBirth(SelectedOrphan?.date_of_birth || "");
-      setUniqueCode(SelectedOrphan?.unique_code || "");
-    }
-  }, [SelectedOrphan]);
-
+  const [getUploadedFiles, setGetUploadedFiles] = useState<any>([]);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [image, setImage] = useState({ url: "", file: "" });
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [gender, setGender] = useState("");
+  const [uniqueCode, setUniqueCode] = useState("");
   const [Loading, setIsLoading] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -88,6 +68,32 @@ const Health = () => {
   const [cardIDError, setCardIDError] = useState(false);
   const [DiseaseTypeError, setDiseaseTypeError] = useState(false);
   const [uniqueCodeError, setUniqueCodeError] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [singleData, setSingleData] = useState<MyData>({});
+  const [errorModal, setErroModal] = useState(false);
+
+  const fetchData = async (token: any, uniqueCode: any) => {
+    setLoader(true);
+    try {
+      const response = await GetOphansDetails(token, uniqueCode);
+      setSingleData(response);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    if (singleData) {
+      setFirstName(singleData?.orphan?.first_name);
+      setLastName(singleData?.orphan?.last_name);
+      setImage({ url: singleData?.orphan?.profile_photo, file: "" });
+      setDateOfBirth(singleData?.orphan?.date_of_birth);
+      setGender(singleData?.orphan?.gender);
+    }
+  }, [singleData]);
+
 
   const addMoreLink = () => {
     setInsertLink((prevLinks) => [...prevLinks, ""]);
@@ -103,17 +109,17 @@ const Health = () => {
   };
 
   const queryClient = useQueryClient();
-  const orphanId = SelectedOrphan?.id;
+  const orphanId = OrphanDatas?.id;
 
   const mutation = useMutation({
-    mutationFn: (payload: any) => EditOrphanApi(payload, token, orphanId),
+    mutationFn: (payload: any) => CreateOrphanActivities(payload, token),
     onSuccess: (data) => {
       setIsLoading(true);
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);
       } else {
-        toast.success("Orphan details updated successfully");
+        toast.success("Orphan activity created successfully");
         queryClient.invalidateQueries({ queryKey: ["orphans"] });
         setIsLoading(false);
       }
@@ -123,6 +129,7 @@ const Health = () => {
       setIsLoading(false);
     },
   });
+
 
   if (image.url?.indexOf("data:image") != undefined) {
     if (image.url?.indexOf("data:image") > -1) {
@@ -175,16 +182,6 @@ const Health = () => {
   };
 
   const handleYesClick = async () => {
-    const {
-      firstName,
-      lastName,
-      image,
-      gender,
-      dateOfBirth,
-      phoneNumberOfSchool,
-      uniqueCode,
-    } = useAddOrphanStore.getState();
-
     if (!token) {
       return;
     }
@@ -192,14 +189,27 @@ const Health = () => {
     setIsLoading(true);
 
     try {
+      // Check if there's an Health need in the SponsorshipRequest array
+      const hasHealthNeed = singleData?.SponsorshipRequest.some(
+        (request: { need: string }) => request.need == "HEALTH"
+      );
+
+      if (!hasHealthNeed) {
+        // No Health need found, handle accordingly (e.g., show a message)
+        setErroModal(true);
+        return;
+      }
       const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        profile_photo: "https://example.com/profile.jpg",
-        gender: gender,
-        date_of_birth: dateOfBirth,
-        unique_code: uniqueCode,
-        phone_number_of_contact_person: phoneNumberOfSchool,
+        guardian_id: singleData?.orphan?.guardians_id,
+        orphan_id: singleData?.orphan?.id,
+        activity: "HEALTH",
+        description: "Health",
+        name_of_health_facility: healthFacility,
+        type_of_disease: diseaseType,
+        // date_of_enrollment: dayjs().format("YYYY-MM-DD"), // Ensure date is in the correct format
+        // upload_document: getUploadFiles[0]?.url,
+        upload_document: "Health.pdf", //for testing purposes
+        date_of_enrollment: "2024-05-10"
       };
 
       // Make the API call with the payload
@@ -211,9 +221,13 @@ const Health = () => {
     }
   };
 
+  const handleCloseErrorModal = () => {
+    setErroModal(false);
+  };
+
   return (
     <>
-      {Loading || isLoading ? <LoaderBackdrop /> : null}
+      {Loading || isLoading || loader ? <LoaderBackdrop /> : null}
 
       <Box>
         <Box sx={{ py: 2 }}>
@@ -238,30 +252,41 @@ const Health = () => {
                   <Typography>Orphan ID</Typography>
                 </Box>
                 <Box sx={{ borderRadius: "10px" }}>
-                  <TextField
-                    sx={{
-                      width: "100%",
-                      borderRadius: "50px",
-                    }}
-                    inputProps={{
-                      sx: {
-                        borderRadius: "10px",
-                      },
-                    }}
-                    placeholder="#234565"
+                  <Select
                     value={uniqueCode}
-                    onChange={(event: {
-                      target: {
-                        value: string;
-                      };
-                    }) => {
-                      setUniqueCode(event?.target.value);
-                      setUniqueCodeError(false);
+                    sx={{
+                      borderRadius: "10px",
+                      width: "100%",
                     }}
-                  />
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      -- Select --
+                    </MenuItem>
+                    {OrphanDatas?.orphans?.map((item: any, index: any) => (
+                      <MenuItem
+                        key={index}
+                        value={item.unique_code}
+                        onClick={() => {
+                          setUniqueCode(item.unique_code);
+                          setUniqueCodeError(false);
+                          fetchData(token, item.unique_code);
+                        }}
+                        sx={{
+                          textTransform: "capitalize",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {item.first_name} {item.last_name} -{" "}
+                        <Typography component="span" fontWeight="bold">
+                          {item.unique_code}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </Select>
                   {uniqueCodeError && (
                     <Typography component="p" color="error">
-                      First Name is required
+                      Orphan ID is required
                     </Typography>
                   )}
                 </Box>
@@ -553,10 +578,13 @@ const Health = () => {
                   Additional Information
                 </Typography>
               </Box>
-              <DragUpload
-                title={"Upload Document here"}
-                subtitle={"Drag and Drop Document"}
-              />
+              <Box>
+                <DragUpload
+                  title={"Upload Document here"}
+                  subtitle={"Drag and Drop Document"}
+                  setGetUploadedFiles={setGetUploadedFiles}
+                />
+              </Box>
             </Box>
             <Box sx={{ marginBottom: "30px" }}>
               <Grid container spacing={5}>
@@ -587,6 +615,7 @@ const Health = () => {
                             const newLinks = [...insertLink];
                             newLinks[index] = event.target.value;
                             setInsertLink(newLinks);
+                            setLinkError(false);
                           }}
                         />
                         {/* Error message if needed */}
@@ -693,6 +722,14 @@ const Health = () => {
           </Box>
         </Box>
       </Box>
+      <AlertDialog
+        open={errorModal}
+        onClose={handleCloseErrorModal}
+        content={
+          "This Orphan currently lacks any sponsorship requests related to Health needs."
+        }
+        disagreeText={"Close"}
+      />
     </>
   );
 };

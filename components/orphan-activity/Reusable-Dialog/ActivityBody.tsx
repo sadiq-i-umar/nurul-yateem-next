@@ -43,7 +43,7 @@ const ActivityBody = () => {
                   justifyContent: "start",
                   gap: 2,
                   py: 2,
-                  width: "100%", // Ensure the content takes up the full width
+                  width: "100%", 
                 }}
               >
                 <Box>

@@ -7,13 +7,16 @@ const DragUpload = ({
   title,
   subtitle,
   onFileUpload,
+  setGetUploadedFiles,
 }: {
   title: string;
   subtitle: string;
   onFileUpload?: (id: string, file: any) => void;
+  setGetUploadedFiles?: any;
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
+  setGetUploadedFiles(uploadedFiles);
 
   const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
@@ -67,7 +70,7 @@ const DragUpload = ({
           const url = reader.result;
           const affidavitData = { file, url };
 
-          onFileUpload && onFileUpload(title, file); 
+          onFileUpload && onFileUpload(title, file);
           setUploadedFiles((prevFiles) => [...prevFiles, affidavitData]); // Store uploaded file information
         };
 

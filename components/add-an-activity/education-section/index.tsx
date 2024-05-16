@@ -5,8 +5,10 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -15,23 +17,31 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
 import { PhotoUploadFrame } from "../../common/image-frames";
 import DragUpload from "../../drag-upload";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { EditOrphanApi } from "../../../service/update-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
+import { GetOphansDetails, getOrphans } from "../../../service/orphan-list";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AlertDialog from "../../Reusable-Dialog";
+import {
+  CreateOrphanActivities,
+} from "../../../service/update-account";
+
+interface MyData {
+  orphan?: any;
+  SponsorshipRequest?: any;
+}
 
 const Education = () => {
   const { data: session } = useSession();
   const token = session?.token;
+  // to get all orphans id
   const {
-    data: SelectedOrphan,
+    data: OrphanDatas,
     isLoading,
     status,
   } = useQuery({
@@ -44,59 +54,7 @@ const Education = () => {
   const [sponsorFirstName, setSponsorFirstName] = useState("");
   const [sponsorLastName, setSponsorLastName] = useState("");
   const [showSponsor, setShowSponsor] = useState(false);
-
-  const handleShowSponsor = () => {
-    setShowSponsor(true);
-  };
-
-  const {
-    firstName,
-    lastName,
-    image,
-    gender,
-    dateOfBirth,
-    dateOfEnrollment,
-    InSchool,
-    schoolName,
-    schoolAddress,
-    schoolContact,
-    phoneNumberOfSchool,
-    class_,
-    uniqueCode,
-    setFirstName,
-    setLastName,
-    setImage,
-    setGender,
-    setDateOfBirth,
-    setDateOfEnrollment,
-    setInSchool,
-    setSchoolName,
-    setSchoolAddress,
-    setSchoolContact,
-    setPhoneNumberOfSchool,
-    setClass,
-    setUniqueCode,
-  } = useAddOrphanStore();
-
-  useEffect(() => {
-    if (SelectedOrphan) {
-      setFirstName(SelectedOrphan?.first_name || "");
-      setLastName(SelectedOrphan?.last_name || "");
-      setImage(SelectedOrphan?.profile_photo || "");
-      setGender(SelectedOrphan?.gender || "");
-      setDateOfBirth(SelectedOrphan?.date_of_birth || "");
-      setInSchool(SelectedOrphan?.in_school || "");
-      setSchoolName(SelectedOrphan?.school_name || "");
-      setSchoolAddress(SelectedOrphan?.school_address || "");
-      setSchoolContact(SelectedOrphan?.school_contact_person || "");
-      setPhoneNumberOfSchool(
-        SelectedOrphan?.phone_number_of_contact_person || ""
-      );
-      setClass(SelectedOrphan?.class || "");
-      setUniqueCode(SelectedOrphan?.unique_code || "");
-    }
-  }, [SelectedOrphan]);
-
+  const [errorModal, setErroModal] = useState(false);
   const [Loading, setIsLoading] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -112,6 +70,56 @@ const Education = () => {
   const [inSchoolError, setInSchoolError] = useState(false);
   const [dateOfEnrollmentError, setDateOfEnrollmentError] = useState(false);
   const [uniqueCodeError, setUniqueCodeError] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [image, setImage] = useState({ url: "", file: "" });
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [gender, setGender] = useState("");
+  const [InSchool, setInSchool] = useState("");
+  const [schoolName, setSchoolName] = useState("");
+  const [schoolContact, setSchoolContact] = useState("");
+  const [phoneNumberOfSchool, setPhoneNumberOfSchool] = useState("");
+  const [uniqueCode, setUniqueCode] = useState("");
+  const [dateOfEnrollment, setDateOfEnrollment] = useState(null);
+  const [orphanClass, setOrphanClass] = useState("");
+  const [singleData, setSingleData] = useState<MyData>({});
+  const [loader, setLoader] = useState(false);
+  const [getUploadFiles, setGetUploadedFiles] = useState<any[]>([]);
+
+  const fetchData = async (token: any, uniqueCode: any) => {
+    setLoader(true);
+    try {
+      const response = await GetOphansDetails(token, uniqueCode);
+      setSingleData(response);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    if (singleData) {
+      setFirstName(singleData?.orphan?.first_name);
+      setLastName(singleData?.orphan?.last_name);
+      setImage({ url: singleData?.orphan?.profile_photo, file: "" });
+      setDateOfBirth(singleData?.orphan?.date_of_birth);
+      setGender(singleData?.orphan?.gender);
+      setInSchool(singleData?.orphan?.in_school);
+      setSchoolName(singleData?.orphan?.school_name);
+      setSchoolContact(singleData?.orphan?.school_contact_person);
+      setPhoneNumberOfSchool(
+        singleData?.orphan?.phone_number_of_contact_person
+      );
+      setOrphanClass(singleData?.orphan?.class);
+      setSponsorFirstName(singleData?.orphan?.sponsor_first_name);
+      setSponsorLastName(singleData?.orphan?.sponsor_last_name);
+    }
+  }, [singleData]);
+
+  const handleShowSponsor = () => {
+    setShowSponsor(true);
+  };
 
   const addMoreLink = () => {
     setInsertLink((prevLinks) => [...prevLinks, ""]);
@@ -126,18 +134,19 @@ const Education = () => {
     });
   };
 
+  // console.log(uniqueCode);
   const queryClient = useQueryClient();
-  const orphanId = SelectedOrphan?.id;
+  // const orphanId = SelectedOrphan?.id;
 
   const mutation = useMutation({
-    mutationFn: (payload: any) => EditOrphanApi(payload, token, orphanId),
+    mutationFn: (payload: any) => CreateOrphanActivities(payload, token),
     onSuccess: (data) => {
       setIsLoading(true);
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);
       } else {
-        toast.success("Orphan details updated successfully");
+        toast.success("Orphan activity created successfully");
         queryClient.invalidateQueries({ queryKey: ["orphans"] });
         setIsLoading(false);
       }
@@ -176,7 +185,6 @@ const Education = () => {
       setInSchoolError(true);
       isValid = false;
     }
-
     if (!schoolName) {
       setSchoolNameError(true);
       isValid = false;
@@ -193,7 +201,7 @@ const Education = () => {
       setPhoneNumberOfSchoolError(true);
       isValid = false;
     }
-    if (!class_) {
+    if (!orphanClass) {
       setClassError(true);
       isValid = false;
     }
@@ -201,14 +209,14 @@ const Education = () => {
       setDateOfEnrollmentError(true);
       isValid = false;
     }
-    if (!sponsorFirstName) {
-      setSponsorFirstNameError(true);
-      isValid = false;
-    }
-    if (!sponsorLastName) {
-      setSponsorLastNameError(true);
-      isValid = false;
-    }
+    // if (!sponsorFirstName) {
+    //   setSponsorFirstNameError(true);
+    //   isValid = false;
+    // }
+    // if (!sponsorLastName) {
+    //   setSponsorLastNameError(true);
+    //   isValid = false;
+    // }
 
     if (!isValid) {
       toast.error("Please fill in all required fields");
@@ -220,44 +228,37 @@ const Education = () => {
   };
 
   const handleYesClick = async () => {
-    const {
-      firstName,
-      lastName,
-      image,
-      gender,
-      dateOfBirth,
-      stateOfOrigin,
-      localGovernmentArea,
-      InSchool,
-      schoolName,
-      schoolAddress,
-      schoolContact,
-      phoneNumberOfSchool,
-      class_,
-      uniqueCode,
-    } = useAddOrphanStore.getState();
-
     if (!token) {
       return;
     }
     setIsLoading(true);
 
     try {
+      // Check if there's an EDUCATION need in the SponsorshipRequest array
+      const hasEducationNeed = singleData?.SponsorshipRequest.some(
+        (request: { need: string }) => request.need == "EDUCATION"
+      );
+
+      if (!hasEducationNeed) {
+        // No EDUCATION need found, handle accordingly (e.g., show a message)
+        setErroModal(true);
+        return;
+      }
+
+      // EDUCATION need found, proceed with making the request
       const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        profile_photo: "https://example.com/profile.jpg",
-        gender: gender,
-        date_of_birth: dateOfBirth,
-        state_of_origin: stateOfOrigin,
-        local_government: localGovernmentArea,
-        in_school: InSchool,
-        school_name: schoolName,
-        school_address: schoolAddress,
-        school_contact_person: schoolContact,
-        phone_number_of_contact_person: phoneNumberOfSchool,
-        class: class_,
+        guardian_id: singleData?.orphan?.guardians_id,
+        orphan_id: singleData?.orphan?.id,
+        activity: "EDUCATION",
+        description: "Educaiton",
+        name_of_school_contact_person: schoolContact,
+        phone_number_of_school_contact_person: phoneNumberOfSchool,
+        date_of_enrollment: dayjs(dateOfEnrollment).format("YYYY-MM-DD"), // Ensure date is in the correct format
+        // upload_document: getUploadFiles[0]?.url,
+        upload_document: "education.pdf", //for testing purposes
       };
+
+      console.log(payload);
 
       // Make the API call with the payload
       await mutation.mutateAsync(payload);
@@ -268,9 +269,13 @@ const Education = () => {
     }
   };
 
+  const handleCloseErrorModal = () => {
+    setErroModal(false);
+  };
+
   return (
     <>
-      {Loading || isLoading ? <LoaderBackdrop /> : null}
+      {Loading || isLoading || loader ? <LoaderBackdrop /> : null}
 
       <Box>
         <Box sx={{ py: 2 }}>
@@ -294,28 +299,40 @@ const Education = () => {
                 <Box sx={{ marginBottom: "11.5px" }}>
                   <Typography>Orphan ID</Typography>
                 </Box>
+
                 <Box sx={{ borderRadius: "10px" }}>
-                  <TextField
-                    sx={{
-                      width: "100%",
-                      borderRadius: "50px",
-                    }}
-                    inputProps={{
-                      sx: {
-                        borderRadius: "10px",
-                      },
-                    }}
-                    placeholder="#234565"
+                  <Select
                     value={uniqueCode}
-                    onChange={(event: {
-                      target: {
-                        value: string;
-                      };
-                    }) => {
-                      setUniqueCode(event?.target.value);
-                      setUniqueCodeError(false);
+                    sx={{
+                      borderRadius: "10px",
+                      width: "100%",
                     }}
-                  />
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      -- Select --
+                    </MenuItem>
+                    {OrphanDatas?.orphans?.map((item: any, index: any) => (
+                      <MenuItem
+                        key={index}
+                        value={item.unique_code}
+                        onClick={() => {
+                          setUniqueCode(item.unique_code);
+                          setUniqueCodeError(false);
+                          fetchData(token, item.unique_code);
+                        }}
+                        sx={{
+                          textTransform: "capitalize",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {item.first_name} {item.last_name} -{" "}
+                        <Typography component="span" fontWeight="bold">
+                          {item.unique_code}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </Select>
                   {uniqueCodeError && (
                     <Typography component="p" color="error">
                       Orphan ID is required
@@ -339,6 +356,7 @@ const Education = () => {
                       sx={{
                         width: "100%",
                         borderRadius: "50px",
+                        textDecoration: "capitalize",
                       }}
                       inputProps={{
                         sx: {
@@ -584,13 +602,13 @@ const Education = () => {
                           },
                         }}
                         placeholder="Primary Four"
-                        value={class_}
+                        value={orphanClass}
                         onChange={(event: {
                           target: {
                             value: string;
                           };
                         }) => {
-                          setClass(event?.target.value);
+                          setOrphanClass(event?.target.value);
                           setClassError(false);
                         }}
                       />
@@ -711,6 +729,7 @@ const Education = () => {
               <DragUpload
                 title={"Upload Document here"}
                 subtitle={"Drag and Drop Document"}
+                setGetUploadedFiles={setGetUploadedFiles}
               />
             </Box>
             <Box sx={{ marginBottom: "30px" }}>
@@ -742,10 +761,9 @@ const Education = () => {
                             const newLinks = [...insertLink];
                             newLinks[index] = event.target.value;
                             setInsertLink(newLinks);
+                            setLinkError(false);
                           }}
                         />
-                        {/* Error message if needed */}
-                        {/* Add an error message logic here if needed */}
                         {linkError && (
                           <Typography component="p" color="error">
                             Link is required
@@ -949,6 +967,14 @@ const Education = () => {
           </Box>
         </Box>
       </Box>
+      <AlertDialog
+        open={errorModal}
+        onClose={handleCloseErrorModal}
+        content={
+          "This Orphan currently lacks any sponsorship requests related to Educational needs."
+        }
+        disagreeText={"Close"}
+      />
     </>
   );
 };

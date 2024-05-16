@@ -35,13 +35,10 @@ export const EditOrphanApi = async (Data: any, token: any, id: number) => {
 
     data: Data,
   });
-
   return res;
 };
-export const AddSponsorshipRequestApi = async (
-  Data: any,
-  token: any,
-) => {
+
+export const AddSponsorshipRequestApi = async (Data: any, token: any) => {
   const res = await request("POST", `${baseUrl}/guardian/sponsorship-request`, {
     headers: {
       "Content-Type": "application/json",
@@ -50,6 +47,16 @@ export const AddSponsorshipRequestApi = async (
 
     data: Data,
   });
+  return res;
+};
 
+export const CreateOrphanActivities = async (Data: any, token: any) => {
+  const res = await request("POST", `${baseUrl}/guardian/createActivities`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: Data,
+  });
   return res;
 };
