@@ -231,6 +231,7 @@ export const TopGuardian: React.FC = () => {
       />
       {TopGuardianData.map((guardian, index) => (
         <Box
+          key={index}
           sx={{
             display: "flex",
             justifyContent: "space-between",
