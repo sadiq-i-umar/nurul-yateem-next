@@ -47,6 +47,23 @@ export const ImageFrame40: React.FC<{ image: string }> = ({ image }) => {
   );
 };
 
+export const ImageFrameCircular60: React.FC<{ image: string }> = ({
+  image,
+}) => {
+  return (
+    <Box
+      sx={{
+        backgroundImage: `url(${image})`,
+        backgroundSize: "100% 100%",
+        width: "60px",
+        height: "60px",
+        borderRadius: "50%",
+        backgroundColor: "#E7E7E7"
+      }}
+    />
+  );
+};
+
 export const ImageFrameCircular70: React.FC<{ image: string }> = ({
   image,
 }) => {
