@@ -24,10 +24,10 @@ const Nav: React.FC<{
   const navDatats =
     account === 'SPONSOR'
       ? navConfigSponsor
-      : account === 'GUARDIAN'
-      ? navConfig
-      : // : [];
-        navConfigSponsor;
+      : account === "GUARDIAN"
+      ? navConfig:
+      //: [];
+      navConfig;
 
   return (
     <Box

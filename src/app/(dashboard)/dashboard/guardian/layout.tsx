@@ -7,6 +7,7 @@ import MainContent from "../../../../../components/main-content";
 import DashboardFooter from "../../../../../components/footer/dashboard";
 import Nav from "../../../../../components/nav";
 
+
 const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [openLargeNav, setOpenLargeNav] = useState(true);
   const [openSmallNav, setOpenSmallNav] = useState(false);
