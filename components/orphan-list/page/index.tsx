@@ -1,3 +1,4 @@
+//C:\Users\AHMED AHMAN\Desktop\nurul-yateem-next\components\orphan-list\page\index.tsx
 "use client";
 import { Box } from "@mui/material";
 import SubHeader from "../../sub-header";
