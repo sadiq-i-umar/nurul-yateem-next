@@ -25,8 +25,8 @@ const Nav: React.FC<{
     account === 'SPONSOR'
       ? navConfigSponsor
       : account === "GUARDIAN"
-      ? navConfig:
-      //: [];
+      ? navConfig
+      : //[];
       navConfig;
 
   return (
