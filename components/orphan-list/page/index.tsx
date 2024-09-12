@@ -1,4 +1,3 @@
-//C:\Users\AHMED AHMAN\Desktop\nurul-yateem-next\components\orphan-list\page\index.tsx
 "use client";
 import { Box } from "@mui/material";
 import SubHeader from "../../sub-header";
@@ -9,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoaderBackdrop from "../../common/loader";
 import NeedList from "../../../components/tables/need-list";
+import OrphanSponsorshipCard from '../../cards/orphan-sponsorship';
 
 const OrphanListPage: React.FC = () => {
   const router = useRouter();
@@ -17,23 +17,23 @@ const OrphanListPage: React.FC = () => {
   const accountType = session?.user?.accountType;
 
   const { data, isLoading, status } = useQuery({
-    queryKey: ["orphans"],
+    queryKey: ['orphans'],
     queryFn: () => getOrphans(token),
     enabled: !!token,
   });
   const handleButtonTwoClick = () => {
-    router.push("/dashboard/guardian/orphan-list/add-an-orphan");
+    router.push('/dashboard/guardian/orphan-list/add-an-orphan');
   };
 
   const handleFilterButtonClick = () => {
-    console.log("Filtering");
+    console.log('Filtering');
   };
 
   const handleExportClick = () => {
-    console.log("Exporting");
+    console.log('Exporting');
   };
   const handlePrintClick = () => {
-    console.log("Printing");
+    console.log('Printing');
   };
 
   return (
@@ -45,8 +45,8 @@ const OrphanListPage: React.FC = () => {
       <Box>
         <SubHeader
           itemCount={undefined}
-          buttonTwoText={"Add Orphans"}
-          buttonTwoIcon="/plus.svg"
+          buttonTwoText={'Add Orphans'}
+          buttonTwoIcon='/plus.svg'
           buttonTwoClick={handleButtonTwoClick}
           exportButton={handleExportClick}
           printButton={handlePrintClick}
@@ -55,13 +55,15 @@ const OrphanListPage: React.FC = () => {
           searchQuery={(data) => console.log(data)}
         />
       </Box>
-      {accountType === "SPONSOR" ? (
-        <Box sx={{ marginX: "-30px" }}>
+      {accountType === 'SPONSOR' ? (
+        <Box sx={{ marginX: '-30px' }}>
           <NeedList />
         </Box>
       ) : (
-        <Box sx={{ marginX: "-30px" }}>
-          <OrphanListTable orphanData={data?.orphans} />
+        <Box sx={{ marginX: '-30px' }}>
+          {/* <OrphanListTable orphanData={data?.orphans} /> */}
+          {/* <OrphanListTable orphanData={[{}]} /> */}
+          <OrphanSponsorshipCard />
         </Box>
       )}
     </Box>
