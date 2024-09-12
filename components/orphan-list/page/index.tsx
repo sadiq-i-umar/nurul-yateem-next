@@ -1,13 +1,13 @@
-"use client";
-import { Box } from "@mui/material";
-import SubHeader from "../../sub-header";
-import OrphanListTable from "../../tables/orphan-list";
-import { useQuery } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import LoaderBackdrop from "../../common/loader";
-import NeedList from "../../../components/tables/need-list";
+'use client';
+import { Box } from '@mui/material';
+import SubHeader from '../../sub-header';
+import OrphanListTable from '../../tables/orphan-list';
+import { useQuery } from '@tanstack/react-query';
+import { getOrphans } from '../../../service/orphan-list';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import LoaderBackdrop from '../../common/loader';
+import NeedList from '../../../components/tables/need-list';
 import OrphanSponsorshipCard from '../../cards/orphan-sponsorship';
 
 const OrphanListPage: React.FC = () => {
@@ -63,7 +63,7 @@ const OrphanListPage: React.FC = () => {
         <Box sx={{ marginX: '-30px' }}>
           {/* <OrphanListTable orphanData={data?.orphans} /> */}
           {/* <OrphanListTable orphanData={[{}]} /> */}
-          <OrphanSponsorshipCard />
+          <OrphanSponsorshipCard cardData={[]} />
         </Box>
       )}
     </Box>
