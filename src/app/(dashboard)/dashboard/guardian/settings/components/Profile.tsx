@@ -1,20 +1,13 @@
 "use client";
 import React from 'react';
 import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, Link, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
+import pfpimage from './Ellipse 1.png'; // Import the image file
 
 const Profile: React.FC = () => {
     return (
         <section>
             <Box >
-                <Box sx={{ p: 2,}}>
                 
-                    <Button  variant="contained">My profile</Button>
-                    <Button sx={{ marginLeft: 4, }} >Account Details</Button>
-                    <Button sx={{ marginLeft: 4, }}>Password</Button>
-                    <Button sx={{ marginLeft: 4, }}>Notification</Button>
-                    <Button sx={{ marginLeft: 4, }}>2-Factor authentication</Button>
-                </Box>
-                <Divider />
                 <Box>
                     <Typography sx={{ fontSize: "1.125rem", fontWeight: "500", margin: 2, }}> Profile </Typography>
                     <Typography sx={{ margin: 2, color: '#676767', fontSize: "0.875rem", fontWeight: "400", }}>Update your photo and personal details</Typography >
@@ -23,9 +16,11 @@ const Profile: React.FC = () => {
                 <Box sx={{ display: 'flex' }}>
                     <Box>
                         <Typography sx={{ fontSize: "1.125rem", fontWeight: "500", margin: 2, }}> Your Photo </Typography>
+                        
                         <Typography sx={{ margin: 2, color: '#676767', fontSize: "0.875rem", fontWeight: "400", }}> This is displayed on your profile</Typography>
                     </Box>
-                    <Box sx={{ marginLeft: '30rem', marginTop:'1rem', }}>
+                    <Box><img  src={`${pfpimage}`} alt="profile picture" /></Box>
+                    <Box sx={{ marginLeft: '30rem', marginTop: '1rem', }}>
                         <img src="+9--" alt="" />
                         <Button color="primary">Delete</Button>
                         <Button color="success" sx={{ margin: 2 }}> Change </Button>
@@ -36,7 +31,7 @@ const Profile: React.FC = () => {
                     <Box >
                         <Typography sx={{ fontSize: "1.125rem", fontWeight: "500", margin: 2, }}>Your Name</Typography >
                     </Box>
-                    <Box sx={{  marginLeft: '20rem', padding: '1rem' }}>
+                    <Box sx={{ marginLeft: '20rem', padding: '1rem' }}>
                         <TextField sx={{ marginRight: '3rem' }} id="outlined-basic" label="Firstname:" variant="outlined" />
                         <TextField id="outlined-basic" label="Lastname:" variant="outlined" />
                     </Box>
@@ -255,13 +250,13 @@ const Profile: React.FC = () => {
                 <Box sx={{ display: 'flex' }}>
 
                     <Box>
-                        <Typography sx={{ fontSize: "1.125rem", fontWeight: "500", margin: 5,}} variant="h3" >
+                        <Typography sx={{ fontSize: "1.125rem", fontWeight: "500", margin: 5, }} variant="h3" >
                             Deactivate Account
                         </Typography>
                     </Box>
-                    <Box sx={{ padding: '2rem', left:'5rem', width:'40rem' }}>
-                        <Button variant="contained" color="error" sx={{padding: '0.5rem',  width:'40rem',borderRadius: '30px' }}>Deactivate My Account</Button><br/>
-                        <FormControlLabel required control={<Checkbox />} label="Warning by clicking this box, it means you have initiated the deactivation button." sx={{padding: '0.5rem', width:'40rem' }}/>
+                    <Box sx={{ padding: '2rem', left: '5rem', width: '40rem' }}>
+                        <Button variant="contained" color="error" sx={{ padding: '0.5rem', width: '40rem', borderRadius: '30px' }}>Deactivate My Account</Button><br />
+                        <FormControlLabel required control={<Checkbox />} label="Warning by clicking this box, it means you have initiated the deactivation button." sx={{ padding: '0.5rem', width: '40rem' }} />
                     </Box>
                 </Box>
             </Box>
