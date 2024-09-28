@@ -62,7 +62,7 @@ const OrphanListPage: React.FC = () => {
         <Box sx={{ marginY: "5px" }}>
           <OrphanListTable orphanData={data?.orphans} />
           {/* <OrphanListTable orphanData={[{}]} /> */}
-          {/* <OrphanSponsorshipCard /> */}
+          <OrphanSponsorshipCard cardData={[]} />
         </Box>
       )}
     </Box>
