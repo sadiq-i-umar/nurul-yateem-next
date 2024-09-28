@@ -27,9 +27,7 @@ import { GetOphansDetails, getOrphans } from "../../../service/orphan-list";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AlertDialog from "../../Reusable-Dialog";
-import {
-  CreateOrphanActivities,
-} from "../../../service/update-account";
+import { CreateOrphanActivities } from "../../../service/update-account";
 
 interface MyData {
   orphan?: any;
@@ -109,7 +107,7 @@ const Education = () => {
       setSchoolName(singleData?.orphan?.school_name);
       setSchoolContact(singleData?.orphan?.school_contact_person);
       setPhoneNumberOfSchool(
-        singleData?.orphan?.phone_number_of_contact_person
+        singleData?.orphan?.phone_number_of_contact_person,
       );
       setOrphanClass(singleData?.orphan?.class);
       setSponsorFirstName(singleData?.orphan?.sponsor_first_name);
@@ -236,7 +234,7 @@ const Education = () => {
     try {
       // Check if there's an EDUCATION need in the SponsorshipRequest array
       const hasEducationNeed = singleData?.SponsorshipRequest.some(
-        (request: { need: string }) => request.need == "EDUCATION"
+        (request: { need: string }) => request.need == "EDUCATION",
       );
 
       if (!hasEducationNeed) {
@@ -434,9 +432,9 @@ const Education = () => {
                           setDateOfBirth(
                             newDate
                               ? dayjs(newDate, "DD/MM/YYYY").format(
-                                  "YYYY-MM-DD"
+                                  "YYYY-MM-DD",
                                 )
-                              : ""
+                              : "",
                           );
                           setDateOfBirthError(false);
                         }}

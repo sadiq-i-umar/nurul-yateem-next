@@ -341,18 +341,13 @@ export default function BannerCarousel() {
       autoplay={{ delay: 5000 }}
     >
       <SwiperSlide>
-        <img src="/banner1.svg" alt="Banner 1"
-        width="100%"
-         />
+        <img src="/banner1.svg" alt="Banner 1" width="100%" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src="/banner2.svg" alt="Banner 2"
-        width="100%"
-         />
+        <img src="/banner2.svg" alt="Banner 2" width="100%" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src="/banner3.svg" alt="Banner 3"
-        width="100%" />
+        <img src="/banner3.svg" alt="Banner 3" width="100%" />
       </SwiperSlide>
     </Swiper>
   );

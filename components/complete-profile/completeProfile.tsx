@@ -93,7 +93,7 @@ const CompleteAccount: React.FC = () => {
   }, [status]);
 
   const handleDataFromTabOne = (
-    personalInfo: PersonalInformation | undefined | any
+    personalInfo: PersonalInformation | undefined | any,
   ) => {
     if (personalInfo) {
     }

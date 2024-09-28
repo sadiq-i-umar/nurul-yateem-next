@@ -68,7 +68,7 @@ export default function OrphanList() {
   return (
     <>
       <OrphanListPage />
-      <OrphanSponsorshipCard cardData={cardData} />
+      {/*<OrphanSponsorshipCard cardData={cardData} />*/}
     </>
   );
 }

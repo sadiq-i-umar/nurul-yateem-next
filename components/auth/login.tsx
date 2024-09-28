@@ -109,7 +109,7 @@ const Login: React.FC = () => {
                 if (orphans?.length === 0) {
                   handleLoginSuccess();
                   toast.success(
-                    "Please complete your profile first. You have no orphans."
+                    "Please complete your profile first. You have no orphans.",
                   );
                   router.push("/dashboard/add-an-orphan");
                   router.refresh();
@@ -133,7 +133,7 @@ const Login: React.FC = () => {
                 } else {
                   console.error("Error during fetching user profile:", error);
                   toast.error(
-                    "An unexpected error occurred. Please try again."
+                    "An unexpected error occurred. Please try again.",
                   );
                 }
               }

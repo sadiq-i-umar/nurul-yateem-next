@@ -29,7 +29,7 @@ const UserAccount: React.FC<{ image: string; name: string; role: any }> = ({
   };
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
+    null,
   );
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);

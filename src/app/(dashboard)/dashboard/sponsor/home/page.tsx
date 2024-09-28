@@ -35,7 +35,6 @@ export default function GuardianDashboard() {
           <Grid sx={{ minHeight: "100%" }} item xs={12} md={12} lg={12}>
             <Box sx={{ height: "100%", overflow: "hidden" }}>
               <BannerCarousel />
-            
             </Box>
           </Grid>
           <Grid sx={{ minHeight: "100%" }} item xs={12} lg={3}>

@@ -26,7 +26,7 @@ export const buildQueryString = (params: DictOf<any> = {}) =>
     .filter(
       (key: string) =>
         ![undefined, null].includes(params[key]) &&
-        params[key].toString().trim() !== ""
+        params[key].toString().trim() !== "",
     )
     .map((key: string) => [
       key,
@@ -53,7 +53,7 @@ export default function handleResponse(
   response: Response,
   responseType: ResponseType,
   resolve: PromiseResolver,
-  reject: PromiseRejector
+  reject: PromiseRejector,
 ) {
   if (response.status < 500) {
     switch (responseType) {
@@ -98,7 +98,7 @@ export function request(
     data,
     responseType = "json",
     ...rest
-  }: RequestOptions
+  }: RequestOptions,
 ): Promise<FetchResponse> {
   return new Promise((resolve: PromiseResolver, reject: PromiseRejector) => {
     const options: RequestInit = { ...rest, method, headers: headers || {} };
@@ -119,7 +119,7 @@ export function request(
 
     fetch(path, options)
       .then((response) =>
-        handleResponse(response, responseType, resolve, reject)
+        handleResponse(response, responseType, resolve, reject),
       )
       .catch((error) => reject(error));
   });

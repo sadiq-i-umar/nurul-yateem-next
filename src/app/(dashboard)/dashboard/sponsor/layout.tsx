@@ -20,6 +20,7 @@ const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
         closeSmallNav={() => setOpenSmallNav(false)}
       />
       <Box>
+        ``
         <Header
           small={openSmallNav}
           large={openLargeNav}

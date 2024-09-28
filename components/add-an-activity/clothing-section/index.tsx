@@ -22,9 +22,7 @@ import DragUpload from "../../drag-upload";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import {
-  CreateOrphanActivities
-} from "../../../service/update-account";
+import { CreateOrphanActivities } from "../../../service/update-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetOphansDetails, getOrphans } from "../../../service/orphan-list";
 import AddIcon from "@mui/icons-material/Add";
@@ -192,7 +190,7 @@ const Clothing = () => {
     try {
       // Check if there's an Clothing need in the SponsorshipRequest array
       const hasClothingNeed = singleData?.SponsorshipRequest.some(
-        (request: { need: string }) => request.need == "CLOTHING"
+        (request: { need: string }) => request.need == "CLOTHING",
       );
 
       if (!hasClothingNeed) {
@@ -386,9 +384,9 @@ const Clothing = () => {
                           setDateOfBirth(
                             newDate
                               ? dayjs(newDate, "DD/MM/YYYY").format(
-                                  "YYYY-MM-DD"
+                                  "YYYY-MM-DD",
                                 )
-                              : ""
+                              : "",
                           );
                           setDateOfBirthError(false);
                         }}

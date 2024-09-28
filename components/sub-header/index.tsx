@@ -48,7 +48,6 @@ const SubHeader: React.FC<Props> = ({
     <Paper
       sx={{
         backgroundColor: "white",
-        marginX: "-30px",
         paddingX: "30px",
         paddingTop: "20px",
         ...(pageHasTable
@@ -82,6 +81,7 @@ const SubHeader: React.FC<Props> = ({
             <Typography sx={{ color: "#667085" }}>{subtitle}</Typography>
           </Box>
         </Box>
+
         <Box sx={{ display: "flex", paddingTop: "10px" }}>
           {buttonOneText && buttonOneIcon && (
             <Box sx={{ mr: { xs: "6px", sm: "12px" } }}>
@@ -91,94 +91,93 @@ const SubHeader: React.FC<Props> = ({
               />
             </Box>
           )}
-          {pathname == "/dashboard/guardian/orphan-list" && (
-            <Box
-              sx={{
-                mt: { xs: "0px", sm: "0px" },
-                mb: { xs: "20px", sm: "0px" },
-              }}
-            >
-              {buttonTwoText && buttonTwoIcon && (
-                <Box
-                  onClick={() => buttonTwoClick && buttonTwoClick()}
-                  sx={{ mr: { xs: "6px", sm: "12px" } }}
-                >
-                  <Button
-                    variant="contained"
-                    disableElevation
-                    sx={{
-                      textTransform: "none",
-                      borderRadius: "30px",
-                      paddingX: "20px",
-                      paddingY: "10px",
-                      backgroundColor: "#3863FA",
-                      zIndex: 0,
-                      "&:hover": {
-                        backgroundColor: "#3863FA",
-                      },
-                    }}
-                    startIcon={
-                      buttonTwoIcon ? (
-                        <img src={buttonTwoIcon} alt="Button Icon" />
-                      ) : null
-                    }
-                    onClick={() => buttonTwoClick && buttonTwoClick()}
-                  >
-                    {buttonTwoText}
-                  </Button>
-                </Box>
-              )}
-            </Box>
-          )}
 
           {/* export and save */}
-          {pathname == "/dashboard/sponsor/orphan-list" && (
-            <>
-              <Box
-                sx={{
-                  mt: { xs: "0px", sm: "0px" },
-                  mb: { xs: "20px", sm: "0px" },
-                }}
-              >
-                {exportButton && (
-                  <Box
-                    onClick={() => exportButton()}
-                    sx={{ mr: { xs: "6px", sm: "12px" } }}
-                  >
-                    <Button
-                      variant="outlined"
-                      disableElevation
-                      sx={{
-                        textTransform: "none",
-                        borderRadius: "10px",
-                        paddingX: "20px",
-                        color: "black",
-                        paddingY: "10px",
-                        backgroundColor: "white",
-                        borderColor: "black",
-                        zIndex: 0,
-                        "&:hover": {
-                          backgroundColor: "#EBEFFF",
-                          borderColor: "#3863FA",
-                        },
-                      }}
-                      startIcon={<CloudUploadOutlined />}
+          {pathname == "/dashboard/sponsor/orphan-list" ||
+            ("/dashboard/admin/orphan-list" && (
+              <>
+                <Box
+                  sx={{
+                    mt: { xs: "0px", sm: "0px" },
+                    mb: { xs: "20px", sm: "0px" },
+                  }}
+                >
+                  {exportButton && (
+                    <Box
                       onClick={() => exportButton()}
+                      sx={{ mr: { xs: "6px", sm: "12px" } }}
                     >
-                      Export
-                    </Button>
-                  </Box>
-                )}
-              </Box>
+                      <Button
+                        variant="outlined"
+                        disableElevation
+                        sx={{
+                          textTransform: "none",
+                          borderRadius: "50px",
+                          paddingX: "20px",
+                          color: "black",
+                          paddingY: "10px",
+                          backgroundColor: "white",
+                          borderColor: "black",
+                          zIndex: 0,
+                          "&:hover": {
+                            backgroundColor: "#EBEFFF",
+                            borderColor: "#3863FA",
+                          },
+                        }}
+                        startIcon={<CloudUploadOutlined />}
+                        onClick={() => exportButton()}
+                      >
+                        Export
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+                <Box
+                  sx={{
+                    mt: { xs: "0px", sm: "0px" },
+                    mb: { xs: "20px", sm: "0px" },
+                  }}
+                >
+                  {printButton && (
+                    <Box
+                      onClick={() => printButton()}
+                      sx={{ mr: { xs: "6px", sm: "12px" } }}
+                    >
+                      <Button
+                        variant="contained"
+                        disableElevation
+                        sx={{
+                          textTransform: "none",
+                          borderRadius: "30px",
+                          paddingX: "20px",
+                          paddingY: "10px",
+                          backgroundColor: "#3863FA",
+                          zIndex: 0,
+                          "&:hover": {
+                            backgroundColor: "#3863FA",
+                          },
+                        }}
+                        startIcon={<LocalPrintshopOutlined />}
+                        onClick={() => printButton()}
+                      >
+                        Print
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+              </>
+            ))}
+          {pathname == "/dashboard/guardian/orphan-list" ||
+            ("/dashboard/admin/orphan-list" && (
               <Box
                 sx={{
                   mt: { xs: "0px", sm: "0px" },
                   mb: { xs: "20px", sm: "0px" },
                 }}
               >
-                {printButton && (
+                {buttonTwoText && buttonTwoIcon && (
                   <Box
-                    onClick={() => printButton()}
+                    onClick={() => buttonTwoClick && buttonTwoClick()}
                     sx={{ mr: { xs: "6px", sm: "12px" } }}
                   >
                     <Button
@@ -195,16 +194,19 @@ const SubHeader: React.FC<Props> = ({
                           backgroundColor: "#3863FA",
                         },
                       }}
-                      startIcon={<LocalPrintshopOutlined />}
-                      onClick={() => printButton()}
+                      startIcon={
+                        buttonTwoIcon ? (
+                          <img src={buttonTwoIcon} alt="Button Icon" />
+                        ) : null
+                      }
+                      onClick={() => buttonTwoClick && buttonTwoClick()}
                     >
-                      Print
+                      {buttonTwoText}
                     </Button>
                   </Box>
                 )}
               </Box>
-            </>
-          )}
+            ))}
         </Box>
       </Box>
       <Box

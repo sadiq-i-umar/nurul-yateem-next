@@ -64,8 +64,8 @@ const ForgotPassword: React.FC = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Enter your account email address and we&apos;ll send you a link to
-                  reset your password
+                  Enter your account email address and we&apos;ll send you a
+                  link to reset your password
                 </Typography>
                 <Typography>Email Address</Typography>
               </Box>
