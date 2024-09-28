@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  HeroImageFrame,
-  LogoImageFrame,
-} from "../common/image-frames";
+import { HeroImageFrame, LogoImageFrame } from "../common/image-frames";
 import { emailValidationRegexp, nameValidationRegexp } from "../../utils";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {

@@ -64,7 +64,7 @@ const PersonalInformationTab: React.FC<{
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage({ file, url: reader.result as string }); 
+        setImage({ file, url: reader.result as string });
       };
       reader.readAsDataURL(file);
       setImageError(false);
@@ -72,12 +72,11 @@ const PersonalInformationTab: React.FC<{
       setImageError(true);
     }
   };
-  
+
   if (image.url && image.url.startsWith("data:image")) {
     // Conditionally upload image to Google bucket and store response
     // You can call your upload function here
   }
-  
 
   const [dob, setDob] = useState<Dayjs | null | any>(null);
 

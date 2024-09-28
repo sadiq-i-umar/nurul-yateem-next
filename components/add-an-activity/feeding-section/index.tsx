@@ -191,7 +191,7 @@ const Feeding = () => {
     try {
       // Check if there's an Feeding need in the SponsorshipRequest array
       const hasFeedingNeed = singleData?.SponsorshipRequest.some(
-        (request: { need: string }) => request.need == "FEEDING"
+        (request: { need: string }) => request.need == "FEEDING",
       );
 
       if (!hasFeedingNeed) {
@@ -382,9 +382,9 @@ const Feeding = () => {
                           setDateOfBirth(
                             newDate
                               ? dayjs(newDate, "DD/MM/YYYY").format(
-                                  "YYYY-MM-DD"
+                                  "YYYY-MM-DD",
                                 )
-                              : ""
+                              : "",
                           );
                           setDateOfBirthError(false);
                         }}

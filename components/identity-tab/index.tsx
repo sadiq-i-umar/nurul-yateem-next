@@ -31,7 +31,7 @@ const IdentityTab: React.FC<{
 
   const handleMeansOfIdentificationChange = (
     event: SelectChangeEvent<string>,
-    child: React.ReactNode
+    child: React.ReactNode,
   ) => {
     const value = event.target.value;
     setMeansOfIdentification(value);

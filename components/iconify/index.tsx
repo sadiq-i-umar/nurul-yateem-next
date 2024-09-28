@@ -1,6 +1,6 @@
-import { Icon } from '@iconify/react';
-import Box from '@mui/material/Box';
-import { forwardRef, ReactNode, Ref } from 'react';
+import { Icon } from "@iconify/react";
+import Box from "@mui/material/Box";
+import { forwardRef, ReactNode, Ref } from "react";
 
 interface IconifyProps {
   icon: any; // You may replace 'any' with a more specific type based on the actual type of your 'icon' prop
@@ -19,7 +19,7 @@ const Iconify = forwardRef(
       sx={{ width, height: width, ...sx }}
       {...other}
     />
-  )
+  ),
 );
 
 export default Iconify;

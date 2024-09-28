@@ -94,7 +94,6 @@ const Health = () => {
     }
   }, [singleData]);
 
-
   const addMoreLink = () => {
     setInsertLink((prevLinks) => [...prevLinks, ""]);
   };
@@ -129,7 +128,6 @@ const Health = () => {
       setIsLoading(false);
     },
   });
-
 
   if (image.url?.indexOf("data:image") != undefined) {
     if (image.url?.indexOf("data:image") > -1) {
@@ -191,7 +189,7 @@ const Health = () => {
     try {
       // Check if there's an Health need in the SponsorshipRequest array
       const hasHealthNeed = singleData?.SponsorshipRequest.some(
-        (request: { need: string }) => request.need == "HEALTH"
+        (request: { need: string }) => request.need == "HEALTH",
       );
 
       if (!hasHealthNeed) {
@@ -209,7 +207,7 @@ const Health = () => {
         // date_of_enrollment: dayjs().format("YYYY-MM-DD"), // Ensure date is in the correct format
         // upload_document: getUploadFiles[0]?.url,
         upload_document: "Health.pdf", //for testing purposes
-        date_of_enrollment: "2024-05-10"
+        date_of_enrollment: "2024-05-10",
       };
 
       // Make the API call with the payload
@@ -384,9 +382,9 @@ const Health = () => {
                           setDateOfBirth(
                             newDate
                               ? dayjs(newDate, "DD/MM/YYYY").format(
-                                  "YYYY-MM-DD"
+                                  "YYYY-MM-DD",
                                 )
-                              : ""
+                              : "",
                           );
                           setDateOfBirthError(false);
                         }}

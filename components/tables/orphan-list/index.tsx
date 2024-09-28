@@ -21,7 +21,7 @@ const OrphanListTable: React.FC<{
   orphanData: any[];
 }> = ({ orphanData }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
+    null,
   );
   const [openViewDetailsModal, setOpenViewDetailsModal] = React.useState(false);
   const [SelectedOrphan, setSelectedOrphan] = React.useState<any>();
@@ -55,7 +55,7 @@ const OrphanListTable: React.FC<{
 
   const handleOpenPopover = (
     event: React.MouseEvent<HTMLButtonElement>,
-    data: any
+    data: any,
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedOrphan(data);
@@ -166,28 +166,28 @@ const OrphanListTable: React.FC<{
                       orphan?.account_status == "APPROVED"
                         ? "#ECFDF3"
                         : orphan?.account_status == "PENDING"
-                        ? "#FFF8E4"
-                        : orphan?.account_status == "REJECTED"
-                        ? "#FFEFEF"
-                        : ""
+                          ? "#FFF8E4"
+                          : orphan?.account_status == "REJECTED"
+                            ? "#FFEFEF"
+                            : ""
                     }
                     dotColor={
                       orphan?.account_status == "APPROVED"
                         ? "#007A27"
                         : orphan?.account_status == "PENDING"
-                        ? "#FFA800"
-                        : orphan?.account_status == "REJECTED"
-                        ? "#FF0000"
-                        : ""
+                          ? "#FFA800"
+                          : orphan?.account_status == "REJECTED"
+                            ? "#FF0000"
+                            : ""
                     }
                     textColor={
                       orphan?.account_status == "APPROVED"
                         ? "#007A27"
                         : orphan?.account_status == "PENDING"
-                        ? "#FFA800"
-                        : orphan?.account_status == "REJECTED"
-                        ? "#FF0000"
-                        : ""
+                          ? "#FFA800"
+                          : orphan?.account_status == "REJECTED"
+                            ? "#FF0000"
+                            : ""
                     }
                   />
                 </TableCell>
@@ -311,7 +311,7 @@ const OrphanListTable: React.FC<{
           </TableBody>
         </Table>
       </TableContainer>
-      
+
       <AlertDialog
         open={openDialog}
         onClose={handleClickClose}

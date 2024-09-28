@@ -1,3 +1,46 @@
+export const navConfigAdmin = [
+  {
+    title: "Dashboard",
+    icon: "/category.svg",
+    path: "/dashboard/admin/home",
+  },
+  {
+    title: "Applications",
+    icon: "/category.svg",
+    path: "/dashboard/admin/applications",
+  },
+  {
+    title: "Orphan List",
+    icon: "/users.svg",
+    path: "/dashboard/admin/orphan-list",
+  },
+  {
+    title: "Guardian List",
+    icon: "/users.svg",
+    path: "/dashboard/admin/guardian-list",
+  },
+  {
+    title: "Sponsor List",
+    icon: "/users.svg",
+    path: "/dashboard/admin/sponsor-list",
+  },
+  {
+    title: "Activity",
+    icon: "/folder_open.svg",
+    path: "/dashboard/admin/activity",
+  },
+  {
+    title: "Users",
+    icon: "/folder_open.svg",
+    path: "/dashboard/admin/users",
+  },
+  {
+    title: "Settings",
+    icon: "/gear.svg",
+    path: "/dashboard/admin/settings",
+  },
+];
+
 export const navConfig = [
   {
     title: "Dashboard",

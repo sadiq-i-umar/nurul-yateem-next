@@ -84,7 +84,7 @@ const EditOrphanSideModal: React.FC<{
       setSchoolAddress(SelectedOrphan?.school_address || "");
       setSchoolContact(SelectedOrphan?.school_contact_person || "");
       setPhoneNumberOfSchool(
-        SelectedOrphan?.phone_number_of_contact_person || ""
+        SelectedOrphan?.phone_number_of_contact_person || "",
       );
       setClass(SelectedOrphan?.class || "");
       setUniqueCode(SelectedOrphan?.unique_code || "");
@@ -488,7 +488,7 @@ const EditOrphanSideModal: React.FC<{
                               <MenuItem key={index} value={item}>
                                 {item}
                               </MenuItem>
-                            )
+                            ),
                           )}
                         </Select>
                         {stateOfOriginError && (
@@ -550,9 +550,9 @@ const EditOrphanSideModal: React.FC<{
                             setDateOfBirth(
                               newDate
                                 ? dayjs(newDate, "DD/MM/YYYY").format(
-                                    "YYYY-MM-DD"
+                                    "YYYY-MM-DD",
                                   )
-                                : ""
+                                : "",
                             );
                             setDateOfBirthError(false);
                           }}

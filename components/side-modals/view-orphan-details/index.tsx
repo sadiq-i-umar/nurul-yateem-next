@@ -9,9 +9,8 @@ const ViewOrphanDetailsSideModal: React.FC<{
   close: () => void;
   orphanData: Orphan;
 }> = ({ open, close, orphanData }) => {
-
   return (
-    <Dialog open={open} onClose={close} >
+    <Dialog open={open} onClose={close}>
       <Box
         sx={{
           display: "flex",
@@ -41,11 +40,7 @@ const ViewOrphanDetailsSideModal: React.FC<{
         >
           <Box sx={{ flexGrow: 1, display: "flex" }}>
             <Box>
-              <ImageFrameCircular80
-                image={
-                  orphanData?.profile_photo
-                }
-              />
+              <ImageFrameCircular80 image={orphanData?.profile_photo} />
             </Box>
             <Box>
               <Box>

@@ -41,7 +41,7 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
               if (orphans?.length === 0) {
                 handleLoginSuccess();
                 toast.success(
-                  "Please complete your profile first. You have no orphans."
+                  "Please complete your profile first. You have no orphans.",
                 );
                 router.push("/dashboard/add-an-orphan");
                 router.refresh();

@@ -147,28 +147,28 @@ const OrphanActivityTable: React.FC<{
                       orphan?.account_status == "APPROVED"
                         ? "#ECFDF3"
                         : orphan?.account_status == "PENDING"
-                        ? "#FFF8E4"
-                        : orphan?.account_status == "REJECTED"
-                        ? "#FFEFEF"
-                        : ""
+                          ? "#FFF8E4"
+                          : orphan?.account_status == "REJECTED"
+                            ? "#FFEFEF"
+                            : ""
                     }
                     dotColor={
                       orphan?.account_status == "APPROVED"
                         ? "#007A27"
                         : orphan?.account_status == "PENDING"
-                        ? "#FFA800"
-                        : orphan?.account_status == "REJECTED"
-                        ? "#FF0000"
-                        : ""
+                          ? "#FFA800"
+                          : orphan?.account_status == "REJECTED"
+                            ? "#FF0000"
+                            : ""
                     }
                     textColor={
                       orphan?.account_status == "APPROVED"
                         ? "#007A27"
                         : orphan?.account_status == "PENDING"
-                        ? "#FFA800"
-                        : orphan?.account_status == "REJECTED"
-                        ? "#FF0000"
-                        : ""
+                          ? "#FFA800"
+                          : orphan?.account_status == "REJECTED"
+                            ? "#FF0000"
+                            : ""
                     }
                   />
                 </TableCell>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Typography, IconButton, Container } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PhotoIcon from '@mui/icons-material/Photo';
+import React, { useState } from "react";
+import { Box, Typography, IconButton, Container } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PhotoIcon from "@mui/icons-material/Photo";
 
 const DragUpload = ({
   title,
@@ -82,34 +82,34 @@ const DragUpload = ({
   return (
     <Box
       sx={{
-        borderRadius: '10px',
-        width: '100%',
+        borderRadius: "10px",
+        width: "100%",
       }}
     >
       <Typography
-        variant='h6'
+        variant="h6"
         sx={{
-          fontWeight: '400',
-          pt: { xs: '.5rem', md: '.5rem' },
-          textAlign: 'left',
+          fontWeight: "400",
+          pt: { xs: ".5rem", md: ".5rem" },
+          textAlign: "left",
         }}
       >
         {title}
       </Typography>
       <label
-        htmlFor='fileInput'
+        htmlFor="fileInput"
         style={{
-          cursor: 'pointer',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          marginTop: '1rem',
-          marginBottom: '1rem',
-          border: `3px dashed ${isDragging ? '#519E33' : 'lightgray'}`,
-          borderRadius: '10px',
-          padding: '50px 0px',
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          marginTop: "1rem",
+          marginBottom: "1rem",
+          border: `3px dashed ${isDragging ? "#519E33" : "lightgray"}`,
+          borderRadius: "10px",
+          padding: "50px 0px",
         }}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
@@ -120,9 +120,9 @@ const DragUpload = ({
 
         <Typography
           sx={{
-            fontSize: '14px',
-            color: '#B4B3B3',
-            marginTop: '10px',
+            fontSize: "14px",
+            color: "#B4B3B3",
+            marginTop: "10px",
           }}
         >
           {subtitle}
@@ -130,11 +130,11 @@ const DragUpload = ({
       </label>
 
       <input
-        id='fileInput'
-        type='file'
+        id="fileInput"
+        type="file"
         multiple
-        accept='.jpg, .jpeg, .png, .pdf, .doc, .docx'
-        style={{ display: 'none' }}
+        accept=".jpg, .jpeg, .png, .pdf, .doc, .docx"
+        style={{ display: "none" }}
         onChange={handleFileInputChange}
       />
 
@@ -142,43 +142,43 @@ const DragUpload = ({
         <Box
           key={index}
           sx={{
-            border: '1px solid lightgray',
-            borderRadius: '10px',
-            py: { xs: '1rem', md: '.5rem' },
-            px: { xs: '0px', md: '2rem' },
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mt: '2.5rem',
+            border: "1px solid lightgray",
+            borderRadius: "10px",
+            py: { xs: "1rem", md: ".5rem" },
+            px: { xs: "0px", md: "2rem" },
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mt: "2.5rem",
           }}
         >
           <Container
             sx={{
-              display: 'flex',
-              justifyContent: 'start',
-              alignItems: 'center',
-              gap: '.5rem',
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "center",
+              gap: ".5rem",
             }}
           >
             <PhotoIcon style={{ fontSize: 40 }} />
             <Box>
               <Typography
-                variant='h6'
+                variant="h6"
                 sx={{
-                  fontWeight: '400',
-                  pt: { xs: '.5rem', md: '.5rem' },
-                  textAlign: 'left',
+                  fontWeight: "400",
+                  pt: { xs: ".5rem", md: ".5rem" },
+                  textAlign: "left",
                 }}
               >
                 {uploadedFile.file.name}
               </Typography>
               <Typography
-                variant='h6'
+                variant="h6"
                 sx={{
-                  fontWeight: '200',
-                  pt: { xs: '.5rem', md: '.5rem' },
-                  px: { xs: '0px', md: '1rem' },
-                  textAlign: 'left',
+                  fontWeight: "200",
+                  pt: { xs: ".5rem", md: ".5rem" },
+                  px: { xs: "0px", md: "1rem" },
+                  textAlign: "left",
                 }}
               >
                 {`${(uploadedFile.file.size / 1024).toFixed(2)} KB`}
@@ -186,12 +186,12 @@ const DragUpload = ({
             </Box>
           </Container>
           <IconButton
-            aria-label='delete'
-            size='large'
-            color='error'
+            aria-label="delete"
+            size="large"
+            color="error"
             onClick={() => handleDeleteFile(index)}
           >
-            <DeleteIcon fontSize='inherit' />
+            <DeleteIcon fontSize="inherit" />
           </IconButton>
         </Box>
       ))}

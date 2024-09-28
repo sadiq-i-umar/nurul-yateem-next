@@ -34,7 +34,7 @@ const List = () => {
               sx={{
                 display: "flex",
                 flexDirection: "row",
-                justifyContent:"space-between"
+                justifyContent: "space-between",
               }}
             >
               <Typography>Abraham Christopher</Typography>

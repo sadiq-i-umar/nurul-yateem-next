@@ -109,7 +109,7 @@ const AddSponsorshipRequestSideModal: React.FC<{
     const amountNeededNumber = parseInt(AmountNeeded.replace(/,/g, ""), 10);
     const currentAmountNumber = parseInt(
       CurrentAmountGotten.replace(/,/g, ""),
-      10
+      10,
     );
 
     // Assemble the data required by the backend API
