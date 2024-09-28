@@ -1,12 +1,13 @@
-"use client";
-import { Box } from "@mui/material";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { ImageFrameRectangular117By53 } from "../common/image-frames";
-import { navConfig, navConfigAdmin, navConfigSponsor } from "./config";
-import { NavItem } from "./item";
-import UserAccount from "./user-account";
-import { useSession } from "next-auth/react";
+'use client';
+import { Box } from '@mui/material';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { ImageFrameRectangular117By53 } from '../common/image-frames';
+import { navConfig, navConfigAdmin, navConfigSponsor } from './config';
+import { NavItem } from './item';
+import UserAccount from './user-account';
+import { useSession } from 'next-auth/react';
+import { UserRole } from '../../constants';
 
 const Nav: React.FC<{
   large: boolean;
@@ -21,15 +22,14 @@ const Nav: React.FC<{
   const lastName = session?.user?.lastName;
   const account = session?.user?.account;
 
-  const navDatats =
-    account === "SPONSOR"
+  const navData =
+    account === UserRole.sponsor
       ? navConfigSponsor
-      : account === "GUARDIAN"
-        ? navConfig
-        : account === "ADMIN"
-          ? navConfigAdmin
-          : //: [];
-            navConfigAdmin;
+      : account === UserRole.guardian
+      ? navConfig
+      : account === UserRole.admin
+      ? navConfigAdmin
+      : [];
 
   return (
     <Box
@@ -39,15 +39,15 @@ const Nav: React.FC<{
               ...(small
                 ? {
                     //Styles applied when both the large and small navs are open
-                    position: { xs: "fixed", md: "static" },
+                    position: { xs: 'fixed', md: 'static' },
                     zIndex: { xs: 10000, md: 0 },
                     backgroundColor: {
-                      xs: "rgba(0, 0, 0, 0.3)",
-                      md: "transparent",
+                      xs: 'rgba(0, 0, 0, 0.3)',
+                      md: 'transparent',
                     },
-                    width: { xs: "100%", md: "auto" },
-                    minHeight: { xs: "100vh", md: 0 },
-                    display: { xs: "block", md: "block" },
+                    width: { xs: '100%', md: 'auto' },
+                    minHeight: { xs: '100vh', md: 0 },
+                    display: { xs: 'block', md: 'block' },
                   }
                 : {
                     /**No style applied when large nav is open but small nav is closed */
@@ -57,12 +57,12 @@ const Nav: React.FC<{
               ...(small
                 ? {
                     //Styles applied when small nav is opened but large nav is closed
-                    position: "fixed",
+                    position: 'fixed',
                     zIndex: 10000,
-                    backgroundColor: "rgba(0, 0, 0, 0.3)",
-                    width: "100%",
-                    minHeight: "100vh",
-                    display: { xs: "block", md: "none" },
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    width: '100%',
+                    minHeight: '100vh',
+                    display: { xs: 'block', md: 'none' },
                   }
                 : {
                     /**No style applied when both navs are closed */
@@ -77,84 +77,88 @@ const Nav: React.FC<{
                 ...(small
                   ? {
                       //Styles applied when both the large and small navs are open
-                      width: { xs: "200px", sm: "250px", md: "280px" },
-                      display: "block",
-                      paddingLeft: "20px",
-                      position: { xs: "static", md: "fixed" },
-                      backgroundColor: { xs: "white", md: "transparent" },
-                      minHeight: { xs: "100vh", md: 0 },
+                      width: { xs: '200px', sm: '250px', md: '280px' },
+                      display: 'block',
+                      paddingLeft: '20px',
+                      position: { xs: 'static', md: 'fixed' },
+                      backgroundColor: { xs: 'white', md: 'transparent' },
+                      minHeight: { xs: '100vh', md: 0 },
                     }
                   : {
                       /**Styles applied when large nav is open but small nav is closed */
-                      width: "280px",
-                      display: { xs: "none", md: "block" },
-                      paddingLeft: "20px",
-                      position: "fixed",
+                      width: '280px',
+                      display: { xs: 'none', md: 'block' },
+                      paddingLeft: '20px',
+                      position: 'fixed',
                     }),
               }
             : {
                 ...(small
                   ? {
                       //Styles applied when small nav is open but large nav is closed
-                      width: { xs: "200px", sm: "250px" },
-                      display: { xs: "block", md: "none" },
-                      paddingLeft: "20px",
-                      backgroundColor: "white",
-                      minHeight: "100vh",
+                      width: { xs: '200px', sm: '250px' },
+                      display: { xs: 'block', md: 'none' },
+                      paddingLeft: '20px',
+                      backgroundColor: 'white',
+                      minHeight: '100vh',
                     }
                   : {
                       /**Style applied when both navs are closed */
-                      display: "none",
+                      display: 'none',
                     }),
               }),
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            height: "90px",
-            ...(large && { paddingRight: "5px" }),
-            ...(small && { paddingRight: "15px" }),
+            display: 'flex',
+            alignItems: 'center',
+            height: '90px',
+            ...(large && { paddingRight: '5px' }),
+            ...(small && { paddingRight: '15px' }),
           }}
         >
-          <ImageFrameRectangular117By53 image="/nurul_yateem_logo.png" />
+          <ImageFrameRectangular117By53 image='/nurul_yateem_logo.png' />
           <Box
             {...(large && { onClick: closeLargeNav })}
             {...(small && { onClick: closeSmallNav })}
             sx={{
               flexGrow: 1,
-              justifyContent: "flex-end",
-              cursor: "pointer",
-              display: "flex",
+              justifyContent: 'flex-end',
+              cursor: 'pointer',
+              display: 'flex',
             }}
           >
-            <Image src={"/menu.svg"} width={24} height={24} alt={"Menu Icon"} />
+            <Image src={'/menu.svg'} width={24} height={24} alt={'Menu Icon'} />
           </Box>
         </Box>
-        <Box sx={{ height: "100vh", overflow: "auto" }}>
+        <Box sx={{ height: '100vh', overflow: 'auto' }}>
           <Box
             sx={{
-              paddingLeft: "5px",
-              paddingTop: "50px",
-              position: "relative",
-              height: "80%",
+              paddingLeft: '5px',
+              paddingTop: '50px',
+              position: 'relative',
+              height: '80%',
             }}
           >
-            {navDatats.map((item: any) => (
-              <Box key={item.title} sx={{ mb: "40px", mr: "20px" }}>
-                <Box onClick={() => router.push(item.path)}>
-                  <NavItem
-                    key={item.title}
-                    icon={item.icon}
-                    title={item.title}
-                    isActive={path.startsWith(item.path) || path === item.path}
-                  />
+            {navData.map(
+              (item: { title: string; icon: string; path: string }) => (
+                <Box key={item.title} sx={{ mb: '40px', mr: '20px' }}>
+                  <Box onClick={() => router.push(item.path)}>
+                    <NavItem
+                      key={item.title}
+                      icon={item.icon}
+                      title={item.title}
+                      isActive={
+                        path.startsWith(item.path) || path === item.path
+                      }
+                    />
+                  </Box>
                 </Box>
-              </Box>
-            ))}
+              )
+            )}
             <UserAccount
-              image=""
+              image=''
               name={`${firstName} ${lastName}`}
               role={account}
             />
