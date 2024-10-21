@@ -1,0 +1,28 @@
+/* Header styles */
+.header {
+  padding: 20px;
+  background-color: lightblue;
+  display: flex;
+  align-items: center;
+}
+.header h3 {
+  flex-grow: 1;
+}
+ul {
+  display: flex;
+  list-style-type: none;
+  gap: 20px;
+}
+
+/* Footer styles */
+.footer {
+  padding: 20px;
+  background-color: lightblue;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+.footer p {
+  margin: 0;
+}
