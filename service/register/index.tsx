@@ -14,7 +14,7 @@ import { request } from "../../utils/request";
 // };
 
 export const RegisterUser = async (RegisterData: any) => {
-  const res = await request("POST", `${baseUrl}/register`, {
+  const res = await request("POST", `${baseUrl}/v1/user`, {
     headers: {
       "Content-Type": "application/json",
     },

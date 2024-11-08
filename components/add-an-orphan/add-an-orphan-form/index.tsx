@@ -1,775 +1,734 @@
-"use client";
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
-  FormControlLabel,
-  Grid,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
   Typography,
+  Button,
+  TextField,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Select,
+  MenuItem,
+  Grid,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useState } from "react";
-import { states_in_nigeria_dropdown } from "../../../utils";
-import { PhotoUploadFrame } from "../../common/image-frames";
-import { VisuallyHiddenInput } from "../../common/input";
-import DragUpload from "../../drag-upload";
-import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
-import toast from "react-hot-toast";
-import AlertDialog from "../../Reusable-Dialog";
-import { usePathname, useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+import dayjs from "dayjs";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import "react-datepicker/dist/react-datepicker.css";
+import { states_in_nigeria_dropdown } from "@/utils";
+import { PhotoUploadFrame } from "@/components/common/image-frames";
+import DragUpload from "@/components/drag-upload";
+import LoaderBackdrop from "../../common/loader";
+import {
+  storage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "@/config/FirebaseConfig"; // Adjust based on your Firebase config
+import { createOrphan } from "@/src/app/api/orphan";
 
-const AddAnOrphanForm = ({ onClick }: { onClick: () => void }) => {
+interface FormData {
+  picture: string;
+  gender: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  stateOfOrigin: string;
+  localGovernment: string;
+  dateOfBirth: string;
+  inSchool: boolean;
+  schoolName: string;
+  schoolAddress: string;
+  affidavitOfGuardianship: string;
+  schoolContactPerson: string;
+  schoolContactPhone: string;
+}
+
+interface AddAnOrphanFormProps {
+  onSuccess: () => void;
+}
+
+const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
   const {
-    firstName,
-    lastName,
-    image,
-    gender,
-    dateOfBirth,
-    stateOfOrigin,
-    localGovernmentArea,
-    InSchool,
-    schoolName,
-    schoolAddress,
-    schoolContact,
-    phoneNumberOfSchool,
-    class_,
-    setFirstName,
-    setLastName,
-    setImage,
-    setGender,
-    setDateOfBirth,
-    setStateOfOrigin,
-    setLocalGovernmentArea,
-    setInSchool,
-    setSchoolName,
-    setSchoolAddress,
-    setSchoolContact,
-    setPhoneNumberOfSchool,
-    setClass,
-  } = useAddOrphanStore();
-  const router = useRouter();
-  const [firstNameError, setFirstNameError] = useState(false);
-  const [lastNameError, setLastNameError] = useState(false);
-  const [dateOfBirthError, setDateOfBirthError] = useState(false);
-  const [stateOfOriginError, setStateOfOriginError] = useState(false);
-  const [localGovernmentAreaError, setLocalGovernmentAreaError] =
-    useState(false);
-  const [schoolNameError, setSchoolNameError] = useState(false);
-  const [schoolAddressError, setSchoolAddressError] = useState(false);
-  const [schoolContactError, setSchoolContactError] = useState(false);
-  const [phoneNumberOfSchoolError, setPhoneNumberOfSchoolError] =
-    useState(false);
-  const [classError, setClassError] = useState(false);
-  const [imageError, setImageError] = useState(false);
+    control,
+    handleSubmit,
+    formState: { errors },
+    register,
+    setValue,
+    watch,
+  } = useForm<FormData>({
+    defaultValues: {
+      picture: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      stateOfOrigin: "",
+      localGovernment: "",
+      dateOfBirth: "",
+      schoolName: "",
+      schoolAddress: "",
+      affidavitOfGuardianship: "",
+      schoolContactPerson: "",
+      schoolContactPhone: "",
+    },
+  });
+
+  const [image, setImage] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+
+  const [, setAffidavitUrl] = useState<string | null>(null);
+  const [showDialog, setShowDialog] = useState<boolean>(false); // State to manage dialog visibility
+
+  const [schoolName, setSchoolName] = useState<string>("");
+  const [class_, setClass] = useState<string>("");
+  const [schoolAddress, setSchoolAddress] = useState<string>("");
+
+  const handleAffidavitUpload = (fileName: string, fileUrl: string) => {
+    setAffidavitUrl(fileUrl);
+    setValue("affidavitOfGuardianship", fileUrl);
+  };
+
+  const picture = watch("picture");
+
+  const inSchool = watch("inSchool");
 
   const handleImageSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
+    const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage({ file, url: reader?.result as string });
-      };
-      reader.readAsDataURL(file);
-      setImageError(false);
+      uploadImageToFirebase(file);
+    }
+  };
+
+  const uploadImageToFirebase = async (file: File) => {
+    setUploading(true);
+    const storageRef = ref(storage, `avatars/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      () => {},
+      (error) => {
+        setUploading(false);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        setImage(downloadURL);
+        setValue("picture", downloadURL, { shouldValidate: true }); // Ensure validation occurs here
+        setUploading(false);
+      },
+    );
+  };
+
+  useEffect(() => {
+    if (inSchool === false) {
+      // Use strict comparison to boolean
+      // Clear school-related fields when 'No' is selected
+      setSchoolName("");
+      setClass("");
+      setSchoolAddress("");
+      setValue("schoolName", ""); // Reset form fields
+      setValue("schoolAddress", ""); // Reset form fields
+    }
+  }, [inSchool, setValue]); // Including setValue to avoid direct state manipulation
+
+  const handleDialogClose = () => {
+    setShowDialog(false);
+  };
+
+  const handleYesClick = async () => {
+    handleSubmit(onSubmit)(); // Call onSubmit with form data
+    setShowDialog(false); // Close the dialog
+  };
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    if (!data.picture) {
+      toast.error("Image is required.");
+      return;
+    }
+
+    if (data.dateOfBirth) {
+      data.dateOfBirth = dayjs(data.dateOfBirth).toISOString(); // Convert to ISO format
+    }
+
+    // Ensure inSchool is a boolean, handle string 'true' or 'false' values
+    if (typeof data.inSchool === "string") {
+      data.inSchool = data.inSchool === "true"; // Converts 'true' to true, anything else to false
     } else {
-      setImageError(true);
+      data.inSchool = !!data.inSchool; // This ensures it is a boolean if it's already a boolean
+    }
+
+    try {
+      setLoading(true);
+      const response = await createOrphan(data);
+      if (response.message) {
+        toast.error("Failed to create orphan.");
+      } else {
+        toast.success("Orphan created successfully!");
+        onSuccess(); // Notify parent component of success
+      }
+    } catch (error) {
+      toast.error("An error occurred while creating orphan.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (image.url?.indexOf("data:image") != undefined) {
-    if (image.url?.indexOf("data:image") > -1) {
-      // TODO: Upload image to google bucket and store response
-    }
-  }
-  const sendDataToParent = () => {
-    let isValid = true;
-    if (!firstName) {
-      setFirstNameError(true);
-      isValid = false;
-    }
-    if (!lastName) {
-      setLastNameError(true);
-      isValid = false;
-    }
-    if (!dateOfBirth) {
-      setDateOfBirthError(true);
-      isValid = false;
-    }
-    if (!stateOfOrigin) {
-      setStateOfOriginError(true);
-      isValid = false;
-    }
-    if (!localGovernmentArea) {
-      setLocalGovernmentAreaError(true);
-      isValid = false;
-    }
-
-    if (!schoolName) {
-      setSchoolNameError(true);
-      isValid = false;
-    }
-    if (!schoolAddress) {
-      setSchoolAddressError(true);
-      isValid = false;
-    }
-    if (!schoolContact) {
-      setSchoolContactError(true);
-      isValid = false;
-    }
-    if (!phoneNumberOfSchool) {
-      setPhoneNumberOfSchoolError(true);
-      isValid = false;
-    }
-    if (!class_) {
-      setClassError(true);
-      isValid = false;
-    }
-    if (!image.url) {
-      setImageError(true);
-      isValid = false;
-    }
-
-    if (!isValid) {
-      toast.error("Please fill in all required fields");
-    }
-
-    if (isValid) {
-      onClick();
-    }
-  };
-
-  //cancel modal
-
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const pathname = usePathname();
-
-  const handleClickClose = () => {
-    setOpenDialog(false);
-  };
-  const handleCancel = () => {
-    setOpenDialog(false);
-    if (pathname === "/dashboard/guardian/orphan-list/add-an-orphan") {
-      router.push("/dashboard/guardian/orphan-list");
-    } else if (pathname === "/dashboard/add-an-orphan") {
-      router.push("/dashboard/complete-account");
-    }
+  const handleFormSubmit = () => {
+    setShowDialog(true); // Show the confirmation dialog
   };
 
   return (
-    <Box>
-      <Box
-        sx={{
-          display: "flex",
-          marginBottom: "20px",
-          alignItems: "center",
-          flexDirection: { xs: "column", md: "row" },
-        }}
-      >
+    <>
+      {loading && <LoaderBackdrop />}
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            border: "1px solid #DFDFDF",
-            borderStyle: "dashed",
-            paddingX: "15px",
-            paddingY: "10px",
-            marginRight: "30px",
+            justifyContent: "center", // Centers horizontally
+            alignItems: "center", // Centers vertically
+            backgroundColor: "white",
+            padding: "24px",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <Box sx={{ marginBottom: "10px" }}>
-            <Typography>Avatar</Typography>
-          </Box>
-          <PhotoUploadFrame image={image.url || ""} />
-          <Box sx={{ marginBottom: "10px" }}>
-            <Button
-              component="label"
-              variant="contained"
+          <Box
+            sx={{
+              backgroundColor: "white",
+              padding: "24px",
+              width: "100%",
+              maxWidth: "800px",
+            }}
+          >
+            <Box
               sx={{
-                backgroundColor: "#3863FA",
-                boxShadow: "none",
-                width: "100%",
-                borderRadius: "6px",
-                textTransform: "none",
-                paddingY: "10px",
-                paddingX: "70px",
-                position: "relative",
-                textAlign: "center",
-                "&:hover": { backgroundColor: "#3863FA" },
+                display: "flex",
+                marginBottom: "80px",
+                alignItems: "center",
+                flexDirection: { xs: "column", md: "row" },
               }}
             >
-              Choose file
-              <VisuallyHiddenInput
-                type="file"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImageSelection}
-              />
-            </Button>
-          </Box>
-          {imageError && (
-            <Typography component="p" color="error">
-              Image is required
-            </Typography>
-          )}
-        </Box>
-        <Box
-          sx={{
-            marginTop: { xs: "20px", md: "-100px" },
-            width: { xs: "100%", sm: "320px" },
-          }}
-        >
-          <Typography sx={{ color: "#676767" }}>
-            Svg, Png, Jpg are all allowed, and must not be more that 5MB
-          </Typography>
-        </Box>
-      </Box>
-      <Box sx={{}}>
-        <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
-          <Typography>Gender</Typography>
-        </Box>
-        <RadioGroup
-          value={gender}
-          sx={{ display: "flex", flexDirection: "row" }}
-        >
-          <Box
-            onClick={() => setGender("MALE")}
-            sx={{
-              flexShrink: 1,
-              cursor: "pointer",
-              border: "2px solid",
-              paddingY: "10px",
-              paddingX: "15px",
-              borderRadius: "10px",
-              marginRight: "40px",
-              ...(gender == "MALE"
-                ? { borderColor: "#268500" }
-                : { borderColor: "#D2D2D2" }),
-              marginBottom: "30px",
-            }}
-          >
-            <FormControlLabel
-              onClick={() => setGender("MALE")}
-              value="MALE"
-              control={<Radio />}
-              label="Male"
-            />
-          </Box>
-          <Box
-            onClick={() => setGender("FEMALE")}
-            sx={{
-              cursor: "pointer",
-              border: "2px solid",
-              paddingY: "10px",
-              paddingX: "15px",
-              borderRadius: "10px",
-              ...(gender == "FEMALE"
-                ? { borderColor: "#268500" }
-                : { borderColor: "#D2D2D2" }),
-              marginBottom: "30px",
-            }}
-          >
-            <FormControlLabel
-              onClick={(e) => setGender("FEMALE")}
-              value="FEMALE"
-              control={<Radio />}
-              label="Female"
-            />
-          </Box>
-        </RadioGroup>
-      </Box>
-      <Box sx={{ marginBottom: "30px" }}>
-        <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>First Name</Typography>
-              </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <TextField
-                  sx={{
-                    width: "100%",
-                    borderRadius: "50px",
-                  }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder="Enter First Name"
-                  value={firstName}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setFirstName(event?.target.value);
-                    setFirstNameError(false);
-                  }}
-                />
-                {firstNameError && (
-                  <Typography component="p" color="error">
-                    First Name is required
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>Last Name</Typography>
-              </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <TextField
-                  sx={{
-                    width: "100%",
-                    borderRadius: "50px",
-                  }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder="Enter Last Name"
-                  value={lastName}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setLastName(event?.target.value);
-                    setLastNameError(false);
-                  }}
-                />
-                {lastNameError && (
-                  <Typography component="p" color="error">
-                    Last Name is required
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-      <Box sx={{ marginBottom: "60px", width: "100%" }}>
-        <DragUpload
-          title={"Affidavit of Guardianship"}
-          subtitle={"Drag and Drop Document"}
-        />
-      </Box>
-      <Box sx={{ marginBottom: "10px" }}>
-        <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>State of Origin</Typography>
-              </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <Select
-                  value={stateOfOrigin}
-                  sx={{
-                    borderRadius: "10px",
-                    width: "100%",
-                  }}
-                  onChange={(e) => {
-                    setStateOfOrigin(e.target.value);
-                    setStateOfOriginError(false);
-                  }}
-                  displayEmpty
-                >
-                  <MenuItem value="" disabled>
-                    -- Select --
-                  </MenuItem>
-                  {[...states_in_nigeria_dropdown].map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {stateOfOriginError && (
-                  <Typography component="p" color="error">
-                    State of Origin is required
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>LGA</Typography>
-              </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <TextField
-                  sx={{
-                    width: "100%",
-                    borderRadius: "50px",
-                  }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder={"Enter LGA"}
-                  value={localGovernmentArea}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setLocalGovernmentArea(event?.target.value);
-                    setLocalGovernmentAreaError(false);
-                  }}
-                />
-                {localGovernmentAreaError && (
-                  <Typography component="p" color="error">
-                    Local governmnet area is required
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-      <Box sx={{ marginBottom: "50px" }}>
-        <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "11.5px" }}>
-              <Typography>Date of Birth</Typography>
-            </Box>
-            <Box sx={{ borderRadius: "10px" }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  value={dateOfBirth}
-                  onChange={(newDate) => {
-                    setDateOfBirth(newDate ?? null);
-                    setDateOfBirthError(false);
-                  }}
-                  format="DD/MM/YYYY"
-                  sx={{ width: "100%" }}
-                />
-              </LocalizationProvider>
-              {dateOfBirthError && (
-                <Typography component="p" color="error">
-                  Date of birth is required
-                </Typography>
-              )}
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-      <Box sx={{ marginBottom: "50px" }}>
-        <Typography variant={"h1"} sx={{ fontWeight: 400 }}>
-          School Information
-        </Typography>
-      </Box>
-      <Box sx={{ marginBottom: "10px" }}>
-        <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box sx={{}}>
-              <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
-                <Typography>Is he/she in school?</Typography>
-              </Box>
-              <RadioGroup
-                value={InSchool}
-                sx={{ display: "flex", flexDirection: "row" }}
-              >
-                <Box
-                  onClick={() => setInSchool("YES")}
-                  sx={{
-                    flexShrink: 1,
-                    cursor: "pointer",
-                    border: "2px solid",
-                    paddingY: "10px",
-                    paddingX: "15px",
-                    borderRadius: "10px",
-                    marginRight: "40px",
-                    ...(InSchool == "YES"
-                      ? { borderColor: "#268500" }
-                      : { borderColor: "#D2D2D2" }),
-                    marginBottom: "30px",
-                  }}
-                >
-                  <FormControlLabel
-                    onClick={() => setInSchool("YES")}
-                    value="YES"
-                    control={<Radio />}
-                    label="Yes"
-                  />
-                </Box>
-                <Box
-                  onClick={() => setInSchool("NO")}
-                  sx={{
-                    cursor: "pointer",
-                    border: "2px solid",
-                    paddingY: "10px",
-                    paddingX: "15px",
-                    borderRadius: "10px",
-                    ...(InSchool == "NO"
-                      ? { borderColor: "#268500" }
-                      : { borderColor: "#D2D2D2" }),
-                    marginBottom: "30px",
-                  }}
-                >
-                  <FormControlLabel
-                    onClick={(e) => setInSchool("NO")}
-                    value="NO"
-                    control={<Radio />}
-                    label="NO"
-                  />
-                </Box>
-              </RadioGroup>
-            </Box>
-          </Grid>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>School Name</Typography>
-              </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <TextField
-                  sx={{
-                    width: "100%",
-                    borderRadius: "50px",
-                  }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder={"Enter School Name"}
-                  value={schoolName}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setSchoolName(event?.target.value);
-                    setSchoolNameError(false);
-                  }}
-                />
-                {schoolNameError && (
-                  <Typography component="p" color="error">
-                    School Name is required
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-        <Grid item lg={6}>
-          <Box sx={{ marginBottom: "21.5px" }}>
-            <Box sx={{ marginBottom: "11.5px" }}>
-              <Typography>Class</Typography>
-            </Box>
-            <Box sx={{ borderRadius: "10px" }}>
-              <TextField
+              <Box
                 sx={{
-                  width: "100%",
-                  borderRadius: "50px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  border: "1px dashed #DFDFDF",
+                  paddingX: "15px",
+                  paddingY: "10px",
+                  marginRight: "30px",
                 }}
-                inputProps={{
-                  sx: {
-                    borderRadius: "10px",
-                  },
+              >
+                <Typography>Picture</Typography>
+                <PhotoUploadFrame image={image || ""} />
+                <Button
+                  component="label"
+                  variant="contained"
+                  sx={{ width: "100%", borderRadius: "6px" }}
+                >
+                  Choose file
+                  <input
+                    type="file"
+                    accept=".png, .jpg, .jpeg"
+                    hidden
+                    onChange={handleImageSelection}
+                  />
+                </Button>
+                {errors.picture && (
+                  <Typography component="p" color="error">
+                    {errors.picture.message}
+                  </Typography>
+                )}
+              </Box>
+              <Box
+                sx={{
+                  marginTop: { xs: "20px", md: "-100px" },
+                  width: { xs: "100%", sm: "320px" },
                 }}
-                placeholder={"Enter Class Level"}
-                value={class_}
-                onChange={(event: {
-                  target: {
-                    value: string;
-                  };
-                }) => {
-                  setClass(event?.target.value);
-                  setClassError(false);
-                }}
-              />
-              {classError && (
-                <Typography component="p" color="error">
-                  Class is required
+              >
+                <Typography sx={{ color: "#676767" }}>
+                  Svg, Png, Jpg are all allowed, and must not be more than 5MB
                 </Typography>
-              )}
-            </Box>
-          </Box>
-        </Grid>
-      </Box>
-      <Box sx={{ marginBottom: "40px" }}>
-        <Box sx={{ marginBottom: "11.5px" }}>
-          <Typography>School Address</Typography>
-        </Box>
-        <Box sx={{ borderRadius: "10px" }}>
-          <TextField
-            placeholder="Write in here..."
-            sx={{
-              width: "100%",
-              borderRadius: "50px",
-            }}
-            inputProps={{
-              sx: {
-                borderRadius: "10px",
-              },
-            }}
-            value={schoolAddress}
-            onChange={(event: {
-              target: {
-                value: string;
-              };
-            }) => {
-              setSchoolAddress(event?.target.value);
-              setSchoolAddressError(false);
-            }}
-            multiline
-            rows={4}
-          />
-          {schoolAddressError && (
-            <Typography component="p" color="error">
-              School Address is required
-            </Typography>
-          )}
-        </Box>
-      </Box>
-      <Box sx={{ marginBottom: "30px" }}>
-        <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>School Contact Person</Typography>
-              </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <TextField
-                  sx={{
-                    width: "100%",
-                    borderRadius: "50px",
-                  }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder="Enter full name"
-                  value={schoolContact}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setSchoolContact(event?.target.value);
-                    setSchoolContactError(false);
-                  }}
-                />
-                {schoolContactError && (
-                  <Typography component="p" color="error">
-                    School Contact Person is required
-                  </Typography>
-                )}
               </Box>
             </Box>
-          </Grid>
-          <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
-                <Typography>Phone Number of Contact Person</Typography>
-              </Box>
-              <Box sx={{ borderRadius: "10px" }}>
-                <TextField
-                  sx={{
-                    width: "100%",
-                    borderRadius: "50px",
-                  }}
-                  inputProps={{
-                    sx: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  placeholder="Enter phone number"
-                  value={phoneNumberOfSchool}
-                  onChange={(event: {
-                    target: {
-                      value: string;
-                    };
-                  }) => {
-                    setPhoneNumberOfSchool(event?.target.value);
-                    setPhoneNumberOfSchoolError(false);
-                  }}
-                />
-                {phoneNumberOfSchoolError && (
-                  <Typography component="p" color="error">
-                    Phone Number of Contact Person is required
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
 
-      <Box sx={{ marginBottom: "100px" }}>
-        <Grid container spacing={5}>
-          <Grid item lg={6}>
-            <Grid container spacing={4}>
-              <Grid item lg={6}>
-                <Box>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      boxShadow: "none",
-                      width: "100%",
-                      borderRadius: "2rem",
-                      textTransform: "none",
-                      paddingY: "10px",
-                      paddingX: "70px",
-                      background: "#000",
-                      ":hover": { backgroundColor: "#000" },
-                    }}
-                    onClick={() => setOpenDialog(true)}
-                  >
-                    Cancel
-                  </Button>
-                </Box>
-              </Grid>
-              <Grid item lg={6}>
-                <Box>
-                  <Button
-                    onClick={sendDataToParent}
-                    variant="contained"
-                    sx={{
-                      boxShadow: "none",
-                      width: "100%",
-                      borderRadius: "2rem",
-                      textTransform: "none",
-                      paddingY: "10px",
-                      paddingX: "70px",
-                      backgroundColor: "#3863FA",
-                      ":hover": { backgroundColor: "#3863FA" },
-                    }}
-                  >
-                    Submit
-                  </Button>
-                </Box>
+            {/* Gender Selection */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} lg={12}>
+                <Controller
+                  control={control}
+                  name="gender"
+                  defaultValue={gender}
+                  render={({ field }) => (
+                    <RadioGroup
+                      {...field}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          flexGrow: 1,
+                          cursor: "pointer",
+                          border: "1px solid",
+                          paddingY: "5px",
+                          paddingX: "10px",
+                          borderRadius: "8px",
+                          marginRight: "10px",
+                          borderColor:
+                            field.value === "MALE" ? "#268500" : "#D2D2D2",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <FormControlLabel
+                          value="MALE"
+                          control={<Radio />}
+                          label="Male"
+                          sx={{
+                            cursor: "pointer",
+                            fontSize: "0.875rem",
+                            margin: 0,
+                          }}
+                        />
+                      </Box>
+
+                      <Box
+                        sx={{
+                          flexGrow: 1, // Make the box take full width available
+                          cursor: "pointer",
+                          border: "1px solid",
+                          paddingY: "5px",
+                          paddingX: "16px",
+                          borderRadius: "8px",
+                          borderColor:
+                            field.value === "FEMALE" ? "#268500" : "#D2D2D2",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <FormControlLabel
+                          value="FEMALE"
+                          control={<Radio />}
+                          label="Female"
+                          sx={{
+                            cursor: "pointer",
+                            fontSize: "0.875rem",
+                            margin: 0,
+                          }}
+                        />
+                      </Box>
+                    </RadioGroup>
+                  )}
+                  rules={{ required: "Gender is required" }}
+                />
+                {errors.gender && (
+                  <Typography color="error">{errors.gender.message}</Typography>
+                )}
               </Grid>
             </Grid>
-          </Grid>
-        </Grid>
-      </Box>
-      <AlertDialog
-        open={openDialog}
-        onClose={handleClickClose}
-        onAgree={handleCancel}
-        title={"Cancel"}
-        content={
-          "Do you wish to cancel your information that has already been started?"
-        }
-        disagreeText={"No"}
-        agreeText={"Yes, continue"}
-      />
-    </Box>
+
+            <Box sx={{ marginTop: 3 }} />
+
+            {/* Name Inputs */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} lg={4}>
+                <Controller
+                  control={control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="First Name"
+                      placeholder="Enter First Name"
+                      fullWidth
+                      error={!!errors.firstName}
+                      helperText={
+                        errors.firstName ? "First Name is required" : ""
+                      }
+                      sx={{ borderRadius: "10px" }}
+                    />
+                  )}
+                  rules={{ required: "First Name is required" }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={4}>
+                <Controller
+                  control={control}
+                  name="middleName"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Middle Name"
+                      placeholder="Enter Middle Name"
+                      fullWidth
+                      error={!!errors.middleName}
+                      helperText={
+                        errors.middleName ? "Middle Name is required" : ""
+                      }
+                    />
+                  )}
+                  rules={{ required: "Middle Name is required" }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={4}>
+                <Controller
+                  control={control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Last Name"
+                      placeholder="Enter Last Name"
+                      fullWidth
+                      error={!!errors.lastName}
+                      helperText={
+                        errors.lastName ? "Last Name is required" : ""
+                      }
+                      sx={{ borderRadius: "10px" }}
+                    />
+                  )}
+                  rules={{ required: "Last Name is required" }}
+                />
+              </Grid>
+            </Grid>
+
+            <Box sx={{ marginTop: 3 }} />
+
+            {/* State of Origin and LGA */}
+            <Grid container spacing={2}>
+              <Grid item lg={6}>
+                <Controller
+                  control={control}
+                  name="stateOfOrigin"
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      fullWidth
+                      displayEmpty
+                      error={!!errors.stateOfOrigin}
+                      value={field.value || ""} // Ensure controlled state
+                    >
+                      <MenuItem value="" disabled>
+                        -- Select --
+                      </MenuItem>
+                      {states_in_nigeria_dropdown.map((item, index) => (
+                        <MenuItem key={index} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                  rules={{ required: "State of Origin is required" }}
+                />
+                {errors.stateOfOrigin && (
+                  <Typography component="p" color="error">
+                    {errors.stateOfOrigin.message}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item lg={6}>
+                <Controller
+                  control={control}
+                  name="localGovernment"
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="LGA"
+                      placeholder="Enter LGA"
+                      fullWidth
+                      error={!!errors.localGovernment}
+                      helperText={
+                        errors.localGovernment
+                          ? "Local government area is required"
+                          : ""
+                      }
+                      sx={{ borderRadius: "10px" }}
+                    />
+                  )}
+                  rules={{ required: "Local government area is required" }}
+                />
+              </Grid>
+            </Grid>
+
+            <Box sx={{ marginTop: 3 }} />
+
+            {/* Date of Birth */}
+            <Box sx={{ marginBottom: "20px" }}>
+              <Typography>Date of Birth</Typography>
+              <Controller
+                control={control}
+                name="dateOfBirth"
+                rules={{ required: "Date of Birth is required" }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="date"
+                    fullWidth
+                    error={!!errors.dateOfBirth}
+                    helperText={
+                      errors.dateOfBirth ? "Date of Birth is required" : ""
+                    }
+                    sx={{ borderRadius: "10px" }}
+                  />
+                )}
+              />
+            </Box>
+
+            {/* Document Upload */}
+            <Box sx={{ marginBottom: "40px" }}>
+              <DragUpload
+                title="Affidavit of Guardianship"
+                subtitle="Drag and Drop Document"
+                onFileUpload={handleAffidavitUpload}
+              />
+            </Box>
+
+            {/* School Status */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} lg={6}>
+                <Controller
+                  control={control}
+                  name="inSchool"
+                  render={({ field }) => (
+                    <RadioGroup
+                      {...field}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between", // Ensure equal spacing between buttons
+                        width: "100%",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          flexGrow: 1, // Make the box take full width available
+                          cursor: "pointer",
+                          border: "1px solid",
+                          paddingY: "5px", // Adjust padding
+                          paddingX: "10px", // Adjust padding
+                          borderRadius: "8px",
+                          marginRight: "10px", // Reduce spacing between buttons
+                          borderColor:
+                            String(field.value) == "true"
+                              ? "#268500"
+                              : "#D2D2D2",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <FormControlLabel
+                          value="true"
+                          control={<Radio />}
+                          label="In School"
+                          sx={{
+                            cursor: "pointer",
+                            fontSize: "0.875rem",
+                            margin: 0,
+                          }}
+                        />
+                      </Box>
+
+                      <Box
+                        sx={{
+                          flexGrow: 1, // Make the box take full width available
+                          cursor: "pointer",
+                          border: "1px solid",
+                          paddingY: "5px",
+                          paddingX: "16px",
+                          borderRadius: "8px",
+                          borderColor:
+                            String(field.value) == "false"
+                              ? "#268500"
+                              : "#D2D2D2",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <FormControlLabel
+                          value="false"
+                          control={<Radio />}
+                          label="Not in School"
+                          sx={{
+                            cursor: "pointer",
+                            fontSize: "0.875rem",
+                            margin: 0,
+                          }}
+                        />
+                      </Box>
+                    </RadioGroup>
+                  )}
+                  rules={{ required: "Please select the school status" }}
+                />
+                {errors.inSchool && (
+                  <Typography component="p" color="error">
+                    {errors.inSchool.message}
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
+            <Box sx={{ marginTop: 3 }} />
+
+            {/* Conditional Rendering for School Info */}
+            {typeof inSchool === "boolean"
+              ? inSchool === true
+              : inSchool === "true" && (
+                  <Grid container spacing={3}>
+                    {" "}
+                    {/* Increased spacing between the fields */}
+                    {/* School Name */}
+                    <Grid item lg={12} xs={12}>
+                      <Controller
+                        control={control}
+                        name="schoolName"
+                        defaultValue=""
+                        rules={{ required: "School Name is required" }}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="School Name"
+                            placeholder="Enter School Name"
+                            fullWidth
+                            error={!!error}
+                            helperText={error ? error.message : ""}
+                            sx={{ borderRadius: "10px" }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    {/* Class */}
+                    <Grid item lg={6} xs={12}>
+                      <Controller
+                        control={control}
+                        name="schoolContactPerson"
+                        defaultValue=""
+                        rules={{
+                          required: "School contact person is required",
+                        }}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="School Contact Person"
+                            placeholder="Enter Contact Person Name"
+                            fullWidth
+                            error={!!error}
+                            helperText={error ? error.message : ""}
+                            sx={{ borderRadius: "10px" }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item lg={6} xs={12}>
+                      <Controller
+                        control={control}
+                        name="schoolContactPhone"
+                        defaultValue=""
+                        rules={{ required: "School contact phone is required" }}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="School Contact Phone"
+                            placeholder="Enter Contact Phone Number"
+                            fullWidth
+                            error={!!error}
+                            helperText={error ? error.message : ""}
+                            sx={{ borderRadius: "10px" }}
+                            type="tel" // To specify it's a phone number field
+                          />
+                        )}
+                      />
+                    </Grid>
+                    {/* School Address */}
+                    <Grid item lg={12} xs={12}>
+                      <Controller
+                        control={control}
+                        name="schoolAddress"
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="School Address"
+                            placeholder="Enter School Address"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            sx={{ borderRadius: "10px" }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                )}
+
+            {/* Submit Button */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                marginY: "16px",
+              }}
+            >
+              <Button
+                variant="contained"
+                onClick={handleFormSubmit}
+                disabled={uploading}
+                sx={{
+                  width: "80%",
+                }}
+              >
+                Submit
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+        <Dialog open={showDialog} onClose={handleDialogClose}>
+          <DialogTitle sx={{ marginTop: "10px" }}>
+            <Typography
+              sx={{ color: "#39353D", fontWeight: "bold", fontSize: "24px" }}
+            >
+              Confirm Submission
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
+            Before submitting the orphan's details, please ensure all the
+            information is correct.
+          </DialogContent>
+          <DialogActions sx={{ marginBottom: "10px" }}>
+            <Button
+              sx={{ color: "#39353D", textTransform: "none" }}
+              onClick={handleDialogClose}
+            >
+              No, Cancel
+            </Button>
+            <Button
+              variant="contained"
+              disabled={uploading || loading}
+              sx={{ textTransform: "none" }}
+              onClick={handleYesClick}
+            >
+              Yes, Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </form>
+    </>
   );
 };
 

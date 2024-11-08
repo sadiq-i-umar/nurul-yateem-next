@@ -175,8 +175,8 @@ export const PhotoUploadFrame: React.FC<{
         justifyContent: "center",
         backgroundColor: "#F5F5F5",
         borderRadius: "50%",
-        width: "110px",
-        height: "110px",
+        width: "180px",
+        height: "180px",
       }}
     ></Box>
   );

@@ -1,7 +1,11 @@
 "use client";
 
 import { HeroImageFrame, LogoImageFrame } from "../common/image-frames";
-import { emailValidationRegexp, nameValidationRegexp } from "../../utils";
+import {
+  emailValidationRegexp,
+  nameValidationRegexp,
+  phoneValidationRegexp,
+} from "../../utils";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Alert,
@@ -25,32 +29,20 @@ import RegistrationSuccessMessage from "../registration-success-message";
 import { RegisterUser } from "../../service/register";
 import { useMutation } from "@tanstack/react-query";
 import LoaderBackdrop from "../common/loader";
+import { useRouter } from "next/navigation";
 
 const Register: React.FC = () => {
-  const {
-    mutateAsync,
-    status,
-    isSuccess,
-    data: Data,
-  } = useMutation({
-    mutationFn: (payload: any) => RegisterUser(payload), // Assuming RegisterUser is an async function returning a Promise
-  });
-
-  useEffect(() => {
-    if (status === "success" && Data?.status === true) {
-      toast.success("Your account has been created successfully");
-    } else if (status === "success" && Data?.status === false) {
-      const errors = JSON.parse(Data.errors);
-      toast.error(errors.email[0]);
-    }
-  }, [status, Data]);
-
+  const router = useRouter();
   //For storing input values
-  const [checkedAccountType, setCheckedAccountType] = useState("GUARDIAN");
+  const [checkedAccountType, setCheckedAccountType] = useState("guardian");
   const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [dob, setDob] = useState("");
+
   const [confirmPassword, setConfirmPassword] = useState("");
   //For loader
 
@@ -58,11 +50,20 @@ const Register: React.FC = () => {
   const [firstNameError, setFirstNameError] = useState(false);
   const [firstNameError2, setFirstNameError2] = useState(false);
 
+  const [middleNameError, setMiddleNameError] = useState(false);
+  const [middleNameError2, setMiddleNameError2] = useState(false);
+
   const [lastNameError, setLastNameError] = useState(false);
   const [lastNameError2, setLastNameError2] = useState(false);
 
   const [emailAddressError, setEmailAddressError] = useState(false);
   const [emailAddressError2, setEmailAddressError2] = useState(false);
+
+  const [phoneNumberError, setPhoneNumberError] = useState(false);
+  const [phoneNumberError2, setPhoneNumberError2] = useState(false);
+
+  const [dobError, setDobError] = useState(false);
+  const [dobError2, setDobError2] = useState(false);
 
   const [passwordError, setPasswordError] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
@@ -76,8 +77,11 @@ const Register: React.FC = () => {
 
   //For validating correctness of input before sending to api. Perform a group check on the values before performing mutation
   let fNameError,
+    mNameError,
     lNameError,
     eAddressError,
+    pNumberError,
+    dError,
     passError,
     confirmPassError: boolean;
 
@@ -93,14 +97,43 @@ const Register: React.FC = () => {
 
   const handleInternetMessageClose = () => setShowInternetMessage(false);
 
+  const {
+    mutateAsync,
+    status,
+    isSuccess,
+    data: Data,
+  } = useMutation({
+    mutationFn: (payload: any) => RegisterUser(payload), // Assuming RegisterUser is an async function returning a Promise
+    onSuccess: (data) => {
+      // Check if the response indicates success
+      if (data && data.statusCode) {
+        // If not successful, you might handle that here too (optional)
+        toast.error(data?.message || "An unexpected error occurred");
+      } else {
+        router.push("/login");
+        // If successful, show success message
+        toast.success("Your account has been created successfully");
+      }
+    },
+    onError: (error) => {
+      console.error("Error from API:", error); // Log any error response
+    },
+  });
+
   //Submitting the form
   const handleSubmitClick = async () => {
     setFirstNameError(false);
     setFirstNameError2(false);
+    setMiddleNameError(false);
+    setMiddleNameError2(false);
     setLastNameError(false);
     setLastNameError2(false);
     setEmailAddressError(false);
     setEmailAddressError2(false);
+    setPhoneNumberError(false);
+    setPhoneNumberError2(false);
+    setDobError(false);
+    setDobError2(false);
     setPasswordError(false);
     setPasswordError2(false);
     setConfirmPasswordError(false);
@@ -117,6 +150,19 @@ const Register: React.FC = () => {
       fNameError = true;
     } else {
       fNameError = false;
+    }
+
+    if (middleName.length < 1) {
+      setMiddleNameError(true);
+      mNameError = true;
+    } else if (
+      middleName.length > 0 &&
+      !nameValidationRegexp.test(middleName.trim())
+    ) {
+      setMiddleNameError2(true);
+      mNameError = true;
+    } else {
+      mNameError = false;
     }
 
     if (lastName.length < 1) {
@@ -143,6 +189,26 @@ const Register: React.FC = () => {
       eAddressError = true;
     } else {
       eAddressError = false;
+    }
+
+    if (phoneNumber.length < 1) {
+      setPhoneNumberError(true);
+      pNumberError = true;
+    } else if (
+      phoneNumber.length > 0 &&
+      !phoneValidationRegexp.test(phoneNumber.trim())
+    ) {
+      setPhoneNumberError2(true);
+      pNumberError = true;
+    } else {
+      pNumberError = false;
+    }
+
+    if (dob.length < 1) {
+      setDobError(true);
+      dError = true;
+    } else {
+      dError = false;
     }
 
     if (password.length < 1) {
@@ -175,20 +241,28 @@ const Register: React.FC = () => {
       !(
         fNameError ||
         lNameError ||
+        mNameError ||
         eAddressError ||
+        pNumberError ||
+        dError ||
         passError ||
         confirmPassError
       )
     ) {
       if (!isInternetConnectivityError) {
         const payload = {
-          first_name: firstName,
-          last_name: lastName,
-          email: emailAddress,
+          phoneNumber: phoneNumber,
           password: password,
-          password_confirmation: confirmPassword,
-          account_type: checkedAccountType,
+          role: checkedAccountType,
+          email: emailAddress,
+          profile: {
+            firstName: firstName,
+            middleName: middleName,
+            lastName: lastName,
+            dateOfBirth: dob,
+          },
         };
+        console.log(payload);
 
         await mutateAsync(payload);
       } else {
@@ -202,6 +276,11 @@ const Register: React.FC = () => {
     setFirstNameError2(false);
   }
 
+  function clearMiddleNameError() {
+    setLastNameError(false);
+    setLastNameError2(false);
+  }
+
   function clearLastNameError() {
     setLastNameError(false);
     setLastNameError2(false);
@@ -210,6 +289,16 @@ const Register: React.FC = () => {
   function clearEmailAddressError() {
     setEmailAddressError(false);
     setEmailAddressError2(false);
+  }
+
+  function clearPhoneNumberError() {
+    setPhoneNumberError(false);
+    setPhoneNumberError2(false);
+  }
+
+  function clearDobError() {
+    setDobError(false);
+    setDobError2(false);
   }
 
   function clearPasswordError() {
@@ -340,7 +429,7 @@ const Register: React.FC = () => {
                             <Grid item xs={12} sm={6}>
                               <Box
                                 onClick={() =>
-                                  setCheckedAccountType("GUARDIAN")
+                                  setCheckedAccountType("guardian")
                                 }
                                 sx={{
                                   cursor: "pointer",
@@ -348,16 +437,16 @@ const Register: React.FC = () => {
                                   paddingY: "10px",
                                   paddingX: "15px",
                                   borderRadius: "5px",
-                                  ...(checkedAccountType == "GUARDIAN"
+                                  ...(checkedAccountType == "guardian"
                                     ? { borderColor: "#268500" }
                                     : { borderColor: "#D2D2D2" }),
                                 }}
                               >
                                 <FormControlLabel
                                   onClick={() =>
-                                    setCheckedAccountType("GUARDIAN")
+                                    setCheckedAccountType("guardian")
                                   }
-                                  value="GUARDIAN"
+                                  value="guardian"
                                   control={<Radio />}
                                   label="Guardian"
                                 />
@@ -365,23 +454,23 @@ const Register: React.FC = () => {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                               <Box
-                                onClick={() => setCheckedAccountType("SPONSOR")}
+                                onClick={() => setCheckedAccountType("sponsor")}
                                 sx={{
                                   cursor: "pointer",
                                   border: "2px solid",
                                   paddingY: "10px",
                                   paddingX: "15px",
                                   borderRadius: "5px",
-                                  ...(checkedAccountType == "SPONSOR"
+                                  ...(checkedAccountType == "sponsor"
                                     ? { borderColor: "#268500" }
                                     : { borderColor: "#D2D2D2" }),
                                 }}
                               >
                                 <FormControlLabel
                                   onClick={() =>
-                                    setCheckedAccountType("SPONSOR")
+                                    setCheckedAccountType("sponsor")
                                   }
-                                  value="SPONSOR"
+                                  value="sponsor"
                                   control={<Radio />}
                                   label="Sponsor"
                                 />
@@ -418,6 +507,38 @@ const Register: React.FC = () => {
                             helperText={
                               (firstNameError && "Must not be empty") ||
                               (firstNameError2 && "Must be a valid name input")
+                            }
+                          />
+                        </Box>
+                      </Box>
+                      <Box sx={{ marginBottom: "21.5px" }}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                          <Typography>Middle Name</Typography>
+                        </Box>
+                        <Box sx={{ borderRadius: "10px" }}>
+                          <TextField
+                            placeholder="Enter your middlename"
+                            sx={{
+                              width: "100%",
+                              borderRadius: "50px",
+                            }}
+                            inputProps={{
+                              sx: {
+                                borderRadius: "10px",
+                              },
+                            }}
+                            onChange={(event: {
+                              target: {
+                                value: React.SetStateAction<string>;
+                              };
+                            }) => {
+                              setMiddleName(event?.target.value);
+                              clearMiddleNameError();
+                            }}
+                            error={middleNameError || middleNameError2}
+                            helperText={
+                              (middleNameError && "Must not be empty") ||
+                              (middleNameError2 && "Must be a valid name input")
                             }
                           />
                         </Box>
@@ -471,11 +592,63 @@ const Register: React.FC = () => {
                             error={emailAddressError || emailAddressError2}
                             helperText={
                               (emailAddressError && "Must not be empty") ||
-                              (emailAddressError2 && "Must be a valid email")
+                              (emailAddressError2 &&
+                                "Must be a valid email address")
                             }
                           />
                         </Box>
                       </Box>
+                      <Box sx={{ marginBottom: "21.5px" }}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                          <Typography>Phone Number</Typography>
+                        </Box>
+                        <Box>
+                          <TextField
+                            placeholder="Enter your Phone Number"
+                            sx={{
+                              width: "100%",
+                              borderRadius: "10px",
+                            }}
+                            onChange={(event: {
+                              target: {
+                                value: React.SetStateAction<string>;
+                              };
+                            }) => {
+                              setPhoneNumber(event.target.value);
+                              clearPhoneNumberError();
+                            }}
+                            error={phoneNumberError || phoneNumberError2}
+                            helperText={
+                              (phoneNumberError && "Must not be empty") ||
+                              (phoneNumberError2 &&
+                                "Must be a valid Phone Number +234'*******' ")
+                            }
+                          />
+                        </Box>
+                      </Box>
+                      <Box sx={{ marginBottom: "21.5px" }}>
+                        <Box sx={{ marginBottom: "11.5px" }}>
+                          <Typography>Date of Birth</Typography>
+                        </Box>
+                        <Box>
+                          <TextField
+                            type="date"
+                            placeholder="Enter your date of birth"
+                            sx={{
+                              width: "100%",
+                              borderRadius: "10px",
+                            }}
+                            onChange={(event) => {
+                              const selectedDate = new Date(event.target.value);
+                              setDob(selectedDate.toISOString());
+                              clearDobError();
+                            }}
+                            error={dobError || dobError2}
+                            helperText={dobError && "Must not be empty"}
+                          />
+                        </Box>
+                      </Box>
+
                       <Box sx={{ marginBottom: "21.5px" }}>
                         <Box sx={{ marginBottom: "11.5px" }}>
                           <Typography>Password</Typography>

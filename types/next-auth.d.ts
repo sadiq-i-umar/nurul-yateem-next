@@ -1,21 +1,18 @@
-import NextAuth from "next-auth/next"; // eslint-disable-line unused-imports/no-unused-imports
+// types/next-auth.d.ts
+
+import NextAuth from "next-auth/next";
+import { UserWithToken } from ".";
 
 declare module "next-auth" {
-  interface User {
-    id: string;
-    email: string;
-    account: string;
+  interface User extends UserWithToken {
+    profile: UserProfile; // Make sure UserProfile includes the properties you need
+  }
+
+  interface Session {
+    user: User;
     token: {
       accessToken: string;
       refreshToken: string;
     };
-    firstName: string;
-    lastName: string;
-    accountType: string;
-  }
-
-  interface Session {
-    user: Partial<User>;
-    token: token;
   }
 }

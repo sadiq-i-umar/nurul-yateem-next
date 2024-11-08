@@ -21,9 +21,8 @@ import Link from "next/link";
 import { Session } from "next-auth";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { baseUrl } from "../../utils/constant";
 import LoaderBackdrop from "../common/loader";
+import { rolesMap } from "@/types";
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -79,65 +78,14 @@ const Login: React.FC = () => {
           redirect: false,
         });
 
+        console.log(res);
         if (res && res.ok) {
-          // Get the session after successful sign-in
-          const user: Session | null | undefined = await getSession();
-          if (user !== undefined) {
-            // Check user account type and redirect accordingly
-            if (user?.user?.account === "ADMIN") {
-              handleLoginSuccess();
-              toast.success("Login successful!");
-              router.push("/dashboard/admin/home");
-              router.refresh();
-            } else if (user?.user?.account === "SPONSOR") {
-              handleLoginSuccess();
-              toast.success("Login successful!");
-              router.push("/dashboard/sponsor/home");
-              router.refresh();
-            } else if (user?.user?.account === "GUARDIAN") {
-              try {
-                // Fetch user profile data
-                const profileRes = await axios.get(`${baseUrl}/user-profile`, {
-                  headers: {
-                    Authorization: `Bearer ${user?.token}`,
-                  },
-                });
+          setLoading(true);
+          const user: Session | null = await getSession();
 
-                const { orphans } = profileRes?.data;
-
-                // Check if the user has added any orphans
-                if (orphans?.length === 0) {
-                  handleLoginSuccess();
-                  toast.success(
-                    "Please complete your profile first. You have no orphans.",
-                  );
-                  router.push("/dashboard/add-an-orphan");
-                  router.refresh();
-                } else {
-                  handleLoginSuccess();
-                  toast.success("Login successful!");
-                  router.push("/dashboard/guardian/home");
-                  router.refresh();
-                }
-              } catch (error: any) {
-                if (
-                  error.response &&
-                  error.response.data &&
-                  error.response.data.error ===
-                    "Guardian profile not found for this user."
-                ) {
-                  handleLoginSuccess();
-                  toast.success("Please complete your profile first.");
-                  router.push("/dashboard/complete-account");
-                  router.refresh();
-                } else {
-                  console.error("Error during fetching user profile:", error);
-                  toast.error(
-                    "An unexpected error occurred. Please try again.",
-                  );
-                }
-              }
-            }
+          if (user && user.user?.profile?.roles) {
+            const route = rolesMap[user.user.profile.roles] || "/";
+            router.push(route);
           } else {
             toast.error("Invalid email or password.");
           }
