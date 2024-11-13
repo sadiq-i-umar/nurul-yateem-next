@@ -8,6 +8,8 @@ import Health from "../public/Health.svg";
 export const emailValidationRegexp =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+export const phoneValidationRegexp = /^\+234\d{10}$/;
+
 //For validating names
 export const nameValidationRegexp = /^(?![-\s]+$)[A-Za-z\- ]+$/;
 

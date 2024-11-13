@@ -19,7 +19,7 @@ const Iconify = forwardRef(
       sx={{ width, height: width, ...sx }}
       {...other}
     />
-  )
+  ),
 );
 
 Iconify.displayName = "Iconify";
