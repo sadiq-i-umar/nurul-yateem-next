@@ -55,7 +55,7 @@ const AddOrphanSuccess: React.FC = () => {
                   paddingY: "10px",
                   paddingX: "70px",
                 }}
-                onClick={() => router.push("/dashboard/home")}
+                onClick={() => router.push("/dashboard/guardian/home")}
               >
                 Go to Dashboard
               </Button>

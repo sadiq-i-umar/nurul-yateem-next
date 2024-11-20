@@ -35,9 +35,9 @@ interface MyData {
 }
 
 const Clothing = () => {
-  const { data: session } = useSession();
-  const token = session?.token;
-  const {
+const { data: session } = useSession();
+  const token = session?.user?.token?.accessToken ?? " ";
+    const {
     data: OrphanDatas,
     isLoading,
     status,
@@ -263,7 +263,7 @@ const Clothing = () => {
                     <MenuItem value="" disabled>
                       -- Select --
                     </MenuItem>
-                    {OrphanDatas?.orphans?.map((item: any, index: any) => (
+                    {OrphanDatas?.map((item: any, index: any) => (
                       <MenuItem
                         key={index}
                         value={item.unique_code}

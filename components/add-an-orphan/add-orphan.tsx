@@ -10,7 +10,6 @@ import { usePathname } from "next/navigation";
 const AddAnOrphan: React.FC = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const token = session?.token;
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
@@ -42,13 +41,16 @@ const AddAnOrphan: React.FC = () => {
                 sm={7}
                 md={8}
                 lg={11}
-              >
-                <Box sx={{ my: 2 }}>
+                >
+                  {pathname == "/dashboard/guardian/orphan-list/add-an-orphan" && (
+<Box sx={{ my: 2 }}>
                   <Typography variant="h1">Create an Orphan Account</Typography>
                   <Typography sx={{}}>
                     Simply fill in the detail below
                   </Typography>
                 </Box>
+)}
+                
                 {/* Pass the success handler to form */}
                 <AddAnOrphanForm onSuccess={handleFormSuccess} />
               </Grid>

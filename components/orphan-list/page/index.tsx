@@ -8,17 +8,19 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoaderBackdrop from "../../common/loader";
 import NeedList from "../../../components/tables/need-list";
+import { useEffect } from "react";
+import { OrphanProps } from "@/types";
 
 const OrphanListPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const token = session?.token;
-  const accountType = session?.user?.accountType;
+  const token = session?.user?.token?.accessToken ?? " ";
+  const accountType = session?.user?.profile?.roles[0];
 
-  const { data, isLoading, status } = useQuery({
+const { data, isLoading, status, error } = useQuery<OrphanProps[]>({
     queryKey: ["orphans"],
     queryFn: () => getOrphans(token),
-    enabled: !!token,
+  enabled: !!token,
   });
   const handleButtonTwoClick = () => {
     router.push("/dashboard/guardian/orphan-list/add-an-orphan");
@@ -34,6 +36,23 @@ const OrphanListPage: React.FC = () => {
   const handlePrintClick = () => {
     console.log("Printing");
   };
+
+  useEffect(() => {
+
+   
+    if (!token) {
+      // Optionally, you can redirect to a login page or show a warning if token is not available
+      router.push("/login");
+    }
+    // Logging different parts of data fetching process
+    if (status === "pending") {
+      console.log("Loading orphan data...");
+    } else if (status === "error") {
+      console.error("Error fetching orphan data:", error);
+    } else if (status === "success" && data) {
+      console.log("Fetched orphan data:", data);
+    }
+  }, [data, status, error, token, router]);
 
   return (
     <Box>
@@ -60,7 +79,7 @@ const OrphanListPage: React.FC = () => {
         </Box>
       ) : (
         <Box sx={{ marginY: "5px" }}>
-          <OrphanListTable orphanData={data?.orphans} />
+        <OrphanListTable orphanData={data || []} />
           {/* <OrphanListTable orphanData={[{}]} /> */}
           {/* <OrphanSponsorshipCard cardData={[]} /> */}
         </Box>

@@ -2,14 +2,16 @@ import { Box, Dialog, Divider, Grid, Typography } from "@mui/material";
 import { ImageFrameCircular80 } from "../../common/image-frames";
 import { PillWithDot, TextOnlyPill } from "../../pills";
 import { Close, MoreVert } from "@mui/icons-material";
-import { Orphan } from "../../../types";
+import { Orphan, OrphanProps } from "../../../types";
 
 const ViewOrphanDetailsSideModal: React.FC<{
   open: boolean;
   close: () => void;
-  orphanData: Orphan;
+  orphanData: OrphanProps;
 }> = ({ open, close, orphanData }) => {
-  return (
+
+
+return (
     <Dialog open={open} onClose={close}>
       <Box
         sx={{
@@ -40,32 +42,46 @@ const ViewOrphanDetailsSideModal: React.FC<{
         >
           <Box sx={{ flexGrow: 1, display: "flex" }}>
             <Box>
-              <ImageFrameCircular80 image={orphanData?.profile_photo} />
+              <ImageFrameCircular80 image={orphanData?.profile?.picture} />
             </Box>
-            <Box>
-              <Box>
-                <Typography
-                  sx={{
-                    textTransform: "capitalize",
-                  }}
-                >{`${orphanData?.first_name} ${orphanData?.last_name}`}</Typography>
-              </Box>
-              <Box>
-                <TextOnlyPill
-                  text={orphanData?.gender}
-                  bgColor={""}
-                  color={""}
-                />
-              </Box>
-              <Box>
-                <PillWithDot
-                  text={`created at ${orphanData?.created_at}`}
-                  bgColor=""
-                  dotColor=""
-                  textColor=""
-                />
-              </Box>
-            </Box>
+            <Box
+  sx={{
+    display: "flex",
+    flexDirection: "column",
+  }}
+>
+  <Box>
+    <Typography
+                sx={{
+                  fontSize: '20px',
+                  fontWeight : 'bold',
+        textTransform: "capitalize",
+      }}
+    >
+      {`${orphanData?.profile?.firstName} ${orphanData?.profile?.lastName}`}
+    </Typography>
+  </Box>
+  <Box>
+    <TextOnlyPill
+      text={orphanData?.profile?.gender}
+      bgColor= "blue"
+      color="white" 
+    />
+  </Box>
+  <Box sx={{ fontSize: "14px" }}>
+    <PillWithDot
+      text={new Date(orphanData?.profile?.createdAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })}
+      bgColor=""
+      dotColor=""
+      textColor=""
+    />
+  </Box>
+</Box>
+
           </Box>
           <Box sx={{ display: "flex" }}>
             <Box>
@@ -84,28 +100,35 @@ const ViewOrphanDetailsSideModal: React.FC<{
             groupContent: [
               {
                 title: "State of Origin",
-                content: orphanData?.state_of_origin,
+                content: orphanData?.profile?.localGovernment?.state.name,
               },
               {
                 title: "Local Government Area",
-                content: orphanData?.local_government,
+                content: orphanData?.profile?.localGovernment?.name,
               },
-              { title: "Date of Birth", content: orphanData?.date_of_birth },
+              { title: "Date of Birth", content: new Date(orphanData?.profile?.dateOfBirth).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+          },
             ],
           },
           {
             groupTitle: "School Information",
             groupContent: [
-              { title: "Is he in school", content: orphanData?.in_school },
-              { title: "School Name", content: orphanData?.school_name },
-              { title: "School Address", content: orphanData?.school_address },
+              { title: "Is he in school",   content: orphanData?.Orphan?.schoolStatus
+    ? "In school"
+    : "Not in school",},
+              { title: "School Name", content: orphanData?.Orphan?.schoolName  ?? "" },
+              { title: "School Address", content: orphanData?.Orphan?.schoolAddress ?? ""},
               {
                 title: "School Contact Person",
-                content: orphanData?.school_contact_person,
+                content: orphanData?.Orphan?.schoolContactPerson ?? "",
               },
               {
                 title: "Phone Number of Contact Person",
-                content: orphanData?.phone_number_of_contact_person,
+                content: orphanData?.Orphan?.schoolContactPhone  ?? "sadfdsf",
               },
             ],
           },

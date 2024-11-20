@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { PhotoUploadFrame } from "../../common/image-frames";
 import DragUpload from "../../drag-upload";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -36,7 +36,7 @@ interface MyData {
 
 const Education = () => {
   const { data: session } = useSession();
-  const token = session?.token;
+  const token = session?.user?.token?.accessToken ||  "";
   // to get all orphans id
   const {
     data: OrphanDatas,
@@ -71,14 +71,14 @@ const Education = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [image, setImage] = useState({ url: "", file: "" });
-  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
   const [gender, setGender] = useState("");
   const [InSchool, setInSchool] = useState("");
   const [schoolName, setSchoolName] = useState("");
   const [schoolContact, setSchoolContact] = useState("");
   const [phoneNumberOfSchool, setPhoneNumberOfSchool] = useState("");
   const [uniqueCode, setUniqueCode] = useState("");
-  const [dateOfEnrollment, setDateOfEnrollment] = useState(null);
+const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
   const [orphanClass, setOrphanClass] = useState("");
   const [singleData, setSingleData] = useState<MyData>({});
   const [loader, setLoader] = useState(false);
@@ -310,7 +310,7 @@ const Education = () => {
                     <MenuItem value="" disabled>
                       -- Select --
                     </MenuItem>
-                    {OrphanDatas?.orphans?.map((item: any, index: any) => (
+                    {OrphanDatas?.map((item: any, index: any) => (
                       <MenuItem
                         key={index}
                         value={item.unique_code}
@@ -427,20 +427,14 @@ const Education = () => {
                   <Box sx={{ borderRadius: "10px" }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
-                        value={dayjs(dateOfBirth)}
-                        onChange={(newDate) => {
-                          setDateOfBirth(
-                            newDate
-                              ? dayjs(newDate, "DD/MM/YYYY").format(
-                                  "YYYY-MM-DD",
-                                )
-                              : "",
-                          );
-                          setDateOfBirthError(false);
-                        }}
-                        format="DD/MM/YYYY"
-                        sx={{ width: "100%" }}
-                      />
+            value={dateOfEnrollment}
+          onChange={(newDate) => {
+              setDateOfEnrollment(newDate);
+              setDateOfEnrollmentError(false);
+            }}
+            format="DD/MM/YYYY"
+            sx={{ width: "100%" }}
+          />
                     </LocalizationProvider>
                     {dateOfBirthError && (
                       <Typography component="p" color="error">
@@ -626,8 +620,8 @@ const Education = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         value={dateOfEnrollment}
-                        onChange={(newDate) => {
-                          setDateOfEnrollment(newDate ?? null);
+                        onChange={(newDate: Dayjs | null) => {
+                          setDateOfEnrollment(newDate);
                           setDateOfEnrollmentError(false);
                         }}
                         format="DD/MM/YYYY"

@@ -196,7 +196,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
             backgroundColor: "white",
             padding: "24px",
             borderRadius: "8px",
-            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.1)",
           }}
         >
           <Box
@@ -380,7 +380,6 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
                       }
                     />
                   )}
-                  rules={{ required: "Middle Name is required" }}
                 />
               </Grid>
               <Grid item xs={12} lg={4}>

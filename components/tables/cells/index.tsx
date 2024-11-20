@@ -5,8 +5,8 @@ import { TextOnlyPill } from "../../pills";
 export const ImageNameEmailCell: React.FC<{
   image: string;
   name: string;
-  email: string;
-}> = ({ image, name, email }) => {
+  gender: string;
+}> = ({ image, name, gender }) => {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box sx={{ marginRight: "12px" }}>
@@ -30,7 +30,7 @@ export const ImageNameEmailCell: React.FC<{
           <Typography
             sx={{ fontSize: "12px", color: "#908E8F", fontWeight: 500 }}
           >
-            {email}
+            {gender}
           </Typography>
         </Box>
       </Box>

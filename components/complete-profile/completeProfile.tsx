@@ -22,8 +22,8 @@ import LoaderBackdrop from "../common/loader";
 const CompleteAccount: React.FC = () => {
   const { data: session } = useSession();
   const token = session?.token;
-  const firstName = session?.user?.firstName;
-  const lastName = session?.user?.lastName;
+  const firstName = "first name";
+  const lastName = "last name";
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);

@@ -12,8 +12,8 @@ import NeedList from "../../tables/need-list";
 const ActivityPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const token = session?.token;
-  const accountType = session?.user?.accountType;
+  const token = session?.user?.token?.accessToken ?? " ";
+  const accountType = session?.user?.profile?.roles[0];
 
   const { data, isLoading, status } = useQuery({
     queryKey: ["orphans"],
@@ -60,7 +60,7 @@ const ActivityPage: React.FC = () => {
         </Box>
       ) : (
         <Box sx={{ marginY: "5px" }}>
-          <OrphanListTable orphanData={data?.orphans} />
+          <OrphanListTable orphanData={data || []} />
           {/* <OrphanListTable orphanData={[{}]} /> */}
           {/* <OrphanSponsorshipCard /> */}
         </Box>

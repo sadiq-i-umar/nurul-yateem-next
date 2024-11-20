@@ -1,18 +1,18 @@
 "use client";
-import { useScrollToTop } from "@/app/(dashboard)/hooks/use-scroll-to-top";
 import { Box, Typography, Grid } from "@mui/material";
-import { SessionProvider, useSession } from "next-auth/react";
+import { Session } from "next-auth";
+import { getSession, SessionProvider } from "next-auth/react";
 import {
   LogoImageFrame,
   ProfileImageFrame,
 } from "../../../../../../components/common/image-frames";
+import { useScrollToTop } from "../../../hooks/use-scroll-to-top";
 
-const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const MainDashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   useScrollToTop();
-  const { data: session } = useSession();
-  const token = session?.token;
-  const firstName = session?.user?.firstName;
-  const lastName = session?.user?.lastName;
+    const user: Session | null = await getSession();
+  const firstName = user?.user?.profile.firstName;
+  const lastName = user?.user?.profile.lastName;
 
   return (
     <main>
@@ -99,7 +99,7 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
           </Box>
         </Box>
       </Box>
-      <Grid
+      {/* <Grid
         sx={{
           display: { xs: "none", sm: "block" },
           position: "fixed",
@@ -176,7 +176,7 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </Box>
           </Box>
         </Box>
-      </Grid>
+      </Grid> */}
       {children}
     </main>
   );

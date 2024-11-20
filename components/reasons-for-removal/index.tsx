@@ -1,30 +1,33 @@
 "use client";
 
-import { Add, Close } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  InputLabel,
-  styled,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { FC, useState } from "react";
+import { Box, Button, Dialog, DialogActions, InputLabel, TextField, Typography } from "@mui/material";
+import { styled } from "@mui/system";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export interface ReasonForDeleteOrphanProps {
   openDeleteReason: boolean;
   setOpenDeleteReason: (open: boolean) => void;
   SelectedOrphan: any;
+  onDelete: (reason: string, orphan: any) => void; 
 }
 
 const ReasonForDeleteOrphan: React.FC<ReasonForDeleteOrphanProps> = ({
   openDeleteReason,
   setOpenDeleteReason,
   SelectedOrphan,
+  onDelete,
 }) => {
-  const submitReason = () => {
+  const [reason, setReason] = useState(""); 
+
+  const handleDelete = () => {
+    if (!reason.trim()) {
+      toast("Please provide a reason for removal.");
+      return;
+    }
+    console.log("Reason for deletion:", reason);
+  console.log("Selected Orphan:", SelectedOrphan);
+    onDelete(reason, SelectedOrphan); 
     setOpenDeleteReason(false);
   };
 
@@ -42,7 +45,6 @@ const ReasonForDeleteOrphan: React.FC<ReasonForDeleteOrphanProps> = ({
       <Dialog
         open={openDeleteReason}
         onClose={() => setOpenDeleteReason(false)}
-        sx={{}}
         style={{ overflow: "-moz-hidden-unscrollable" }}
       >
         <Box
@@ -50,27 +52,16 @@ const ReasonForDeleteOrphan: React.FC<ReasonForDeleteOrphanProps> = ({
             display: "flex",
             flexDirection: "column",
             background: "white",
-            paddingTop: "27px",
-            paddingBottom: "22px",
-            paddingRight: "25px",
-            paddingLeft: "25px",
+            padding: "27px 25px",
             width: { xs: "auto", sm: "548px" },
             borderRadius: "18px",
           }}
         >
           <form>
-            <Box
-              sx={{
-                marginBottom: "39px",
-                textAlign: "center",
-                position: "relative",
-              }}
-            >
+            <Box sx={{ marginBottom: "39px", textAlign: "center", position: "relative" }}>
               <Typography
                 variant="h2"
                 sx={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
                   textAlign: "center",
                   wordWrap: "break-word",
                   width: { xs: "150px", sm: "auto" },
@@ -80,12 +71,12 @@ const ReasonForDeleteOrphan: React.FC<ReasonForDeleteOrphanProps> = ({
               </Typography>
             </Box>
 
-            <InputLabel sx={{ marginBottom: "14px" }}>
-              Why are you removing this user?
-            </InputLabel>
+            <InputLabel sx={{ marginBottom: "14px" }}>Why are you removing this user?</InputLabel>
             <TextField
               multiline
               rows={6}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
               sx={{
                 width: "100%",
                 marginBottom: "5px",
@@ -95,9 +86,7 @@ const ReasonForDeleteOrphan: React.FC<ReasonForDeleteOrphanProps> = ({
               label="Write in here..."
               variant="outlined"
               InputLabelProps={{
-                sx: {
-                  fontSize: { xs: "13px", sm: "16px" },
-                },
+                sx: { fontSize: { xs: "13px", sm: "16px" } },
               }}
             />
           </form>
@@ -120,7 +109,7 @@ const ReasonForDeleteOrphan: React.FC<ReasonForDeleteOrphanProps> = ({
           </Button>
 
           <Button
-            onClick={submitReason}
+            onClick={handleDelete}
             autoFocus
             sx={{
               borderRadius: "1rem",
