@@ -48,59 +48,87 @@ const Login: React.FC = () => {
   }
 
   const handleLogin = async () => {
-    setLoading(true); // Set loading state to true when login process starts
+  setLoading(true);
 
-    if (emailAddress === "") {
-      setEmailAddressError(true);
-      setLoading(false); // Set loading state to false when an error occurs
-      return;
-    }
+  if (emailAddress === "") {
+    setEmailAddressError(true);
+    setLoading(false);
+    return;
+  }
 
-    if (password === "") {
-      setPasswordError(true);
-      setLoading(false); // Set loading state to false when an error occurs
-      return;
-    }
+  if (password === "") {
+    setPasswordError(true);
+    setLoading(false);
+    return;
+  }
 
-    if (password.length < 8) {
-      setPasswordError2(true);
-      setLoading(false); // Set loading state to false when an error occurs
-      return;
-    }
+  if (password.length < 8) {
+    setPasswordError2(true);
+    setLoading(false);
+    return;
+  }
 
-    // Only proceed with login if email and password are provided and password meets the length criteria
-    if (emailAddress && password && password.length >= 8) {
-      try {
-        // Sign in user with provided credentials
-        const res = await signIn("credentials", {
-          email: emailAddress,
-          password: password,
-          redirect: false,
-        });
+  if (emailAddress && password && password.length >= 8) {
+    try {
+      const res = await signIn("credentials", {
+        email: emailAddress,
+        password: password,
+        redirect: false,
+      });
 
-        console.log(res);
-        if (res && res.ok) {
-          setLoading(true);
-          const user: Session | null = await getSession();
+      if (res && res.ok) {
+        setLoading(true);
+        const user: Session | null = await getSession();
+        
 
-          if (user && user.user?.profile?.roles) {
-            const route = rolesMap[user.user.profile.roles] || "/";
-            router.push(route);
+        if (user && user.user?.profile?.roles) {
+          const isGuardian = user.user.profile.roles.includes("guardian");
+
+          if (isGuardian) {
+            // Call API to check if the guardian has orphans
+            const response = await fetch(
+              "http://localhost:3002/api/v1/guardian/has-orphans",
+              {
+                method: "GET",
+                headers: {
+                  Accept: "*/*",
+                  Authorization: `Bearer ${user.user.token.accessToken}`, // Pass the token
+                },
+              }
+            );
+
+            const data = await response.json();
+
+            if (data.hasOrphans) {
+              router.push("/dashboard/guardian/home");
+            } else {
+               toast.success(
+                "Please complete your profile first. You have no orphans."
+              );
+              setTimeout(() => {
+                router.push("/dashboard/add-an-orphan");
+              }, 2000); // Delay navigation for 2 seconds
+            
+            }
           } else {
-            toast.error("Invalid email or password.");
+            const route = rolesMap[user?.user?.profile?.roles] || "/";
+            router.push(route);
           }
         } else {
           toast.error("Invalid email or password.");
         }
-      } catch (error: any) {
-        // Handle other errors during sign-in process
-        console.error("An error occurred during sign-in:", error);
-        toast.error("An unexpected error occurred. Please try again.");
-      } finally {
-        setLoading(false); // Set loading state to false when login process finishes
+      } else {
+        toast.error("Invalid email or password.");
       }
+    } catch (error: any) {
+      console.error("An error occurred during sign-in:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+};
+
 
   useEffect(() => {
     return () => {

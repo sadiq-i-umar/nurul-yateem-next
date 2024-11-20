@@ -30,6 +30,7 @@ import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
 import { EditOrphanApi } from "../../../service/update-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 
 const EditOrphanSideModal: React.FC<{
   openSideModal: boolean;
@@ -52,7 +53,6 @@ const EditOrphanSideModal: React.FC<{
     schoolAddress,
     schoolContact,
     phoneNumberOfSchool,
-    class_,
     uniqueCode,
     setFirstName,
     setLastName,
@@ -66,27 +66,25 @@ const EditOrphanSideModal: React.FC<{
     setSchoolAddress,
     setSchoolContact,
     setPhoneNumberOfSchool,
-    setClass,
     setUniqueCode,
   } = useAddOrphanStore();
 
   useEffect(() => {
     if (openSideModal && SelectedOrphan) {
-      setFirstName(SelectedOrphan?.first_name || "");
-      setLastName(SelectedOrphan?.last_name || "");
-      setImage(SelectedOrphan?.profile_photo || "");
-      setGender(SelectedOrphan?.gender || "");
-      setDateOfBirth(SelectedOrphan?.date_of_birth || "");
+      setFirstName(SelectedOrphan?.profile?.firstName || "");
+      setLastName(SelectedOrphan?.profile?.lastName || "");
+      setImage(SelectedOrphan?.profile?.picture || "");
+      setGender(SelectedOrphan?.profile?.gender || "");
+      setDateOfBirth(SelectedOrphan?.profile?.dateofBirth || "");
       setStateOfOrigin(SelectedOrphan?.state_of_origin || "");
-      setLocalGovernmentArea(SelectedOrphan?.local_government || "");
-      setInSchool(SelectedOrphan?.in_school || "");
-      setSchoolName(SelectedOrphan?.school_name || "");
-      setSchoolAddress(SelectedOrphan?.school_address || "");
-      setSchoolContact(SelectedOrphan?.school_contact_person || "");
+      setLocalGovernmentArea(SelectedOrphan?.profile?.localGovernment?.name || "");
+    setInSchool(SelectedOrphan?.Orphan?.schoolName?.length > 0 ? "yes" : "no");
+      setSchoolName(SelectedOrphan?.Orphan?.schoolName || "");
+      setSchoolAddress(SelectedOrphan?.Orphan?.schoolAddress || "");
+      setSchoolContact(SelectedOrphan?.Orphan.schoolContactPerson || "");
       setPhoneNumberOfSchool(
-        SelectedOrphan?.phone_number_of_contact_person || "",
+        SelectedOrphan?.Orphan.schoolContactPhone  || "",
       );
-      setClass(SelectedOrphan?.class || "");
       setUniqueCode(SelectedOrphan?.unique_code || "");
     }
   }, [openSideModal, SelectedOrphan]);
@@ -192,10 +190,7 @@ const EditOrphanSideModal: React.FC<{
       setPhoneNumberOfSchoolError(true);
       isValid = false;
     }
-    if (!class_) {
-      setClassError(true);
-      isValid = false;
-    }
+  
 
     if (!isValid) {
       toast.error("Please fill in all required fields");
@@ -220,7 +215,6 @@ const EditOrphanSideModal: React.FC<{
       schoolAddress,
       schoolContact,
       phoneNumberOfSchool,
-      class_,
       uniqueCode,
     } = useAddOrphanStore.getState();
 
@@ -244,7 +238,6 @@ const EditOrphanSideModal: React.FC<{
         school_address: schoolAddress,
         school_contact_person: schoolContact,
         phone_number_of_contact_person: phoneNumberOfSchool,
-        class: class_,
       };
 
       // Make the API call with the payload
@@ -306,8 +299,13 @@ const EditOrphanSideModal: React.FC<{
                       accept=".png, .jpg, .jpeg"
                       onChange={handleImageSelection}
                     />
-                    <img src={EditPic.src} alt="Hero Image" />
-                  </Button>
+ <Image
+      src={EditPic.src}
+      alt="Hero Image"
+      width={50} 
+      height={50} 
+      style={{ objectFit: "cover" }} 
+    />                  </Button>
                 </Box>
 
                 <Box>
@@ -669,39 +667,7 @@ const EditOrphanSideModal: React.FC<{
                   </Grid>
                 </Grid>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "21.5px" }}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
-                      <Typography>Class</Typography>
-                    </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
-                      <TextField
-                        sx={{
-                          width: "100%",
-                          borderRadius: "50px",
-                        }}
-                        inputProps={{
-                          sx: {
-                            borderRadius: "10px",
-                          },
-                        }}
-                        placeholder={"Enter Class Level"}
-                        value={class_}
-                        onChange={(event: {
-                          target: {
-                            value: string;
-                          };
-                        }) => {
-                          setClass(event?.target.value);
-                          setClassError(false);
-                        }}
-                      />
-                      {classError && (
-                        <Typography component="p" color="error">
-                          Class is required
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
+                  
                 </Grid>
               </Box>
               <Box sx={{ marginBottom: "40px" }}>

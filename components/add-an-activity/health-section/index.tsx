@@ -36,7 +36,7 @@ interface MyData {
 
 const Health = () => {
   const { data: session } = useSession();
-  const token = session?.token;
+  const token = session?.user?.token?.accessToken || "";
   // to get all orphans id
   const {
     data: OrphanDatas,
@@ -108,7 +108,7 @@ const Health = () => {
   };
 
   const queryClient = useQueryClient();
-  const orphanId = OrphanDatas?.id;
+  const orphanId = OrphanDatas?.[0].Orphan.id;
 
   const mutation = useMutation({
     mutationFn: (payload: any) => CreateOrphanActivities(payload, token),
@@ -261,7 +261,7 @@ const Health = () => {
                     <MenuItem value="" disabled>
                       -- Select --
                     </MenuItem>
-                    {OrphanDatas?.orphans?.map((item: any, index: any) => (
+                    {OrphanDatas?.map((item: any, index: any) => (
                       <MenuItem
                         key={index}
                         value={item.unique_code}

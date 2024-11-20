@@ -12,8 +12,8 @@ import OrphanRequestListTable from "../../tables/orphan-request-list";
 const OrphanListRequest: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const token = session?.token;
-  const accountType = session?.user?.accountType;
+  const token = session?.user?.token?.accessToken || "";
+  const accountType = session?.user?.profile?.roles;
 
   const { data, isLoading, status } = useQuery({
     queryKey: ["orphans"],
@@ -51,7 +51,7 @@ const OrphanListRequest: React.FC = () => {
       </Box>
 
       <Box sx={{ marginY: "5px" }}>
-        <OrphanRequestListTable orphanData={data?.orphans} />
+        <OrphanRequestListTable orphanData={data || []} />
         {/* <OrphanListTable orphanData={[{}]} /> */}
         {/* <OrphanSponsorshipCard /> */}
       </Box>

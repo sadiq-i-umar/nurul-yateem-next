@@ -7,7 +7,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import * as React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { PillWithDot } from "../../pills";
 import { ImageNameEmailCell } from "../cells";
 import { MoreVert } from "@mui/icons-material";
@@ -16,10 +15,17 @@ import AlertDialog from "../../Reusable-Dialog";
 import ReasonForDeleteOrphan from "../../reasons-for-removal";
 import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
 import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
+import { OrphanProps } from "@/types";
+import { deleteOrphanRequest } from "@/service/orphan-list";
+import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 const OrphanListTable: React.FC<{
-  orphanData: any[];
+  orphanData: OrphanProps[];
 }> = ({ orphanData }) => {
+
+  const { data: session } = useSession();
+  const token = session?.user?.token?.accessToken ?? " ";
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
@@ -52,6 +58,30 @@ const OrphanListTable: React.FC<{
     setOpenViewDetailsModal(true);
     setSelectedOrphan(data);
   };
+
+  const handleDeleteOrphan = async (reason: string, orphan: any) => {
+    const payload = {
+      orphanId: orphan, 
+      deletionReason : reason
+    }
+      console.log('Payload being sent:', payload);  // Log the payload for debugging
+
+    try {
+    const response = await deleteOrphanRequest(payload, token); // Pass token here
+      console.log(response);
+      if (response) {
+        toast("Orphan deleted successfully.");
+        // Optionally: Remove orphan from orphanData state
+      } else {
+        toast("Failed to delete orphan.");
+      }
+    } catch (error) {
+      console.error("Error deleting orphan:", error);
+      alert("An error occurred. Please try again.");
+    }
+  }
+
+  
 
   const handleOpenPopover = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -111,7 +141,7 @@ const OrphanListTable: React.FC<{
             </TableRow>
           </TableHead>
           <TableBody>
-            {orphanData?.map((orphan) => (
+            {Array.isArray(orphanData) && orphanData.map((orphan) => (
               <TableRow
                 key={`${orphan?.id}`}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -124,18 +154,34 @@ const OrphanListTable: React.FC<{
                       <Checkbox />
                     </Box>
                     <ImageNameEmailCell
-                      image={orphan?.profile_photo}
-                      name={`${orphan?.first_name} ${orphan?.last_name}`}
-                      email={orphan.gender}
+                      image={orphan?.profile.picture}
+                      name={`${orphan?.profile.firstName} ${orphan?.profile.lastName}`}
+                     gender={orphan?.profile.gender}
                     />
                   </Box>
                 </TableCell>
                 <TableCell align="left">
+                <Typography
+  sx={{ fontSize: "14px", fontWeight: 600, color: "#3D3B3C" }}
+>
+  {new Date(orphan?.profile.dateOfBirth).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
+</Typography>
+                </TableCell>
+                <TableCell align="left">
                   <Typography
-                    sx={{ fontSize: "14px", fontWeight: 600, color: "#3D3B3C" }}
-                  >
-                    {orphan?.date_of_birth}
-                  </Typography>
+  sx={{
+    fontSize: "14px",
+    fontWeight: "400",
+    color: "#667085",
+  }}
+>
+  {orphan?.Orphan?.schoolName ? "In school" : "Not in school"}
+</Typography>
+
                 </TableCell>
                 <TableCell align="left">
                   <Typography
@@ -144,52 +190,16 @@ const OrphanListTable: React.FC<{
                       fontWeight: "400",
                       color: "#667085",
                     }}
-                  >
-                    {orphan?.in_school}
-                  </Typography>
-                </TableCell>
-                <TableCell align="left">
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: "400",
-                      color: "#667085",
-                    }}
-                  >
-                    {orphan?.state_of_origin}
-                  </Typography>
+        >Abuja
+        </Typography>
                 </TableCell>
                 <TableCell align="left">
                   <PillWithDot
-                    text={orphan?.account_status}
-                    bgColor={
-                      orphan?.account_status == "APPROVED"
-                        ? "#ECFDF3"
-                        : orphan?.account_status == "PENDING"
-                          ? "#FFF8E4"
-                          : orphan?.account_status == "REJECTED"
-                            ? "#FFEFEF"
-                            : ""
-                    }
-                    dotColor={
-                      orphan?.account_status == "APPROVED"
-                        ? "#007A27"
-                        : orphan?.account_status == "PENDING"
-                          ? "#FFA800"
-                          : orphan?.account_status == "REJECTED"
-                            ? "#FF0000"
-                            : ""
-                    }
-                    textColor={
-                      orphan?.account_status == "APPROVED"
-                        ? "#007A27"
-                        : orphan?.account_status == "PENDING"
-                          ? "#FFA800"
-                          : orphan?.account_status == "REJECTED"
-                            ? "#FF0000"
-                            : ""
-                    }
-                  />
+  text={orphan?.Orphan?.isAccepted ? "Accepted" : "Pending"}
+  bgColor={orphan?.Orphan?.isAccepted ? "#ECFDF3" : "#FFEFEF"}
+  dotColor={orphan?.Orphan?.isAccepted ? "#007A27" : "#FF0000"}
+  textColor={orphan?.Orphan?.isAccepted ? "#007A27" : "#FF0000"}
+/>
                 </TableCell>
                 <TableCell align="left">
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -226,7 +236,7 @@ const OrphanListTable: React.FC<{
                           backgroundColor: "#EBEFFF",
                         },
                       }}
-                      onClick={() => handleOpenDelete(orphan)}
+                      onClick={() => handleOpenDelete(orphan?.Orphan?.id)}
                     >
                       <Image
                         width={21}
@@ -329,11 +339,11 @@ const OrphanListTable: React.FC<{
         open={openViewDetailsModal}
         close={() => setOpenViewDetailsModal(false)}
       />
-
       <ReasonForDeleteOrphan
         openDeleteReason={openDeleteReason}
         setOpenDeleteReason={setOpenDeleteReason}
         SelectedOrphan={SelectedOrphan}
+        onDelete={handleDeleteOrphan} 
       />
       <EditOrphanSideModal
         openSideModal={openEditSideModal}
@@ -350,3 +360,4 @@ const OrphanListTable: React.FC<{
 };
 
 export default OrphanListTable;
+
