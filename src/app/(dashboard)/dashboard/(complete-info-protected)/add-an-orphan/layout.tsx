@@ -1,18 +1,17 @@
 "use client";
 import { Box, Typography, Grid } from "@mui/material";
-import { Session } from "next-auth";
-import { getSession, SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import {
   LogoImageFrame,
   ProfileImageFrame,
 } from "../../../../../../components/common/image-frames";
 import { useScrollToTop } from "../../../hooks/use-scroll-to-top";
 
-const MainDashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+const MainDashboardLayout =  ({ children }: { children: React.ReactNode }) => {
   useScrollToTop();
-    const user: Session | null = await getSession();
-  const firstName = user?.user?.profile.firstName;
-  const lastName = user?.user?.profile.lastName;
+  const { data: session } = useSession(); 
+    const firstName = session?.user?.profile.firstName;
+  const lastName = session?.user?.profile.lastName;
 
   return (
     <main>

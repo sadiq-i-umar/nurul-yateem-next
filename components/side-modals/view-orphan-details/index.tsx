@@ -47,7 +47,8 @@ return (
             <Box
   sx={{
     display: "flex",
-    flexDirection: "column",
+              flexDirection: "column",
+    mx: '10px'
   }}
 >
   <Box>

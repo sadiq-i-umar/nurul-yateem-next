@@ -3,25 +3,22 @@ import { Box } from "@mui/material";
 import SubHeader from "../../sub-header";
 import OrphanListTable from "../../tables/orphan-list";
 import { useQuery } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoaderBackdrop from "../../common/loader";
 import NeedList from "../../../components/tables/need-list";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { OrphanProps } from "@/types";
+import { getOrphans } from "@/src/app/api/service/orphan-list";
+
 
 const OrphanListPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const token = session?.user?.token?.accessToken ?? " ";
+  // const token = session?.user?.token?.accessToken ?? " ";
+  const [token, setToken] = useState("");
   const accountType = session?.user?.profile?.roles[0];
 
-const { data, isLoading, status, error } = useQuery<OrphanProps[]>({
-    queryKey: ["orphans"],
-    queryFn: () => getOrphans(token),
-  enabled: !!token,
-  });
   const handleButtonTwoClick = () => {
     router.push("/dashboard/guardian/orphan-list/add-an-orphan");
   };
@@ -37,30 +34,52 @@ const { data, isLoading, status, error } = useQuery<OrphanProps[]>({
     console.log("Printing");
   };
 
-  useEffect(() => {
 
-   
-    if (!token) {
-      // Optionally, you can redirect to a login page or show a warning if token is not available
-      router.push("/login");
+  // Effect to ensure the token is available before proceeding
+  // useEffect(() => {
+  //   if (!token) {
+  //     // Redirect to login if no token is available
+  //     console.warn("Token not found, redirecting to login...");
+  //     router.push("/login");
+  //   } else {
+  //     // Update state to indicate token is ready
+  //     setTokenAvailable(true);
+  //   }
+  // }, [token, router]);
+
+  useEffect(() => {
+    if (session)
+    {
+      setToken(session.user.token.accessToken);
     }
-    // Logging different parts of data fetching process
+     
+  },[session ])
+
+  // Query to fetch orphans data, only enabled when token is available
+  const { data, isLoading, status, error } = useQuery<OrphanProps[]>({
+    queryKey: ["orphans",token],
+    queryFn: () => getOrphans(token), // Provide fallback to an empty string
+  });
+
+  // Logging for data-fetching states
+  useEffect(() => {
     if (status === "pending") {
       console.log("Loading orphan data...");
     } else if (status === "error") {
       console.error("Error fetching orphan data:", error);
-    } else if (status === "success" && data) {
+    } else if (status === "success") {
       console.log("Fetched orphan data:", data);
     }
-  }, [data, status, error, token, router]);
+  }, [status, data, error]);
+ 
 
   return (
     <Box>
       {isLoading && <LoaderBackdrop />}
-      <Box>
+      <Box sx={{ marginY: "5px" , marginX: "-8px" , ml:'8px' }}>
         <h1>Orphan List</h1>
       </Box>
-      <Box>
+      <Box sx={{ marginY: "5px" , marginX: "-8px" }}>
         <SubHeader
           itemCount={undefined}
           buttonTwoText={"Add Orphans"}
@@ -78,7 +97,7 @@ const { data, isLoading, status, error } = useQuery<OrphanProps[]>({
           <NeedList />
         </Box>
       ) : (
-        <Box sx={{ marginY: "5px" }}>
+        <Box sx={{ marginY: "5px" , marginX: "-8px" }}>
         <OrphanListTable orphanData={data || []} />
           {/* <OrphanListTable orphanData={[{}]} /> */}
           {/* <OrphanSponsorshipCard cardData={[]} /> */}

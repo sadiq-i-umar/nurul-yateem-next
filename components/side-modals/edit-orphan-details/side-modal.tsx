@@ -28,9 +28,9 @@ import { TextOnlyPill } from "../../pills";
 import EditPic from "../../../public/ediitProfile.svg";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { EditOrphanApi } from "../../../service/update-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
+import { EditOrphanApi } from "@/src/app/api/service/update-account";
 
 const EditOrphanSideModal: React.FC<{
   openSideModal: boolean;

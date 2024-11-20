@@ -70,14 +70,14 @@ const DragUpload = ({
 
   return (
     <Container
+      
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleFileDrop}
       onClick={() => document.getElementById("fileInput")?.click()}
     >
       <Box
         sx={{
-          border: "2px dashed #DFDFDF",
-          padding: "20px",
+          paddingX: "20px",
           textAlign: "center",
         }}
       >

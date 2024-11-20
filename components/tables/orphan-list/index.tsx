@@ -16,9 +16,9 @@ import ReasonForDeleteOrphan from "../../reasons-for-removal";
 import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
 import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
 import { OrphanProps } from "@/types";
-import { deleteOrphanRequest } from "@/service/orphan-list";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { deleteOrphanRequest } from "@/src/app/api/service/orphan-list";
 
 const OrphanListTable: React.FC<{
   orphanData: OrphanProps[];

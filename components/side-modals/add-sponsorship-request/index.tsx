@@ -15,9 +15,9 @@ import AlertDialog from "../../Reusable-Dialog";
 import { OrphansNeedData } from "../../../utils";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { AddSponsorshipRequestApi } from "../../../service/update-account";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ImageNameGenderIdCell } from "../../tables/cells";
+import { AddSponsorshipRequestApi } from "@/src/app/api/service/update-account";
 
 const AddSponsorshipRequestSideModal: React.FC<{
   openSideModal: boolean;

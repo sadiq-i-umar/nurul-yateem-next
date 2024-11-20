@@ -4,29 +4,50 @@ import { Box, Button, Typography } from "@mui/material";
 import SubHeader from "../../sub-header";
 import OrphanActivityTable from "../../tables/orphan-activity";
 import { useQuery } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoaderBackdrop from "../../common/loader";
 import ActivityDialog from "../Reusable-Dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ActivityHeader from "../Reusable-Dialog/ActivityHeader";
 import ActivityBody from "../Reusable-Dialog/ActivityBody";
 import Image from "next/image";
 import EmptyImag from "../../../public/nocontentbackup.svg";
 import AddIcon from "@mui/icons-material/Add";
+import { getOrphans } from "@/src/app/api/service/orphan-list";
+import { OrphanProps } from "@/types";
 
 const OrphanActivityPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const token = session?.token;
   const [openDialog, setOpenDoalog] = useState(false);
+  const [token , setToken] = useState("")
 
-  const { data, isLoading, status } = useQuery({
-    queryKey: ["orphans"],
-    queryFn: () => getOrphans(token),
-    enabled: !!token,
+   useEffect(() => {
+    if (session)
+    {
+      setToken(session.user.token.accessToken);
+    }
+     
+  },[session ])
+
+  // Query to fetch orphans data, only enabled when token is available
+  const { data, isLoading, status, error } = useQuery<OrphanProps[]>({
+    queryKey: ["orphans",token],
+    queryFn: () => getOrphans(token), // Provide fallback to an empty string
   });
+
+  // Logging for data-fetching states
+  useEffect(() => {
+    if (status === "pending") {
+      console.log("Loading orphan data...");
+    } else if (status === "error") {
+      console.error("Error fetching orphan data:", error);
+    } else if (status === "success") {
+      console.log("Fetched orphan data:", data);
+    }
+  }, [status, data, error]);
+ 
 
   const handleButtonTwoClick = () => {
     setOpenDoalog(true);

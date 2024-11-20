@@ -26,7 +26,7 @@ const AddAnOrphan: React.FC = () => {
           <AddOrphanSuccess />
         ) : (
           <Grid container>
-            <Grid container lg={12}>
+            <Grid item lg={12}>
               {pathname == "/dashboard/add-an-orphan" && (
                 <Grid item xs={0} sm={5} md={4} lg={3}></Grid>
               )}

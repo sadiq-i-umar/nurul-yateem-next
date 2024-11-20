@@ -3,11 +3,11 @@ import { Box } from "@mui/material";
 import SubHeader from "../../sub-header";
 import OrphanListTable from "../../tables/orphan-list";
 import { useQuery } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoaderBackdrop from "../../common/loader";
 import NeedList from "../../tables/need-list";
+import { getOrphans } from "@/src/app/api/service/orphan-list";
 
 const ActivityPage: React.FC = () => {
   const router = useRouter();

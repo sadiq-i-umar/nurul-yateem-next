@@ -14,13 +14,13 @@ import {
   DialogActions,
   DialogTitle,
   DialogContent,
+  Avatar,
 } from "@mui/material";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
 import { states_in_nigeria_dropdown } from "@/utils";
-import { PhotoUploadFrame } from "@/components/common/image-frames";
 import DragUpload from "@/components/drag-upload";
 import LoaderBackdrop from "../../common/loader";
 import {
@@ -202,7 +202,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
           <Box
             sx={{
               backgroundColor: "white",
-              padding: "24px",
+              padding: "12px",
               width: "100%",
               maxWidth: "800px",
             }}
@@ -210,7 +210,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
             <Box
               sx={{
                 display: "flex",
-                marginBottom: "80px",
+                marginBottom: "20px",
                 alignItems: "center",
                 flexDirection: { xs: "column", md: "row" },
               }}
@@ -221,13 +221,17 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
                   flexDirection: "column",
                   alignItems: "center",
                   border: "1px dashed #DFDFDF",
-                  paddingX: "15px",
-                  paddingY: "10px",
+                  padding: "20px",
                   marginRight: "30px",
                 }}
               >
                 <Typography>Picture</Typography>
-                <PhotoUploadFrame image={image || ""} />
+                <Avatar
+                  src={image || ""}
+                  sx={{ width: 92, height: 92 ,  marginY: "20px"}}
+                />
+                
+                {/* <PhotoUploadFrame image={image || ""} /> */}
                 <Button
                   component="label"
                   variant="contained"
@@ -272,13 +276,12 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
                       sx={{
                         display: "flex",
                         flexDirection: "row",
-                        justifyContent: "space-between",
-                        width: "100%",
+                                                width: "100%",
+
                       }}
                     >
                       <Box
                         sx={{
-                          flexGrow: 1,
                           cursor: "pointer",
                           border: "1px solid",
                           paddingY: "5px",
@@ -286,7 +289,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
                           borderRadius: "8px",
                           marginRight: "10px",
                           borderColor:
-                            field.value === "MALE" ? "#268500" : "#D2D2D2",
+                          field.value === "MALE" ? "#268500" : "#D2D2D2",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -306,7 +309,6 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
 
                       <Box
                         sx={{
-                          flexGrow: 1, // Make the box take full width available
                           cursor: "pointer",
                           border: "1px solid",
                           paddingY: "5px",
@@ -344,7 +346,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
 
             {/* Name Inputs */}
             <Grid container spacing={2}>
-              <Grid item xs={12} lg={4}>
+              <Grid item xs={12} lg={6}>
                 <Controller
                   control={control}
                   name="firstName"
@@ -364,7 +366,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
                   rules={{ required: "First Name is required" }}
                 />
               </Grid>
-              <Grid item xs={12} lg={4}>
+              <Grid item xs={12} lg={6}>
                 <Controller
                   control={control}
                   name="middleName"
@@ -382,7 +384,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} lg={4}>
+              <Grid item xs={12} lg={6}>
                 <Controller
                   control={control}
                   name="lastName"
@@ -488,7 +490,7 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
             </Box>
 
             {/* Document Upload */}
-            <Box sx={{ marginBottom: "40px" }}>
+            <Box sx={{ marginBottom: "40px" ,  padding: '50px' , border: "2px dashed #DFDFDF" }}>
               <DragUpload
                 title="Affidavit of Guardianship"
                 subtitle="Drag and Drop Document"
@@ -689,7 +691,8 @@ const AddAnOrphanForm: React.FC<AddAnOrphanFormProps> = ({ onSuccess }) => {
                 onClick={handleFormSubmit}
                 disabled={uploading}
                 sx={{
-                  width: "80%",
+                  width: "100%",
+                  paddingY : "10px"
                 }}
               >
                 Submit
