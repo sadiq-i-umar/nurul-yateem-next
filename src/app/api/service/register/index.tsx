@@ -1,5 +1,3 @@
-import { baseUrl } from "../../utils/constant";
-import { request } from "../../utils/request";
 
 // export const updateAiProfile = async (token: string, AiprofileData: any) => {
 //   const res = await request("PUT", `${baseUrl}/v1/angel-investor/profile`, {
@@ -9,6 +7,9 @@ import { request } from "../../utils/request";
 //     },
 //     data: AiprofileData,
 //   });
+
+import { baseUrl } from "@/constants";
+import { request } from "@/utils/request";
 
 //   return res;
 // };

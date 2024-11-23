@@ -22,12 +22,12 @@ import DragUpload from "../../drag-upload";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
-import { CreateOrphanActivities } from "../../../service/update-account";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { GetOphansDetails, getOrphans } from "../../../service/orphan-list";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AlertDialog from "../../Reusable-Dialog";
+import { getOrphans, GetOphansDetails } from "@/src/app/api/service/orphan-list";
+import { CreateOrphanActivities } from "@/src/app/api/service/update-account";
 
 interface MyData {
   orphan?: any;

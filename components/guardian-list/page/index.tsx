@@ -2,18 +2,18 @@
 import { Box } from "@mui/material";
 import SubHeader from "../../sub-header";
 import { useQuery } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoaderBackdrop from "../../common/loader";
 import NeedList from "../../../components/tables/need-list";
 import GuardianListTable from "../../tables/guardian-list";
+import { getOrphans } from "@/src/app/api/service/orphan-list";
 
 const GuardianListPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const token = session?.token;
-  const accountType = session?.user?.accountType;
+  const token = session?.user.token.accessToken ?? "";
+  const accountType = session?.user?.profile.roles;
 
   const { data, isLoading, status } = useQuery({
     queryKey: ["orphans"],
@@ -57,7 +57,7 @@ const GuardianListPage: React.FC = () => {
         </Box>
       ) : (
         <Box sx={{ marginY: "5px" }}>
-          <GuardianListTable orphanData={data?.orphans} />
+          <GuardianListTable orphanData={data || []} />
           {/* <OrphanListTable orphanData={[{}]} /> */}
           {/* <OrphanSponsorshipCard /> */}
         </Box>

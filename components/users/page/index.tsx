@@ -3,7 +3,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import SubHeader from "../../sub-header";
 import { useQuery } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import LoaderBackdrop from "../../common/loader";
 import ActivityDialog from "../Reusable-Dialog";
@@ -14,6 +13,7 @@ import Image from "next/image";
 import EmptyImag from "../../../public/nocontentbackup.svg";
 import AddIcon from "@mui/icons-material/Add";
 import UsersTable from "../../tables/users";
+import { getOrphans } from "@/src/app/api/service/orphan-list";
 
 const sampleUserData = [
   {
@@ -40,7 +40,7 @@ const sampleUserData = [
 
 const UsersPage: React.FC = () => {
   const { data: session } = useSession();
-  const token = session?.token;
+  const token = session?.user.token.accessToken ?? "";
   const [openDialog, setOpenDoalog] = useState(false);
 
   const { data, isLoading, status } = useQuery({
