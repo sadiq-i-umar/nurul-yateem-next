@@ -8,7 +8,6 @@ import IdentityTab from "../identity-tab";
 import ProfileSubmitSuccess from "../profile-submit-success";
 import { ArrowLeft } from "@mui/icons-material";
 import { useSession } from "next-auth/react";
-import { UpdateAccount } from "../../service/update-account";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useGuardianStore } from "../../utils/zustand/guardianstore";
@@ -18,6 +17,7 @@ import {
   PersonalInformation,
 } from "../../utils/interfaces";
 import LoaderBackdrop from "../common/loader";
+import { UpdateAccount } from "@/src/app/api/service/update-account";
 
 const CompleteAccount: React.FC = () => {
   const { data: session } = useSession();

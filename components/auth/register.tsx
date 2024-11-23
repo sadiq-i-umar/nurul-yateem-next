@@ -26,10 +26,10 @@ import Link from "next/link";
 import { toast } from "react-hot-toast";
 import React, { useEffect, useState } from "react";
 import RegistrationSuccessMessage from "../registration-success-message";
-import { RegisterUser } from "../../service/register";
 import { useMutation } from "@tanstack/react-query";
 import LoaderBackdrop from "../common/loader";
 import { useRouter } from "next/navigation";
+import { RegisterUser } from "@/src/app/api/service/register";
 
 const Register: React.FC = () => {
   const router = useRouter();
