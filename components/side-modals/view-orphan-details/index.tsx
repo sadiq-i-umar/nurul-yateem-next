@@ -2,7 +2,7 @@ import { Box, Dialog, Divider, Grid, Typography } from "@mui/material";
 import { ImageFrameCircular80 } from "../../common/image-frames";
 import { PillWithDot, TextOnlyPill } from "../../pills";
 import { Close, MoreVert } from "@mui/icons-material";
-import { Orphan, OrphanProps } from "../../../types";
+import { OrphanProps } from "../../../types";
 
 const ViewOrphanDetailsSideModal: React.FC<{
   open: boolean;
@@ -167,6 +167,8 @@ return (
             <Divider sx={{ mb: "20px" }} />
           </>
         ))}
+
+      {!orphanData?.Orphan?.isAccepted ? (
         <Box
           sx={{
             backgroundColor: "#FFF4E5",
@@ -188,6 +190,8 @@ return (
             </Typography>
           </Box>
         </Box>
+      ) : null     }
+        
       </Box>
     </Dialog>
   );

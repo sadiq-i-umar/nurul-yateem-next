@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { TextOnlyPill } from "../pills";
@@ -9,6 +10,7 @@ import {
   LocalPrintshopOutlined,
 } from "@mui/icons-material";
 import path from "path";
+import FilterModal from "../common/filter-pop-up";
 
 interface Props {
   title?: string;
@@ -25,6 +27,7 @@ interface Props {
   buttonTwoText?: string;
   pageHasTable?: boolean;
   searchQuery?: (data: string) => void;
+  onFilterApply?: (filters: any) => void;
 }
 
 const SubHeader: React.FC<Props> = ({
@@ -42,71 +45,65 @@ const SubHeader: React.FC<Props> = ({
   buttonTwoText,
   pageHasTable,
   searchQuery,
+  onFilterApply = () => {},
 }) => {
   const pathname = usePathname();
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const handleFilterButtonClick = () => setFilterModalOpen(true);
+  const handleFilterModalClose = () => setFilterModalOpen(false);
+
   return (
-    <Paper
-      sx={{
-        backgroundColor: "white",
-        paddingX: "30px",
-        paddingTop: "20px",
-        ...(pageHasTable
-          ? { paddingBottom: "30px" }
-          : { paddingBottom: "30px" }),
-      }}
-    >
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Box
-            sx={{ display: "flex", alignItems: "center", marginBottom: "4px" }}
-          >
-            <Box sx={{ marginRight: "8px" }}>
-              <Typography
-                sx={{ fontSize: "18px", fontWeight: 600, color: "black" }}
-              >
-                {title}
-              </Typography>
+    <>
+      <Paper
+        sx={{
+          backgroundColor: "white",
+          paddingX: "30px",
+          paddingTop: "20px",
+          ...(pageHasTable
+            ? { paddingBottom: "30px" }
+            : { paddingBottom: "30px" }),
+        }}
+      >
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } }}>
+          <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
+              <Box sx={{ marginRight: "8px" }}>
+                <Typography sx={{ fontSize: "18px", fontWeight: 600, color: "black" }}>
+                  {title}
+                </Typography>
+              </Box>
+              <Box>
+                {itemCount && (
+                  <TextOnlyPill
+                    text={itemCount?.toString() + " " + itemCountLabel}
+                    bgColor="#F1F7E8"
+                    color="#007A27"
+                  />
+                )}
+              </Box>
             </Box>
-            <Box>
-              {itemCount && (
-                <TextOnlyPill
-                  text={itemCount?.toString() + " " + itemCountLabel}
-                  bgColor="#F1F7E8"
-                  color="#007A27"
+            <Box sx={{ marginBottom: { xs: "10px", sm: "21px" } }}>
+              <Typography sx={{ color: "#667085" }}>{subtitle}</Typography>
+            </Box>
+          </Box>
+
+          <Box sx={{ display: "flex", paddingTop: "10px" }}>
+            {buttonOneText && buttonOneIcon && (
+              <Box sx={{ mr: { xs: "6px", sm: "12px" } }}>
+                <ActionButtonOne
+                  icon={buttonOneIcon ? buttonOneIcon : ""}
+                  text={buttonOneText ? buttonOneText : ""}
                 />
-              )}
-            </Box>
-          </Box>
-          <Box sx={{ marginBottom: { xs: "10px", sm: "21px" } }}>
-            <Typography sx={{ color: "#667085" }}>{subtitle}</Typography>
-          </Box>
-        </Box>
+              </Box>
+            )}
 
-        <Box sx={{ display: "flex", paddingTop: "10px" }}>
-          {buttonOneText && buttonOneIcon && (
-            <Box sx={{ mr: { xs: "6px", sm: "12px" } }}>
-              <ActionButtonOne
-                icon={buttonOneIcon ? buttonOneIcon : ""}
-                text={buttonOneText ? buttonOneText : ""}
-              />
-            </Box>
-          )}
-
-          {/* export and save */}
-          {pathname == "/dashboard/sponsor/orphan-list" ||
-            ("/dashboard/admin/orphan-list" && (
+            {/* export and save */}
+            {pathname === "/dashboard/sponsor/orphan-list" || pathname === "/dashboard/admin/orphan-list" ? (
               <>
-                <Box
-                  sx={{
-                    mt: { xs: "0px", sm: "0px" },
-                    mb: { xs: "20px", sm: "0px" },
-                  }}
-                >
+                <Box sx={{ mt: { xs: "0px", sm: "0px" }, mb: { xs: "20px", sm: "0px" } }}>
                   {exportButton && (
-                    <Box
-                      onClick={() => exportButton()}
-                      sx={{ mr: { xs: "6px", sm: "12px" } }}
-                    >
+                    <Box onClick={() => exportButton()} sx={{ mr: { xs: "6px", sm: "12px" } }}>
                       <Button
                         variant="outlined"
                         disableElevation
@@ -132,17 +129,9 @@ const SubHeader: React.FC<Props> = ({
                     </Box>
                   )}
                 </Box>
-                <Box
-                  sx={{
-                    mt: { xs: "0px", sm: "0px" },
-                    mb: { xs: "20px", sm: "0px" },
-                  }}
-                >
+                <Box sx={{ mt: { xs: "0px", sm: "0px" }, mb: { xs: "20px", sm: "0px" } }}>
                   {printButton && (
-                    <Box
-                      onClick={() => printButton()}
-                      sx={{ mr: { xs: "6px", sm: "12px" } }}
-                    >
+                    <Box onClick={() => printButton()} sx={{ mr: { xs: "6px", sm: "12px" } }}>
                       <Button
                         variant="contained"
                         disableElevation
@@ -166,20 +155,12 @@ const SubHeader: React.FC<Props> = ({
                   )}
                 </Box>
               </>
-            ))}
-          {pathname == "/dashboard/guardian/orphan-list" ||
-            ("/dashboard/admin/orphan-list" && (
-              <Box
-                sx={{
-                  mt: { xs: "0px", sm: "0px" },
-                  mb: { xs: "20px", sm: "0px" },
-                }}
-              >
+            ) : null}
+
+            {pathname === "/dashboard/guardian/orphan-list" || pathname === "/dashboard/admin/orphan-list" ? (
+              <Box sx={{ mt: { xs: "0px", sm: "0px" }, mb: { xs: "20px", sm: "0px" } }}>
                 {buttonTwoText && buttonTwoIcon && (
-                  <Box
-                    onClick={() => buttonTwoClick && buttonTwoClick()}
-                    sx={{ mr: { xs: "6px", sm: "12px" } }}
-                  >
+                  <Box onClick={() => buttonTwoClick && buttonTwoClick()} sx={{ mr: { xs: "6px", sm: "12px" } }}>
                     <Button
                       variant="contained"
                       disableElevation
@@ -195,9 +176,7 @@ const SubHeader: React.FC<Props> = ({
                         },
                       }}
                       startIcon={
-                        buttonTwoIcon ? (
-                          <img src={buttonTwoIcon} alt="Button Icon" />
-                        ) : null
+                        buttonTwoIcon ? <img src={buttonTwoIcon} alt="Button Icon" /> : null
                       }
                       onClick={() => buttonTwoClick && buttonTwoClick()}
                     >
@@ -206,36 +185,26 @@ const SubHeader: React.FC<Props> = ({
                   </Box>
                 )}
               </Box>
-            ))}
+            ) : null}
+          </Box>
         </Box>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          flexWrap: "wrap",
-          mt: "15px",
-          mb: "-25px",
-        }}
-      >
-        <Box
-          sx={{
-            marginRight: "12px",
-            width: "400px",
-            marginBottom: { xs: "15px", sm: "10px" },
-          }}
-        >
-          <SearchBar
-            sendQuery={(data: string) => searchQuery && searchQuery(data)}
-          />
+
+        <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", mt: "15px", mb: "-25px" }}>
+          <Box sx={{ marginRight: "12px", width: "400px", marginBottom: { xs: "15px", sm: "10px" } }}>
+            <SearchBar sendQuery={(data: string) => searchQuery && searchQuery(data)} />
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+            <FilterButton initialFilter={"Filters"} onClick={handleFilterButtonClick} />
+          </Box>
         </Box>
-        <Box
-          sx={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
-        >
-          <FilterButton initialFilter={"Filters"} onClick={filterButton} />
-        </Box>
-      </Box>
-    </Paper>
+      </Paper>
+
+      <FilterModal
+        open={filterModalOpen}
+        onClose={handleFilterModalClose}
+        onApplyFilters={(appliedFilters: any) => onFilterApply && onFilterApply(appliedFilters)}
+      />
+    </>
   );
 };
 

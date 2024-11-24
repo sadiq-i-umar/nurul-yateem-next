@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ActivityData } from "../../../utils";
+import { ActivityData } from "@/utils";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -33,7 +33,7 @@ const ActivityBody = () => {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         justifyContent="center"
       >
-        {ActivityData?.map((activity, index) => (
+        {ActivityData?.map((activity , index) => (
           <Grid key={index} item xs={12} sm={6}>
             <Item onClick={() => router.push(activity.link)}>
               <Box

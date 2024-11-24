@@ -23,6 +23,7 @@ import {
   Checkbox,
   IconButton,
 } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close"; // Ensure correct import
 import { PillWithDot, TextOnlyPill } from "../../pills";
 import { ImageFrameCircular60 } from "../../common/image-frames";
@@ -65,13 +66,13 @@ const OrphanSponsorshipCard: React.FC<OrphanSponsorshipCardProps> = ({
     setOpen(false);
   };
 
-  const handleChangeOrphan = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setOrphan(event.target.value as string);
-  };
+  const handleChangeOrphan = (event: SelectChangeEvent<string>) => {
+  setOrphan(event.target.value);
+};
 
-  const handleChangeAmount = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setAmount(event.target.value as string);
-  };
+const handleChangeAmount = (event: SelectChangeEvent<string>) => {
+  setAmount(event.target.value);
+};
 
   const handleChangeDonationType = (
     event: React.ChangeEvent<HTMLInputElement>,

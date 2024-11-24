@@ -16,10 +16,18 @@ import AlertDialog from "../../Reusable-Dialog";
 import ReasonForDeleteOrphan from "../../reasons-for-removal";
 import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
 import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
+import { deleteOrphanRequest } from "@/src/app/api/service/orphan-list";
+import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 const OrphanActivityTable: React.FC<{
   orphanData: any[];
 }> = ({ orphanData }) => {
+
+  const { data: session } = useSession();
+  const token = session?.user?.token?.accessToken ?? " ";
+
+  
   const [openViewDetailsModal, setOpenViewDetailsModal] = React.useState(false);
   const [SelectedOrphan, setSelectedOrphan] = React.useState<any>();
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -41,6 +49,28 @@ const OrphanActivityTable: React.FC<{
     setOpenDeleteReason(true);
   };
 
+
+  const handleDeleteOrphan = async (reason: string, orphan: any) => {
+    const payload = {
+      orphanId: orphan, 
+      deletionReason : reason
+    }
+      console.log('Payload being sent:', payload);  // Log the payload for debugging
+
+    try {
+    const response = await deleteOrphanRequest(payload, token); // Pass token here
+      console.log(response);
+      if (response) {
+        toast("Orphan deleted successfully.");
+        // Optionally: Remove orphan from orphanData state
+      } else {
+        toast("Failed to delete orphan.");
+      }
+    } catch (error) {
+      console.error("Error deleting orphan:", error);
+      alert("An error occurred. Please try again.");
+    }
+  }
   const handleEdit = (data: any) => {
     setEditOpenSideModal(true);
     setSelectedOrphan(data);
@@ -107,7 +137,7 @@ const OrphanActivityTable: React.FC<{
                     <ImageNameEmailCell
                       image={orphan?.profile_photo}
                       name={`${orphan?.first_name} ${orphan?.last_name}`}
-                      email={orphan.gender}
+                      gender={orphan.gender}
                     />
                   </Box>
                 </TableCell>
@@ -248,6 +278,7 @@ const OrphanActivityTable: React.FC<{
         openDeleteReason={openDeleteReason}
         setOpenDeleteReason={setOpenDeleteReason}
         SelectedOrphan={SelectedOrphan}
+        onDelete={handleDeleteOrphan}
       />
       <EditOrphanSideModal
         openSideModal={openEditSideModal}

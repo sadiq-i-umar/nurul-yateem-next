@@ -20,22 +20,57 @@ import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { deleteOrphanRequest } from "@/src/app/api/service/orphan-list";
 
-const OrphanListTable: React.FC<{
+// Define the props for filters
+interface OrphanListTableProps {
   orphanData: OrphanProps[];
-}> = ({ orphanData }) => {
+  appliedFilters: {
+    status: string[];
+    schoolStatus: string[];
+    stateOfOrigin: string;
+  };
+}
 
+const OrphanListTable: React.FC<OrphanListTableProps> = ({
+  orphanData,
+  appliedFilters,
+}) => {
   const { data: session } = useSession();
   const token = session?.user?.token?.accessToken ?? " ";
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null,
-  );
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [openViewDetailsModal, setOpenViewDetailsModal] = React.useState(false);
   const [SelectedOrphan, setSelectedOrphan] = React.useState<any>();
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDeleteReason, setOpenDeleteReason] = React.useState(false);
   const [openEditSideModal, setEditOpenSideModal] = React.useState(false);
-  const [openSponsorshipSideModal, setOpenSponsorshipSideModal] =
-    React.useState(false);
+  const [openSponsorshipSideModal, setOpenSponsorshipSideModal] = React.useState(false);
+
+ // Filter the orphan data based on applied filters
+const filteredOrphanData = Array.isArray(orphanData)
+  ? orphanData.filter((orphan) => {
+      // Default to empty arrays if appliedFilters?.status or appliedFilters?.schoolStatus are undefined
+      const statusMatches =
+        (Array.isArray(appliedFilters?.status) && appliedFilters?.status.length === 0) ||
+        (Array.isArray(appliedFilters?.status) && appliedFilters?.status.includes(
+          orphan?.Orphan?.isAccepted ? "Approved" : "Rejected"
+        ));
+
+      const schoolStatusMatches =
+        (Array.isArray(appliedFilters?.schoolStatus) && appliedFilters?.schoolStatus.length === 0) ||
+        (Array.isArray(appliedFilters?.schoolStatus) && appliedFilters?.schoolStatus.includes(
+          orphan?.Orphan?.schoolName ? "In School" : "Not in School"
+        ));
+
+      // If no filters are applied (empty filters), return all orphans
+      if ((appliedFilters?.status?.length === 0 || !Array.isArray(appliedFilters?.status)) && 
+          (appliedFilters?.schoolStatus?.length === 0 || !Array.isArray(appliedFilters?.schoolStatus))) {
+        return true;  // No filtering, return all orphans
+      }
+
+      // Return the orphan if it matches the filters
+      return statusMatches && schoolStatusMatches;
+    })
+  : orphanData;  // If orphanData is not an array or empty, return as is
+
 
   const handleOpenDelete = (data: any) => {
     setSelectedOrphan(data);
@@ -61,17 +96,16 @@ const OrphanListTable: React.FC<{
 
   const handleDeleteOrphan = async (reason: string, orphan: any) => {
     const payload = {
-      orphanId: orphan, 
-      deletionReason : reason
-    }
-      console.log('Payload being sent:', payload);  // Log the payload for debugging
+      orphanId: orphan,
+      deletionReason: reason,
+    };
+    console.log("Payload being sent:", payload);
 
     try {
-    const response = await deleteOrphanRequest(payload, token); // Pass token here
+      const response = await deleteOrphanRequest(payload, token);
       console.log(response);
       if (response) {
         toast("Orphan deleted successfully.");
-        // Optionally: Remove orphan from orphanData state
       } else {
         toast("Failed to delete orphan.");
       }
@@ -79,13 +113,11 @@ const OrphanListTable: React.FC<{
       console.error("Error deleting orphan:", error);
       alert("An error occurred. Please try again.");
     }
-  }
-
-  
+  };
 
   const handleOpenPopover = (
     event: React.MouseEvent<HTMLButtonElement>,
-    data: any,
+    data: any
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedOrphan(data);
@@ -126,7 +158,7 @@ const OrphanListTable: React.FC<{
               {[
                 "Date of Birth",
                 "School Status",
-                "Status of Origin",
+                "State of Origin",
                 "Status",
                 "",
               ].map((heading, index) => (
@@ -141,139 +173,97 @@ const OrphanListTable: React.FC<{
             </TableRow>
           </TableHead>
           <TableBody>
-            {Array.isArray(orphanData) && orphanData.map((orphan) => (
-              <TableRow
-                key={`${orphan?.id}`}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  <Box
-                    sx={{ display: "flex", alignItems: "center", ml: "-15px" }}
-                  >
-                    <Box sx={{ marginLeft: "20px" }}>
-                      <Checkbox />
-                    </Box>
-                    <ImageNameEmailCell
-                      image={orphan?.profile.picture}
-                      name={`${orphan?.profile.firstName} ${orphan?.profile.lastName}`}
-                     gender={orphan?.profile.gender}
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell align="left">
-                <Typography
-  sx={{ fontSize: "14px", fontWeight: 600, color: "#3D3B3C" }}
->
-  {new Date(orphan?.profile.dateOfBirth).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })}
-</Typography>
-                </TableCell>
-                <TableCell align="left">
-                  <Typography
-  sx={{
-    fontSize: "14px",
-    fontWeight: "400",
-    color: "#667085",
-  }}
->
-  {orphan?.Orphan?.schoolName ? "In school" : "Not in school"}
-</Typography>
-
-                </TableCell>
-                <TableCell align="left">
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: "400",
-                      color: "#667085",
-                    }}
-        >Abuja
-        </Typography>
-                </TableCell>
-                <TableCell align="left">
-                  <PillWithDot
-  text={orphan?.Orphan?.isAccepted ? "Accepted" : "Pending"}
-  bgColor={orphan?.Orphan?.isAccepted ? "#ECFDF3" : "#FFEFEF"}
-  dotColor={orphan?.Orphan?.isAccepted ? "#007A27" : "#FF0000"}
-  textColor={orphan?.Orphan?.isAccepted ? "#007A27" : "#FF0000"}
-/>
-                </TableCell>
-                <TableCell align="left">
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
+            {Array.isArray(filteredOrphanData) &&
+              filteredOrphanData.map((orphan) => (
+                <TableRow
+                  key={`${orphan?.id}`}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
                     <Box
-                      onClick={() => setOpenViewDetailsModal(true)}
-                      sx={{ mr: "20px", cursor: "pointer", mt: "-5px" }}
+                      sx={{ display: "flex", alignItems: "center", ml: "-15px" }}
                     >
-                      <Button
-                        sx={{
-                          textDecoration: "underline",
-                          color: "#007A27",
-                          fontSize: "15px",
-                          fontWeight: 600,
-                          ":hover": {
-                            borderColor: "#EBEFFF",
-                            color: "#3863FA",
-                            backgroundColor: "#EBEFFF",
-                          },
-                        }}
-                        onClick={() => handleView(orphan)}
-                      >
-                        {"View"}
-                      </Button>
+                      <Box sx={{ marginLeft: "20px" }}>
+                        <Checkbox />
+                      </Box>
+                      <ImageNameEmailCell
+                        image={orphan?.profile.picture}
+                        name={`${orphan?.profile.firstName} ${orphan?.profile.lastName}`}
+                        gender={orphan?.profile.gender}
+                      />
                     </Box>
-
-                    <Button
-                      sx={{
-                        borderColor: "white",
-                        color: "#3863FA",
-                        backgroundColor: "white",
-                        ":hover": {
-                          borderColor: "#EBEFFF",
-                          color: "#3863FA",
-                          backgroundColor: "#EBEFFF",
-                        },
-                      }}
-                      onClick={() => handleOpenDelete(orphan?.Orphan?.id)}
+                  </TableCell>
+                  <TableCell align="left">
+                    <Typography
+                      sx={{ fontSize: "14px", fontWeight: 600, color: "#3D3B3C" }}
                     >
-                      <Image
-                        width={21}
-                        height={21}
-                        alt={"Trash Icon"}
-                        src={"/trash.svg"}
-                      />
-                    </Button>
-                    <Button
+                      {new Date(orphan?.profile.dateOfBirth).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="left">
+                    <Typography
                       sx={{
-                        borderColor: "white",
-                        color: "#3863FA",
-                        backgroundColor: "white",
-                        ":hover": {
-                          borderColor: "#EBEFFF",
-                          color: "#3863FA",
-                          backgroundColor: "#EBEFFF",
-                        },
+                        fontSize: "14px",
+                        fontWeight: "400",
+                        color: "#667085",
                       }}
-                      onClick={() => handleEdit(orphan)}
                     >
-                      <Image
-                        width={21}
-                        height={21}
-                        alt={"Edit Icon"}
-                        src={"/editPen.svg"}
-                        color="red"
-                      />
-                    </Button>
+                      {orphan?.Orphan?.schoolName
+                        ? "In school"
+                        : "Not in school"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="left">
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: "400",
+                        color: "#667085",
+                      }}
+                    >
+                      {"Kano State"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="left">
+                    <PillWithDot
+                      text={orphan?.Orphan?.isAccepted ? "Accepted" : "Rejected"}
+                      bgColor={orphan?.Orphan?.isAccepted ? "#ECFDF3" : "#FFEFEF"}
+                      dotColor={orphan?.Orphan?.isAccepted ? "#007A27" : "#FF0000"}
+                      textColor={orphan?.Orphan?.isAccepted ? "#007A27" : "#FF0000"}
+                    />
+                  </TableCell>
+                  <TableCell align="left">
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Box
+                        onClick={() => setOpenViewDetailsModal(true)}
+                        sx={{ mr: "20px", cursor: "pointer", mt: "-5px" }}
+                      >
+                        <Button
+                          sx={{
+                            textDecoration: "underline",
+                            color: "#007A27",
+                            fontSize: "15px",
+                            fontWeight: 600,
+                            ":hover": {
+                              borderColor: "#EBEFFF",
+                              color: "#3863FA",
+                              backgroundColor: "#EBEFFF",
+                            },
+                          }}
+                          onClick={() => handleView(orphan)}
+                        >
+                          {"View"}
+                        </Button>
+                      </Box>
 
-                    <>
                       <Button
-                        aria-describedby={id}
-                        variant="outlined"
-                        onClick={(event) => {
-                          handleOpenPopover(event, orphan);
-                        }}
                         sx={{
                           borderColor: "white",
                           color: "#3863FA",
@@ -284,40 +274,88 @@ const OrphanListTable: React.FC<{
                             backgroundColor: "#EBEFFF",
                           },
                         }}
+                        onClick={() => handleOpenDelete(orphan?.Orphan?.id)}
                       >
-                        <MoreVert />
+                        <Image
+                          width={21}
+                          height={21}
+                          alt={"Trash Icon"}
+                          src={"/trash.svg"}
+                        />
                       </Button>
-                      <Popover
-                        id={id}
-                        open={open}
-                        anchorEl={anchorEl}
-                        onClose={handleClosePopover}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "left",
+                      <Button
+                        sx={{
+                          borderColor: "white",
+                          color: "#3863FA",
+                          backgroundColor: "white",
+                          ":hover": {
+                            borderColor: "#EBEFFF",
+                            color: "#3863FA",
+                            backgroundColor: "#EBEFFF",
+                          },
                         }}
+                        onClick={() => handleEdit(orphan)}
                       >
-                        <Box sx={{ p: 1 }}>
-                          <Button
-                            sx={{
-                              color: "black",
-                              backgroundColor: "white",
-                              ":hover": {
-                                color: "#3863FA",
+                        <Image
+                          width={21}
+                          height={21}
+                          alt={"Edit Icon"}
+                          src={"/editPen.svg"}
+                          color="red"
+                        />
+                      </Button>
+
+                      <>
+                        <Button
+                          aria-describedby={id}
+                          variant="outlined"
+                          onClick={(event) => {
+                            handleOpenPopover(event, orphan);
+                          }}
+                          sx={{
+                            borderColor: "white",
+                            color: "#3863FA",
+                            backgroundColor: "white",
+                            ":hover": {
+                              borderColor: "#EBEFFF",
+                              color: "#3863FA",
+                              backgroundColor: "#EBEFFF",
+                            },
+                          }}
+                        >
+                          <MoreVert />
+                        </Button>
+                        <Popover
+                          id={id}
+                          open={open}
+                          anchorEl={anchorEl}
+                          onClose={handleClosePopover}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left",
+                          }}
+                        >
+                          <Box sx={{ p: 1 }}>
+                            <Button
+                              sx={{
+                                color: "black",
                                 backgroundColor: "white",
-                              },
-                            }}
-                            onClick={() => handleSponsorshipRequest()}
-                          >
-                            Add Sponsorship Request
-                          </Button>
-                        </Box>
-                      </Popover>
-                    </>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ))}
+                                ":hover": {
+                                  color: "#3863FA",
+                                  backgroundColor: "white",
+                                },
+                              }}
+                              onClick={() => handleSponsorshipRequest()}
+                            >
+                              Add Sponsorship Request
+                            </Button>
+                          </Box>
+                        </Popover>
+                      </>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -343,7 +381,7 @@ const OrphanListTable: React.FC<{
         openDeleteReason={openDeleteReason}
         setOpenDeleteReason={setOpenDeleteReason}
         SelectedOrphan={SelectedOrphan}
-        onDelete={handleDeleteOrphan} 
+        onDelete={handleDeleteOrphan}
       />
       <EditOrphanSideModal
         openSideModal={openEditSideModal}
@@ -360,4 +398,3 @@ const OrphanListTable: React.FC<{
 };
 
 export default OrphanListTable;
-
