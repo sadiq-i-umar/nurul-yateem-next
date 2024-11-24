@@ -1,13 +1,9 @@
 "use client";
 
 import { Box, Button, Typography } from "@mui/material";
-import SubHeader from "../../sub-header";
-import OrphanActivityTable from "../../tables/orphan-activity";
 import { useQuery } from "@tanstack/react-query";
-import { getOrphans } from "../../../service/orphan-list";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import LoaderBackdrop from "../../common/loader";
 import ActivityDialog from "../Reusable-Dialog";
 import { useState } from "react";
 import ActivityHeader from "../Reusable-Dialog/ActivityHeader";
@@ -15,11 +11,15 @@ import ActivityBody from "../Reusable-Dialog/ActivityBody";
 import Image from "next/image";
 import EmptyImag from "../../../public/nocontentbackup.svg";
 import AddIcon from "@mui/icons-material/Add";
+import SubHeader from "@/components/sub-header";
+import OrphanActivityTable from "@/components/tables/orphan-activity";
+import { getOrphans } from "@/src/app/api/service/orphan-list";
+import LoaderBackdrop from "../../loader";
 
 const OrphanActivityPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const token = session?.token;
+  const token = session?.user.token.accessToken ?? "";
   const [openDialog, setOpenDoalog] = useState(false);
 
   const { data, isLoading, status } = useQuery({

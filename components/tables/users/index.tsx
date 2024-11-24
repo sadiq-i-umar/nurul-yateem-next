@@ -84,7 +84,7 @@ const UsersTable: React.FC<{
                     <ImageNameEmailCell
                       image={user?.profile_photo}
                       name={`${user?.first_name} ${user?.last_name}`}
-                      email={user.email}
+                      gender={user.email}
                     />
                   </Box>
                 </TableCell>

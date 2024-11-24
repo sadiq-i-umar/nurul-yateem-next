@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import LoaderBackdrop from "../../common/loader";
 import NeedList from "../../tables/need-list";
 import { getOrphans } from "@/src/app/api/service/orphan-list";
+import { useState } from "react";
 
 const ActivityPage: React.FC = () => {
   const router = useRouter();
@@ -15,11 +16,18 @@ const ActivityPage: React.FC = () => {
   const token = session?.user?.token?.accessToken ?? " ";
   const accountType = session?.user?.profile?.roles[0];
 
+  const [appliedFilters, setAppliedFilters] = useState<any>({});
+
   const { data, isLoading, status } = useQuery({
     queryKey: ["orphans"],
     queryFn: () => getOrphans(token),
     enabled: !!token,
   });
+
+  const handleFilterApply = (filters: any) => {
+    setAppliedFilters(filters); // Update the state with the new filters
+  };
+
   const handleButtonTwoClick = () => {
     router.push("/dashboard/guardian/orphan-list/add-an-orphan");
   };
@@ -52,6 +60,8 @@ const ActivityPage: React.FC = () => {
           filterButton={handleFilterButtonClick}
           pageHasTable={true}
           searchQuery={(data) => console.log(data)}
+                    onFilterApply={handleFilterApply}
+
         />
       </Box>
       {accountType === "SPONSOR" ? (
@@ -60,7 +70,7 @@ const ActivityPage: React.FC = () => {
         </Box>
       ) : (
         <Box sx={{ marginY: "5px" }}>
-          <OrphanListTable orphanData={data || []} />
+          <OrphanListTable orphanData={data || []} appliedFilters={appliedFilters}/>
           {/* <OrphanListTable orphanData={[{}]} /> */}
           {/* <OrphanSponsorshipCard /> */}
         </Box>

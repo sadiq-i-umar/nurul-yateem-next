@@ -16,6 +16,9 @@ import AlertDialog from "../../Reusable-Dialog";
 import ReasonForDeleteOrphan from "../../reasons-for-removal";
 import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
 import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
+import { deleteOrphanRequest } from "@/src/app/api/service/orphan-list";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 const GuardianRequestListTable: React.FC<{
   orphanData: any[];
@@ -72,6 +75,32 @@ const GuardianRequestListTable: React.FC<{
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
+   const { data: session } = useSession();
+  const token = session?.user?.token?.accessToken ?? " ";
+
+
+  const handleDeleteOrphan = async (reason: string, orphan: any) => {
+    const payload = {
+      orphanId: orphan, 
+      deletionReason : reason
+    }
+
+    try {
+    const response = await deleteOrphanRequest(payload, token); // Pass token here
+      console.log(response);
+      if (response) {
+        toast("Orphan deleted successfully.");
+        // Optionally: Remove orphan from orphanData state
+      } else {
+        toast("Failed to delete orphan.");
+      }
+    } catch (error) {
+      console.error("Error deleting orphan:", error);
+      alert("An error occurred. Please try again.");
+    }
+  }
+
+
   return (
     <>
       <TableContainer sx={{ backgroundColor: "white" }}>
@@ -122,7 +151,7 @@ const GuardianRequestListTable: React.FC<{
                     <ImageNameEmailCell
                       image={orphan?.profile_photo}
                       name={`${orphan?.first_name} ${orphan?.last_name}`}
-                      email={orphan.gender}
+                      gender={orphan.gender}
                     />
                   </Box>
                 </TableCell>
@@ -330,6 +359,7 @@ const GuardianRequestListTable: React.FC<{
         openDeleteReason={openDeleteReason}
         setOpenDeleteReason={setOpenDeleteReason}
         SelectedOrphan={SelectedOrphan}
+        onDelete={handleDeleteOrphan}
       />
       <EditOrphanSideModal
         openSideModal={openEditSideModal}

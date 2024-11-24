@@ -19,6 +19,9 @@ const OrphanListPage: React.FC = () => {
   const [token, setToken] = useState("");
   const accountType = session?.user?.profile?.roles[0];
 
+    const [appliedFilters, setAppliedFilters] = useState<any>({}); 
+
+
   const handleButtonTwoClick = () => {
     router.push("/dashboard/guardian/orphan-list/add-an-orphan");
   };
@@ -60,6 +63,10 @@ const OrphanListPage: React.FC = () => {
     queryKey: ["orphans",token],
     queryFn: () => getOrphans(token), // Provide fallback to an empty string
   });
+  
+  const handleFilterApply = (filters: any) => {
+    setAppliedFilters(filters); 
+  };
 
   // Logging for data-fetching states
   useEffect(() => {
@@ -90,6 +97,7 @@ const OrphanListPage: React.FC = () => {
           filterButton={handleFilterButtonClick}
           pageHasTable={true}
           searchQuery={(data) => console.log(data)}
+          onFilterApply={handleFilterApply}
         />
       </Box>
       {accountType === "SPONSOR" ? (
@@ -98,7 +106,7 @@ const OrphanListPage: React.FC = () => {
         </Box>
       ) : (
         <Box sx={{ marginY: "5px" , marginX: "-8px" }}>
-        <OrphanListTable orphanData={data || []} />
+        <OrphanListTable orphanData={data || []} appliedFilters={appliedFilters} />
           {/* <OrphanListTable orphanData={[{}]} /> */}
           {/* <OrphanSponsorshipCard cardData={[]} /> */}
         </Box>
