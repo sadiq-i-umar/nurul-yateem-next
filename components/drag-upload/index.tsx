@@ -1,57 +1,29 @@
-import React, { useState } from "react";
-import { Box, Typography, IconButton, Container } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PhotoIcon from "@mui/icons-material/Photo";
+import React, { useState } from 'react';
+import { Box, Typography, IconButton, Container, Stack } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PhotoIcon from '@mui/icons-material/Photo';
 import {
   storage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
-} from "@/config/FirebaseConfig"; // Adjust based on your Firebase config
+} from '@/config/FirebaseConfig'; // Adjust based on your Firebase config
+import Image from 'next/image';
+import { formatFileSize } from '@/utils';
 
 const DragUpload = ({
-  title,
-  subtitle,
-  onFileUpload,
-  setGetUploadedFiles,
+  onFileChange,
 }: {
-  title: string;
-  subtitle: string;
-  onFileUpload?: (id: string, file: any) => void;
-  setGetUploadedFiles?: any;
+  onFileChange: (file: File | null) => void;
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
-
-  const handleFileUpload = (file: File) => {
-    setUploading(true);
-    const storageRef = ref(storage, `uploads/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {},
-      (error) => {
-        setUploading(false);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          setFileUrl(url);
-          setUploading(false);
-          if (onFileUpload) onFileUpload(file.name, url); // Trigger callback with file name and URL
-        });
-      },
-    );
-  };
 
   const handleFileDrop = (event: React.DragEvent) => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile) {
       setFile(droppedFile);
-      handleFileUpload(droppedFile);
     }
   };
 
@@ -59,62 +31,93 @@ const DragUpload = ({
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      handleFileUpload(selectedFile);
+      setFileUrl(selectedFile.name);
+      onFileChange(selectedFile);
     }
   };
 
   const handleDeleteFile = () => {
     setFile(null);
     setFileUrl(null);
+    onFileChange(null);
   };
 
   return (
-    <Container
-      
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleFileDrop}
-      onClick={() => document.getElementById("fileInput")?.click()}
-    >
-      <Box
-        sx={{
-          paddingX: "20px",
-          textAlign: "center",
+    <>
+      <Container
+        style={{
+          marginBottom: '40px',
+          padding: '50px',
+          border: '2px dashed #DFDFDF',
+          cursor: 'pointer',
         }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleFileDrop}
+        onClick={() => document.getElementById('fileInput')?.click()}
       >
-        <Typography variant="h6">{title}</Typography>
-        <Typography variant="body2">{subtitle}</Typography>
-        <input
-          type="file"
-          id="fileInput"
-          accept=".pdf, .doc, .docx"
-          hidden
-          onChange={handleFileSelect}
-        />
-        <Box>
-          {fileUrl ? (
-            <Box>
-              <Typography variant="body1">{file?.name}</Typography>
-              <IconButton onClick={handleDeleteFile} color="error">
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          ) : (
+        <Box
+          sx={{
+            paddingX: '20px',
+            textAlign: 'center',
+          }}
+        >
+          <input
+            type='file'
+            id='fileInput'
+            accept='.pdf, .doc, .docx'
+            hidden
+            onChange={handleFileSelect}
+          />
+          <Box>
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 0,
               }}
             >
-              <PhotoIcon fontSize="large" />
-              {uploading ? (
-                <Typography variant="body2">Uploading...</Typography>
-              ) : null}
+              <Image src='/doc.svg' width={40} height={40} alt='' />
+              <p
+                style={{ color: '#B4B3B3', fontWeight: 500, fontSize: '14px' }}
+              >
+                Drag and drop document
+              </p>
             </Box>
-          )}
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+      {fileUrl && (
+        <Box
+          sx={{
+            display: 'flex',
+            border: '1px dashed #B4B3B3',
+            mb: '30px',
+            mt: '-10px',
+            padding: '10px',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ marginRight: '10px' }}>
+            <Image src='/doc.svg' width={40} height={40} alt='' />
+          </div>
+          <Stack flexGrow={1} gap={0.1}>
+            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
+              {file?.name}
+            </div>
+            <div style={{ fontSize: '12px' }}>
+              {file?.size ? formatFileSize(file?.size) : ''}
+            </div>
+          </Stack>
+          <div>
+            <IconButton onClick={handleDeleteFile}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
+        </Box>
+      )}
+    </>
   );
 };
 

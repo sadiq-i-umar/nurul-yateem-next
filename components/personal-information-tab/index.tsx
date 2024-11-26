@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Box,
@@ -11,18 +11,18 @@ import {
   Select,
   TextField,
   Typography,
-} from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { maritalStatusOptions, states_in_nigeria_dropdown } from "../../utils";
-import { PhotoUploadFrame } from "../common/image-frames";
-import { VisuallyHiddenInput } from "../common/input";
-import { useGuardianStore } from "../../utils/zustand/guardianstore";
-import { PersonalInformation } from "../../utils/interfaces";
-import { useEffect, useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import toast from "react-hot-toast";
+} from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { maritalStatusOptions, states_in_nigeria_dropdown } from '../../utils';
+import { PhotoUploadFrame } from '../common/image-frames';
+import { VisuallyHiddenInput } from '../common/input';
+import { useGuardianStore } from '../../utils/zustand/guardianstore';
+import { PersonalInformation } from '../../utils/interfaces';
+import { useEffect, useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import toast from 'react-hot-toast';
 
 const PersonalInformationTab: React.FC<{
   onNextClick: (personalInfo: PersonalInformation | undefined) => void;
@@ -64,7 +64,7 @@ const PersonalInformationTab: React.FC<{
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage({ file, url: reader.result as string });
+        setImage({ file: file, url: reader.result as string });
       };
       reader.readAsDataURL(file);
       setImageError(false);
@@ -73,7 +73,7 @@ const PersonalInformationTab: React.FC<{
     }
   };
 
-  if (image.url && image.url.startsWith("data:image")) {
+  if (image.url && image.url.startsWith('data:image')) {
     // Conditionally upload image to Google bucket and store response
     // You can call your upload function here
   }
@@ -117,7 +117,7 @@ const PersonalInformationTab: React.FC<{
       isValid = false;
     }
     if (!isValid) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
     }
 
     if (isValid) {
@@ -125,7 +125,7 @@ const PersonalInformationTab: React.FC<{
       onNextClick({
         image,
         gender,
-        dob: dob?.format("DD/MM/YYYY"),
+        dob: dob?.format('DD/MM/YYYY'),
         maritalStatus,
         phone: phoneNumber,
         altPhone: altPhoneNumber,
@@ -138,141 +138,141 @@ const PersonalInformationTab: React.FC<{
 
   return (
     <Box>
-      <Box sx={{ marginBottom: "20px" }}>
-        <Typography sx={{ fontSize: "16px", fontWeight: "bold" }}>
+      <Box sx={{ marginBottom: '20px' }}>
+        <Typography sx={{ fontSize: '16px', fontWeight: 'bold' }}>
           Step 1: Personal Information
         </Typography>
       </Box>
       <Box
         sx={{
-          display: "flex",
-          marginBottom: "20px",
-          alignItems: "center",
-          flexDirection: { xs: "column", md: "row" },
+          display: 'flex',
+          marginBottom: '20px',
+          alignItems: 'center',
+          flexDirection: { xs: 'column', md: 'row' },
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            border: "1px solid #DFDFDF",
-            borderStyle: "dashed",
-            paddingX: "15px",
-            paddingY: "10px",
-            marginRight: "30px",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            border: '1px solid #DFDFDF',
+            borderStyle: 'dashed',
+            paddingX: '15px',
+            paddingY: '10px',
+            marginRight: '30px',
           }}
         >
-          <Box sx={{ marginBottom: "10px" }}>
+          <Box sx={{ marginBottom: '10px' }}>
             <Typography>Avatar</Typography>
           </Box>
-          <PhotoUploadFrame image={image.url || ""} />
-          <Box sx={{ marginBottom: "10px" }}>
+          <PhotoUploadFrame image={image.url || ''} />
+          <Box sx={{ marginBottom: '10px' }}>
             <Button
-              component="label"
-              variant="contained"
+              component='label'
+              variant='contained'
               sx={{
-                boxShadow: "none",
-                width: "100%",
-                borderRadius: "6px",
-                textTransform: "none",
-                paddingY: "10px",
-                paddingX: "70px",
-                position: "relative",
-                textAlign: "center",
+                boxShadow: 'none',
+                width: '100%',
+                borderRadius: '6px',
+                textTransform: 'none',
+                paddingY: '10px',
+                paddingX: '70px',
+                position: 'relative',
+                textAlign: 'center',
               }}
             >
               Choose file
               <VisuallyHiddenInput
-                type="file"
-                accept=".png, .jpg, .jpeg"
+                type='file'
+                accept='.png, .jpg, .jpeg'
                 onChange={handleImageSelection}
               />
             </Button>
           </Box>
           {imageError && (
-            <Typography component="p" color="error">
+            <Typography component='p' color='error'>
               Image is required
             </Typography>
           )}
         </Box>
         <Box
           sx={{
-            marginTop: { xs: "20px", md: "-100px" },
-            width: { xs: "100%", sm: "320px" },
+            marginTop: { xs: '20px', md: '-100px' },
+            width: { xs: '100%', sm: '320px' },
           }}
         >
-          <Typography sx={{ color: "#676767" }}>
+          <Typography sx={{ color: '#676767' }}>
             Svg, Png, Jpg are all allowed, and must not be more that 5MB
           </Typography>
         </Box>
       </Box>
       <Box>
-        <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
+        <Box sx={{ marginBottom: { xs: '18px', sm: '11.5px' } }}>
           <Typography>Gender</Typography>
         </Box>
         <RadioGroup
           value={gender}
-          sx={{ display: "flex", flexDirection: "row" }}
+          sx={{ display: 'flex', flexDirection: 'row' }}
         >
           <Box
-            onClick={() => setGender("MALE")}
+            onClick={() => setGender('MALE')}
             sx={{
               flexShrink: 1,
-              cursor: "pointer",
-              border: "2px solid",
-              paddingY: "10px",
-              paddingX: "15px",
-              borderRadius: "10px",
-              marginRight: "40px",
-              ...(gender == "MALE"
-                ? { borderColor: "#268500" }
-                : { borderColor: "#D2D2D2" }),
-              marginBottom: "30px",
+              cursor: 'pointer',
+              border: '2px solid',
+              paddingY: '10px',
+              paddingX: '15px',
+              borderRadius: '10px',
+              marginRight: '40px',
+              ...(gender == 'MALE'
+                ? { borderColor: '#268500' }
+                : { borderColor: '#D2D2D2' }),
+              marginBottom: '30px',
             }}
           >
             <FormControlLabel
               onClick={() => {
-                setGender("MALE");
+                setGender('MALE');
               }}
-              value="MALE"
+              value='MALE'
               control={<Radio />}
-              label="Male"
+              label='Male'
             />
           </Box>
           <Box
-            onClick={() => setGender("FEMALE")}
+            onClick={() => setGender('FEMALE')}
             sx={{
-              cursor: "pointer",
-              border: "2px solid",
-              paddingY: "10px",
-              paddingX: "15px",
-              borderRadius: "10px",
-              ...(gender == "FEMALE"
-                ? { borderColor: "#268500" }
-                : { borderColor: "#D2D2D2" }),
-              marginBottom: "30px",
+              cursor: 'pointer',
+              border: '2px solid',
+              paddingY: '10px',
+              paddingX: '15px',
+              borderRadius: '10px',
+              ...(gender == 'FEMALE'
+                ? { borderColor: '#268500' }
+                : { borderColor: '#D2D2D2' }),
+              marginBottom: '30px',
             }}
           >
             <FormControlLabel
               onClick={() => {
-                setGender("FEMALE");
+                setGender('FEMALE');
               }}
-              value="FEMALE"
+              value='FEMALE'
               control={<Radio />}
-              label="Female"
+              label='Female'
             />
           </Box>
         </RadioGroup>
       </Box>
-      <Box sx={{ marginBottom: "10px" }}>
+      <Box sx={{ marginBottom: '10px' }}>
         <Grid container spacing={5}>
           <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
+            <Box sx={{ marginBottom: '21.5px' }}>
+              <Box sx={{ marginBottom: '11.5px' }}>
                 <Typography>Date of Birth</Typography>
               </Box>
-              <Box sx={{ borderRadius: "10px" }}>
+              <Box sx={{ borderRadius: '10px' }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     value={dob}
@@ -280,12 +280,12 @@ const PersonalInformationTab: React.FC<{
                       setDob(newDate ?? null);
                       setDobError(false);
                     }}
-                    format="DD/MM/YYYY"
-                    sx={{ width: "100%" }}
+                    format='DD/MM/YYYY'
+                    sx={{ width: '100%' }}
                   />
                 </LocalizationProvider>
                 {dobError && (
-                  <Typography component="p" color="error">
+                  <Typography component='p' color='error'>
                     Date of birth is required
                   </Typography>
                 )}
@@ -293,16 +293,16 @@ const PersonalInformationTab: React.FC<{
             </Box>
           </Grid>
           <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
+            <Box sx={{ marginBottom: '21.5px' }}>
+              <Box sx={{ marginBottom: '11.5px' }}>
                 <Typography>Marital Status</Typography>
               </Box>
-              <Box sx={{ borderRadius: "10px" }}>
+              <Box sx={{ borderRadius: '10px' }}>
                 <Select
                   value={maritalStatus}
                   sx={{
-                    borderRadius: "10px",
-                    width: "100%",
+                    borderRadius: '10px',
+                    width: '100%',
                   }}
                   onChange={(e) => {
                     setMaritalStatus(e.target.value);
@@ -310,7 +310,7 @@ const PersonalInformationTab: React.FC<{
                   }}
                   displayEmpty
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value='' disabled>
                     -- Select --
                   </MenuItem>
                   {maritalStatusOptions?.map((option, index) => (
@@ -320,7 +320,7 @@ const PersonalInformationTab: React.FC<{
                   ))}
                 </Select>
                 {maritalStatusError && (
-                  <Typography component="p" color="error">
+                  <Typography component='p' color='error'>
                     Marital status is required
                   </Typography>
                 )}
@@ -329,20 +329,20 @@ const PersonalInformationTab: React.FC<{
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ marginBottom: "10px" }}>
+      <Box sx={{ marginBottom: '10px' }}>
         <Grid container spacing={5}>
           <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
+            <Box sx={{ marginBottom: '21.5px' }}>
+              <Box sx={{ marginBottom: '11.5px' }}>
                 <Typography>Phone Number</Typography>
               </Box>
-              <Box sx={{ borderRadius: "10px" }}>
+              <Box sx={{ borderRadius: '10px' }}>
                 <TextField
                   sx={{
-                    width: "100%",
-                    borderRadius: "50px",
+                    width: '100%',
+                    borderRadius: '50px',
                   }}
-                  placeholder="080********"
+                  placeholder='080********'
                   value={phoneNumber}
                   onChange={(event: {
                     target: {
@@ -354,7 +354,7 @@ const PersonalInformationTab: React.FC<{
                   }}
                 />
                 {phoneNumberError && (
-                  <Typography component="p" color="error">
+                  <Typography component='p' color='error'>
                     Phone number is required
                   </Typography>
                 )}
@@ -362,22 +362,22 @@ const PersonalInformationTab: React.FC<{
             </Box>
           </Grid>
           <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
+            <Box sx={{ marginBottom: '21.5px' }}>
+              <Box sx={{ marginBottom: '11.5px' }}>
                 <Typography>Alternate Phone Number {`(Optional)`}</Typography>
               </Box>
-              <Box sx={{ borderRadius: "10px" }}>
+              <Box sx={{ borderRadius: '10px' }}>
                 <TextField
                   sx={{
-                    width: "100%",
-                    borderRadius: "50px",
+                    width: '100%',
+                    borderRadius: '50px',
                   }}
                   inputProps={{
                     sx: {
-                      borderRadius: "10px",
+                      borderRadius: '10px',
                     },
                   }}
-                  placeholder={"080********"}
+                  placeholder={'080********'}
                   value={altPhoneNumber}
                   onChange={(event: {
                     target: {
@@ -392,20 +392,20 @@ const PersonalInformationTab: React.FC<{
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ marginBottom: "21.5px" }}>
-        <Box sx={{ marginBottom: "11.5px" }}>
+      <Box sx={{ marginBottom: '21.5px' }}>
+        <Box sx={{ marginBottom: '11.5px' }}>
           <Typography>Home Address</Typography>
         </Box>
-        <Box sx={{ borderRadius: "10px" }}>
+        <Box sx={{ borderRadius: '10px' }}>
           <TextField
-            placeholder="Write in here..."
+            placeholder='Write in here...'
             sx={{
-              width: "100%",
-              borderRadius: "50px",
+              width: '100%',
+              borderRadius: '50px',
             }}
             inputProps={{
               sx: {
-                borderRadius: "10px",
+                borderRadius: '10px',
               },
             }}
             value={homeAddress}
@@ -421,25 +421,25 @@ const PersonalInformationTab: React.FC<{
             rows={3}
           />
           {homeAddressError && (
-            <Typography component="p" color="error">
+            <Typography component='p' color='error'>
               Home address is required
             </Typography>
           )}
         </Box>
       </Box>
-      <Box sx={{ marginBottom: "30px" }}>
+      <Box sx={{ marginBottom: '30px' }}>
         <Grid container spacing={5}>
           <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
+            <Box sx={{ marginBottom: '21.5px' }}>
+              <Box sx={{ marginBottom: '11.5px' }}>
                 <Typography>State of Origin</Typography>
               </Box>
-              <Box sx={{ borderRadius: "10px" }}>
+              <Box sx={{ borderRadius: '10px' }}>
                 <Select
                   value={stateOfOrigin}
                   sx={{
-                    borderRadius: "10px",
-                    width: "100%",
+                    borderRadius: '10px',
+                    width: '100%',
                   }}
                   onChange={(e) => {
                     setStateOfOrigin(e.target.value);
@@ -447,7 +447,7 @@ const PersonalInformationTab: React.FC<{
                   }}
                   displayEmpty
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value='' disabled>
                     -- Select --
                   </MenuItem>
                   {[...states_in_nigeria_dropdown].map((item, index) => (
@@ -457,7 +457,7 @@ const PersonalInformationTab: React.FC<{
                   ))}
                 </Select>
                 {stateOfOriginError && (
-                  <Typography component="p" color="error">
+                  <Typography component='p' color='error'>
                     Image is required
                   </Typography>
                 )}
@@ -465,22 +465,22 @@ const PersonalInformationTab: React.FC<{
             </Box>
           </Grid>
           <Grid item lg={6}>
-            <Box sx={{ marginBottom: "21.5px" }}>
-              <Box sx={{ marginBottom: "11.5px" }}>
+            <Box sx={{ marginBottom: '21.5px' }}>
+              <Box sx={{ marginBottom: '11.5px' }}>
                 <Typography>LGA</Typography>
               </Box>
-              <Box sx={{ borderRadius: "10px" }}>
+              <Box sx={{ borderRadius: '10px' }}>
                 <TextField
                   sx={{
-                    width: "100%",
-                    borderRadius: "50px",
+                    width: '100%',
+                    borderRadius: '50px',
                   }}
                   inputProps={{
                     sx: {
-                      borderRadius: "10px",
+                      borderRadius: '10px',
                     },
                   }}
-                  placeholder={"Enter LGA"}
+                  placeholder={'Enter LGA'}
                   value={localGovernmentArea}
                   onChange={(event: {
                     target: {
@@ -492,7 +492,7 @@ const PersonalInformationTab: React.FC<{
                   }}
                 />
                 {localGovernmentAreaError && (
-                  <Typography component="p" color="error">
+                  <Typography component='p' color='error'>
                     local government area is required
                   </Typography>
                 )}
@@ -501,23 +501,23 @@ const PersonalInformationTab: React.FC<{
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ marginBottom: "100px" }}>
+      <Box sx={{ marginBottom: '100px' }}>
         <Grid container spacing={5}>
           <Grid item lg={6}>
             <Grid container spacing={4}>
               <Grid item lg={6}>
                 <Box>
                   <Button
-                    variant="contained"
+                    variant='contained'
                     sx={{
-                      boxShadow: "none",
-                      width: "100%",
-                      borderRadius: "6px",
-                      textTransform: "none",
-                      paddingY: "10px",
-                      paddingX: "70px",
-                      background: "#000",
-                      ":hover": { backgroundColor: "#000" },
+                      boxShadow: 'none',
+                      width: '100%',
+                      borderRadius: '6px',
+                      textTransform: 'none',
+                      paddingY: '10px',
+                      paddingX: '70px',
+                      background: '#000',
+                      ':hover': { backgroundColor: '#000' },
                     }}
                   >
                     Cancel
@@ -528,14 +528,14 @@ const PersonalInformationTab: React.FC<{
                 <Box>
                   <Button
                     onClick={sendDataToParent}
-                    variant="contained"
+                    variant='contained'
                     sx={{
-                      boxShadow: "none",
-                      width: "100%",
-                      borderRadius: "6px",
-                      textTransform: "none",
-                      paddingY: "10px",
-                      paddingX: "70px",
+                      boxShadow: 'none',
+                      width: '100%',
+                      borderRadius: '6px',
+                      textTransform: 'none',
+                      paddingY: '10px',
+                      paddingX: '70px',
                     }}
                   >
                     Next
