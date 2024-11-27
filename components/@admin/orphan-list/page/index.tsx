@@ -1,18 +1,17 @@
 "use client";
 import { Box } from "@mui/material";
-import SubHeader from "../../sub-header";
-import OrphanListTable from "../../tables/orphan-list";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import LoaderBackdrop from "../../common/loader";
-import NeedList from "../../../components/tables/need-list";
 import { useEffect, useState } from "react";
-import { Orphans } from "@/types";
-import { getOrphans } from "@/src/app/api/service/orphan-list";
+import { OrphanProps } from "@/types";
+import { getAllOrphans } from "@/src/app/api/service/orphan-list";
+import LoaderBackdrop from "@/components/common/loader";
+import SubHeader from "@/components/sub-header";
+import AdminOrphanListTable from "@/components/tables/admin-orphan-list";
 
 
-const OrphanListPage: React.FC = () => {
+const AdminOrphanListPage: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
   // const token = session?.user?.token?.accessToken ?? " ";
@@ -56,9 +55,9 @@ const OrphanListPage: React.FC = () => {
   },[session ])
 
   // Query to fetch orphans data, only enabled when token is available
-  const { data, isLoading, status, error } = useQuery<Orphans>({
+  const { data, isLoading, status, error } = useQuery<OrphanProps[]>({
     queryKey: ["orphans",token],
-    queryFn: () => getOrphans(token), // Provide fallback to an empty string
+    queryFn: () => getAllOrphans(token), // Provide fallback to an empty string
   });
 
   // Logging for data-fetching states
@@ -92,19 +91,12 @@ const OrphanListPage: React.FC = () => {
           searchQuery={(data) => console.log(data)}
         />
       </Box>
-      {accountType === "SPONSOR" ? (
-        <Box sx={{ marginX: "-30px" }}>
-          <NeedList />
-        </Box>
-      ) : (
         <Box sx={{ marginY: "5px" , marginX: "-8px" }}>
-        <OrphanListTable orphanData={data || []} />
-          {/* <OrphanListTable orphanData={[{}]} /> */}
+        <AdminOrphanListTable orphanData={data || []} />
           {/* <OrphanSponsorshipCard cardData={[]} /> */}
         </Box>
-      )}
     </Box>
   );
 };
 
-export default OrphanListPage;
+export default AdminOrphanListPage;

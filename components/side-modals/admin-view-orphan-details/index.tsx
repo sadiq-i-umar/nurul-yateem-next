@@ -2,12 +2,12 @@ import { Box, Dialog, Divider, Grid, Typography } from "@mui/material";
 import { ImageFrameCircular80 } from "../../common/image-frames";
 import { PillWithDot, TextOnlyPill } from "../../pills";
 import { Close, MoreVert } from "@mui/icons-material";
-import { Orphan } from "../../../types";
+import { Orphan, OrphanProps } from "../../../types";
 
-const ViewOrphanDetailsSideModal: React.FC<{
+const AdminViewOrphanDetailsSideModal: React.FC<{
   open: boolean;
   close: () => void;
-  orphanData: Orphan;
+  orphanData: OrphanProps;
 }> = ({ open, close, orphanData }) => {
 
 
@@ -42,7 +42,7 @@ return (
         >
           <Box sx={{ flexGrow: 1, display: "flex" }}>
             <Box>
-              <ImageFrameCircular80 image={orphanData?.user.profile?.picture} />
+              <ImageFrameCircular80 image={orphanData?.profile?.picture} />
             </Box>
             <Box
   sx={{
@@ -59,19 +59,19 @@ return (
         textTransform: "capitalize",
       }}
     >
-      {`${orphanData?.user.profile?.firstName} ${orphanData?.user.profile?.lastName}`}
+      {`${orphanData?.profile?.firstName} ${orphanData?.profile?.lastName}`}
     </Typography>
   </Box>
   <Box>
     <TextOnlyPill
-      text={orphanData?.user.profile?.gender}
+      text={orphanData?.profile?.gender}
       bgColor= "blue"
       color="white" 
     />
   </Box>
   <Box sx={{ fontSize: "14px" }}>
     <PillWithDot
-      text={new Date(orphanData?.user.profile?.createdAt).toLocaleDateString("en-US", {
+      text={new Date(orphanData?.profile?.createdAt).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -101,13 +101,13 @@ return (
             groupContent: [
               {
                 title: "State of Origin",
-                content: orphanData?.user.profile?.localGovernment?.state.name,
+                content: orphanData?.profile?.localGovernment?.state.name,
               },
               {
                 title: "Local Government Area",
-                content: orphanData?.user.profile?.localGovernment?.name,
+                content: orphanData?.profile?.localGovernment?.name,
               },
-              { title: "Date of Birth", content: new Date(orphanData?.user.profile?.dateOfBirth).toLocaleDateString("en-US", {
+              { title: "Date of Birth", content: new Date(orphanData?.profile?.dateOfBirth).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -118,18 +118,18 @@ return (
           {
             groupTitle: "School Information",
             groupContent: [
-              { title: "Is he in school",   content: orphanData?.schoolStatus
+              { title: "Is he in school",   content: orphanData?.Orphan?.schoolStatus
     ? "In school"
     : "Not in school",},
-              { title: "School Name", content: orphanData?.schoolName  ?? "" },
-              { title: "School Address", content: orphanData?.schoolAddress ?? ""},
+              { title: "School Name", content: orphanData?.Orphan?.schoolName  ?? "" },
+              { title: "School Address", content: orphanData?.Orphan?.schoolAddress ?? ""},
               {
                 title: "School Contact Person",
-                content: orphanData?.schoolContactPerson ?? "",
+                content: orphanData?.Orphan?.schoolContactPerson ?? "",
               },
               {
                 title: "Phone Number of Contact Person",
-                content: orphanData?.schoolContactPhone  ?? "sadfdsf",
+                content: orphanData?.Orphan?.schoolContactPhone  ?? "sadfdsf",
               },
             ],
           },
@@ -167,7 +167,7 @@ return (
             <Divider sx={{ mb: "20px" }} />
           </>
         ))}
-        {!orphanData?.isAccepted && (
+        {!orphanData?.Orphan.isAccepted && (
   <Box
     sx={{
       backgroundColor: "#FFF4E5",
@@ -195,4 +195,4 @@ return (
   );
 };
 
-export default ViewOrphanDetailsSideModal;
+export default AdminViewOrphanDetailsSideModal;

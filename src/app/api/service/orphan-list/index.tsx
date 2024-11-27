@@ -1,11 +1,24 @@
-import { OrphanProps } from "@/types";
+import { Orphans , OrphanProps } from "@/types";
 
-import { authOptions } from "@/src/app/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth";
 import { baseUrl } from "@/constants";
 import { request } from "@/utils/request";
 
-export const getOrphans = async (token : string): Promise<OrphanProps[]> => {
+export const getOrphans = async (token : string): Promise<Orphans> => {
+   
+    const res = await request("GET", `${baseUrl}/v1/orphan/mine`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("API Response:", res);
+
+    // Ensure the response is of the correct type
+    return res as Promise<Orphans>;
+} 
+  
+export const getAllOrphans = async (token : string): Promise<OrphanProps[]> => {
    
     const res = await request("GET", `${baseUrl}/v1/orphan`, {
       headers: {

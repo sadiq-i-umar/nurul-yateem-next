@@ -70,6 +70,73 @@ export interface UserWithToken {
 export interface FetchedResponse<T> extends Array<T> {}
 
 
+export type User = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  isVerified: boolean;
+  isDeleted: boolean;
+  isAchieved: boolean;
+  phoneNumber: string | null;
+  email: string | null;
+  password: string | null;
+  isActive: boolean;
+  authStrategy: string | null;
+  profile: UserProfile;
+};
+
+export type CreatedByOrUpdatedBy = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  isVerified: boolean;
+  isDeleted: boolean;
+  isAchieved: boolean;
+  phoneNumber: string;
+  email: string;
+  password: string;
+  isActive: boolean;
+  authStrategy: string | null;
+};
+
+export type Orphan = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: "deleted" | "active";
+  deletionReason: string | null;
+  trackingNumber: string;
+  picture: string;
+  isAccepted: boolean;
+  schoolName: string;
+  schoolStatus: boolean;
+  schoolAddress: string;
+  schoolContactPerson: string;
+  schoolContactPhone: string;
+  affidavitOfGuardianship: string;
+  createdByUserId: string;
+  userId: string;
+  updatedByUserId: string;
+  requests: any[];  
+  createdBy: CreatedByOrUpdatedBy;
+  updatedBy: CreatedByOrUpdatedBy;
+  user: User;
+};
+
+export type Orphans = Orphan[];
+
+
+
+
+/*
+
+Admin - Get All Orphans Props
+
+*/
+
+
+
+
 type State = {
   id: string;
   name: string;
@@ -100,11 +167,11 @@ export interface OrphanProps {
   phoneNumber: string | null;
   email: string | null;
   isActive: boolean;
-  Orphan: Orphan;
+  Orphan: AllOrphan;
   profile: UserProfile;
 }
 
-export type Orphan =  {
+export type AllOrphan =  {
   affidavitOfGuardianship: string;
   createdAt: string;
   createdBy: {
@@ -144,7 +211,7 @@ export type UserProfile = {
   firstName: string;
   middleName: string | null;
   lastName: string;
-  gender: "MALE" | "FEMALE" | string; 
+  gender: "male" | "female" | string; 
   localGovernment: LocalGovernment;
   dateOfBirth: string;
   homeAddress: string | null;
@@ -155,3 +222,6 @@ export type UserProfile = {
   createdByUserId: string | null;
   updatedByUserId: string | null;
 };
+
+
+
