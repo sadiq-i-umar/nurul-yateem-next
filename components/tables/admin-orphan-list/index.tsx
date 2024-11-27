@@ -10,18 +10,18 @@ import Image from "next/image";
 import { PillWithDot } from "../../pills";
 import { ImageNameEmailCell } from "../cells";
 import { MoreVert } from "@mui/icons-material";
-import ViewOrphanDetailsSideModal from "../../side-modals/view-orphan-details";
+import AdminViewOrphanDetailsSideModal from "../../side-modals/admin-view-orphan-details";
 import AlertDialog from "../../Reusable-Dialog";
 import ReasonForDeleteOrphan from "../../reasons-for-removal";
 import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
 import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
-import { Orphans } from "@/types";
+import { OrphanProps } from "@/types";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { deleteOrphanRequest } from "@/src/app/api/service/orphan-list";
 
-const OrphanListTable: React.FC<{
-  orphanData: Orphans;
+const AdminOrphanListTable: React.FC<{
+  orphanData: OrphanProps[];
 }> = ({ orphanData }) => {
 
   const { data: session } = useSession();
@@ -154,9 +154,9 @@ const OrphanListTable: React.FC<{
                       <Checkbox />
                     </Box>
                     <ImageNameEmailCell
-                      image={orphan?.picture}
-                      name={`${orphan?.user.profile.firstName}  ${orphan?.user.profile.middleName}  ${orphan?.user.profile.lastName}`}
-                     gender={orphan?.user.profile.gender}
+                      image={orphan?.Orphan.picture}
+                      name={`${orphan?.profile.firstName}  ${orphan?.profile.middleName}  ${orphan?.profile.lastName}`}
+                     gender={orphan?.profile.gender}
                     />
                   </Box>
                 </TableCell>
@@ -164,7 +164,7 @@ const OrphanListTable: React.FC<{
                 <Typography
   sx={{ fontSize: "14px", fontWeight: 600, color: "#3D3B3C" }}
 >
-  {new Date(orphan?.user.profile.dateOfBirth).toLocaleDateString("en-US", {
+  {new Date(orphan?.profile.dateOfBirth).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -179,7 +179,7 @@ const OrphanListTable: React.FC<{
     color: "#667085",
   }}
 >
-  {orphan?.schoolName ? "In school" : "Not in school"}
+  {orphan?.Orphan.schoolStatus ? "In school" : "Not in school"}
 </Typography>
 
                 </TableCell>
@@ -190,15 +190,15 @@ const OrphanListTable: React.FC<{
                       fontWeight: "400",
                       color: "#667085",
                     }}
-        >{orphan?.user.profile?.localGovernment?.state.name}
+        >{orphan?.profile?.localGovernment?.state.name}
         </Typography>
                 </TableCell>
                 <TableCell align="left">
                   <PillWithDot
-  text={orphan?.isAccepted ? "Accepted" : "Pending"}
-  bgColor={orphan?.isAccepted ? "#ECFDF3" : "#FFEFEF"}
-  dotColor={orphan?.isAccepted ? "#007A27" : "#FF0000"}
-  textColor={orphan?.isAccepted ? "#007A27" : "#FF0000"}
+  text={orphan?.Orphan.isAccepted ? "Accepted" : "Pending"}
+  bgColor={orphan?.Orphan.isAccepted ? "#ECFDF3" : "#FFEFEF"}
+  dotColor={orphan?.Orphan.isAccepted ? "#007A27" : "#FF0000"}
+  textColor={orphan?.Orphan.isAccepted ? "#007A27" : "#FF0000"}
 />
                 </TableCell>
                 <TableCell align="left">
@@ -334,7 +334,7 @@ const OrphanListTable: React.FC<{
         disagreeText={"No"}
         agreeText={"Yes, Delete"}
       />
-      <ViewOrphanDetailsSideModal
+      <AdminViewOrphanDetailsSideModal
         orphanData={SelectedOrphan}
         open={openViewDetailsModal}
         close={() => setOpenViewDetailsModal(false)}
@@ -359,5 +359,5 @@ const OrphanListTable: React.FC<{
   );
 };
 
-export default OrphanListTable;
+export default AdminOrphanListTable;
 
