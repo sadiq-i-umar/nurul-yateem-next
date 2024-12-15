@@ -1,27 +1,27 @@
-import { Box, Button, Checkbox, Popover, Typography } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import * as React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { PillWithDot } from "../../pills";
-import { ImageNameEmailCell } from "../cells";
-import { MoreVert } from "@mui/icons-material";
-import ViewOrphanDetailsSideModal from "../../side-modals/view-orphan-details";
-import AlertDialog from "../../Reusable-Dialog";
-import ReasonForDeleteOrphan from "../../reasons-for-removal";
-import EditOrphanSideModal from "../../side-modals/edit-orphan-details/side-modal";
-import AddSponsorshipRequestSideModal from "../../side-modals/add-sponsorship-request";
+import { Box, Button, Checkbox, Popover, Typography } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import * as React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { PillWithDot } from '../../pills';
+import { ImageNameEmailCell } from '../cells';
+import { MoreVert } from '@mui/icons-material';
+import ViewOrphanDetailsSideModal from '../../side-modals/view-orphan-details';
+import AlertDialog from '../../Reusable-Dialog';
+import ReasonForDeleteOrphan from '../../reasons-for-removal';
+import EditOrphanSideModal from '../../side-modals/edit-orphan-details/side-modal';
+import AddSponsorshipRequestSideModal from '../../side-modals/add-sponsorship-request';
 
 const GuardianListTable: React.FC<{
   orphanData: any[];
 }> = ({ orphanData }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null,
+    null
   );
   const [openViewDetailsModal, setOpenViewDetailsModal] = React.useState(false);
   const [SelectedOrphan, setSelectedOrphan] = React.useState<any>();
@@ -55,7 +55,7 @@ const GuardianListTable: React.FC<{
 
   const handleOpenPopover = (
     event: React.MouseEvent<HTMLButtonElement>,
-    data: any,
+    data: any
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedOrphan(data);
@@ -70,42 +70,42 @@ const GuardianListTable: React.FC<{
     setAnchorEl(null);
   };
   const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <>
-      <TableContainer sx={{ backgroundColor: "white" }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer sx={{ backgroundColor: 'white' }}>
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontSize: "14px", color: "#667085" }}>
+              <TableCell sx={{ fontSize: '14px', color: '#667085' }}>
                 <Box
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    mb: "-13px",
-                    ml: "-15px",
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: '-13px',
+                    ml: '-15px',
                   }}
                 >
-                  <Box sx={{ marginLeft: "20px" }}>
+                  <Box sx={{ marginLeft: '20px' }}>
                     <Checkbox />
                   </Box>
                   <Box>Name of guardian</Box>
                 </Box>
               </TableCell>
               {[
-                "Phone number",
-                "Employment Status",
-                "Means of ID",
-                "No of orphan",
-                "",
+                'Phone number',
+                'Employment Status',
+                'Means of ID',
+                'No of orphan',
+                '',
               ].map((heading, index) => (
                 <TableCell
                   key={index}
-                  sx={{ fontSize: "14px", color: "#667085" }}
-                  align="left"
+                  sx={{ fontSize: '14px', color: '#667085' }}
+                  align='left'
                 >
-                  <Box sx={{ mb: "-13px" }}>{heading}</Box>
+                  <Box sx={{ mb: '-13px' }}>{heading}</Box>
                 </TableCell>
               ))}
             </TableRow>
@@ -114,116 +114,116 @@ const GuardianListTable: React.FC<{
             {orphanData?.map((orphan) => (
               <TableRow
                 key={`${orphan?.id}`}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell component="th" scope="row">
+                <TableCell component='th' scope='row'>
                   <Box
-                    sx={{ display: "flex", alignItems: "center", ml: "-15px" }}
+                    sx={{ display: 'flex', alignItems: 'center', ml: '-15px' }}
                   >
-                    <Box sx={{ marginLeft: "20px" }}>
+                    <Box sx={{ marginLeft: '20px' }}>
                       <Checkbox />
                     </Box>
                     <ImageNameEmailCell
                       image={orphan?.profile_photo}
                       name={`${orphan?.first_name} ${orphan?.last_name}`}
-                      email={orphan.gender}
+                      gender={''} // email={orphan.gender}
                     />
                   </Box>
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align='left'>
                   <Typography
-                    sx={{ fontSize: "14px", fontWeight: 600, color: "#3D3B3C" }}
+                    sx={{ fontSize: '14px', fontWeight: 600, color: '#3D3B3C' }}
                   >
                     {orphan?.date_of_birth}
                   </Typography>
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align='left'>
                   <Typography
                     sx={{
-                      fontSize: "14px",
-                      fontWeight: "400",
-                      color: "#667085",
+                      fontSize: '14px',
+                      fontWeight: '400',
+                      color: '#667085',
                     }}
                   >
                     {orphan?.in_school}
                   </Typography>
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align='left'>
                   <Typography
                     sx={{
-                      fontSize: "14px",
-                      fontWeight: "400",
-                      color: "#667085",
+                      fontSize: '14px',
+                      fontWeight: '400',
+                      color: '#667085',
                     }}
                   >
                     {orphan?.state_of_origin}
                   </Typography>
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align='left'>
                   <PillWithDot
                     text={orphan?.account_status}
                     bgColor={
-                      orphan?.account_status == "APPROVED"
-                        ? "#ECFDF3"
-                        : orphan?.account_status == "PENDING"
-                          ? "#FFF8E4"
-                          : orphan?.account_status == "REJECTED"
-                            ? "#FFEFEF"
-                            : ""
+                      orphan?.account_status == 'APPROVED'
+                        ? '#ECFDF3'
+                        : orphan?.account_status == 'PENDING'
+                        ? '#FFF8E4'
+                        : orphan?.account_status == 'REJECTED'
+                        ? '#FFEFEF'
+                        : ''
                     }
                     dotColor={
-                      orphan?.account_status == "APPROVED"
-                        ? "#007A27"
-                        : orphan?.account_status == "PENDING"
-                          ? "#FFA800"
-                          : orphan?.account_status == "REJECTED"
-                            ? "#FF0000"
-                            : ""
+                      orphan?.account_status == 'APPROVED'
+                        ? '#007A27'
+                        : orphan?.account_status == 'PENDING'
+                        ? '#FFA800'
+                        : orphan?.account_status == 'REJECTED'
+                        ? '#FF0000'
+                        : ''
                     }
                     textColor={
-                      orphan?.account_status == "APPROVED"
-                        ? "#007A27"
-                        : orphan?.account_status == "PENDING"
-                          ? "#FFA800"
-                          : orphan?.account_status == "REJECTED"
-                            ? "#FF0000"
-                            : ""
+                      orphan?.account_status == 'APPROVED'
+                        ? '#007A27'
+                        : orphan?.account_status == 'PENDING'
+                        ? '#FFA800'
+                        : orphan?.account_status == 'REJECTED'
+                        ? '#FF0000'
+                        : ''
                     }
                   />
                 </TableCell>
-                <TableCell align="left">
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                <TableCell align='left'>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Box
                       onClick={() => setOpenViewDetailsModal(true)}
-                      sx={{ mr: "20px", cursor: "pointer", mt: "-5px" }}
+                      sx={{ mr: '20px', cursor: 'pointer', mt: '-5px' }}
                     >
                       <Button
                         sx={{
-                          textDecoration: "underline",
-                          color: "#007A27",
-                          fontSize: "15px",
+                          textDecoration: 'underline',
+                          color: '#007A27',
+                          fontSize: '15px',
                           fontWeight: 600,
-                          ":hover": {
-                            borderColor: "#EBEFFF",
-                            color: "#3863FA",
-                            backgroundColor: "#EBEFFF",
+                          ':hover': {
+                            borderColor: '#EBEFFF',
+                            color: '#3863FA',
+                            backgroundColor: '#EBEFFF',
                           },
                         }}
                         onClick={() => handleView(orphan)}
                       >
-                        {"View"}
+                        {'View'}
                       </Button>
                     </Box>
 
                     <Button
                       sx={{
-                        borderColor: "white",
-                        color: "#3863FA",
-                        backgroundColor: "white",
-                        ":hover": {
-                          borderColor: "#EBEFFF",
-                          color: "#3863FA",
-                          backgroundColor: "#EBEFFF",
+                        borderColor: 'white',
+                        color: '#3863FA',
+                        backgroundColor: 'white',
+                        ':hover': {
+                          borderColor: '#EBEFFF',
+                          color: '#3863FA',
+                          backgroundColor: '#EBEFFF',
                         },
                       }}
                       onClick={() => handleOpenDelete(orphan)}
@@ -231,19 +231,19 @@ const GuardianListTable: React.FC<{
                       <Image
                         width={21}
                         height={21}
-                        alt={"Trash Icon"}
-                        src={"/trash.svg"}
+                        alt={'Trash Icon'}
+                        src={'/trash.svg'}
                       />
                     </Button>
                     <Button
                       sx={{
-                        borderColor: "white",
-                        color: "#3863FA",
-                        backgroundColor: "white",
-                        ":hover": {
-                          borderColor: "#EBEFFF",
-                          color: "#3863FA",
-                          backgroundColor: "#EBEFFF",
+                        borderColor: 'white',
+                        color: '#3863FA',
+                        backgroundColor: 'white',
+                        ':hover': {
+                          borderColor: '#EBEFFF',
+                          color: '#3863FA',
+                          backgroundColor: '#EBEFFF',
                         },
                       }}
                       onClick={() => handleEdit(orphan)}
@@ -251,27 +251,27 @@ const GuardianListTable: React.FC<{
                       <Image
                         width={21}
                         height={21}
-                        alt={"Edit Icon"}
-                        src={"/editPen.svg"}
-                        color="red"
+                        alt={'Edit Icon'}
+                        src={'/editPen.svg'}
+                        color='red'
                       />
                     </Button>
 
                     <>
                       <Button
                         aria-describedby={id}
-                        variant="outlined"
+                        variant='outlined'
                         onClick={(event) => {
                           handleOpenPopover(event, orphan);
                         }}
                         sx={{
-                          borderColor: "white",
-                          color: "#3863FA",
-                          backgroundColor: "white",
-                          ":hover": {
-                            borderColor: "#EBEFFF",
-                            color: "#3863FA",
-                            backgroundColor: "#EBEFFF",
+                          borderColor: 'white',
+                          color: '#3863FA',
+                          backgroundColor: 'white',
+                          ':hover': {
+                            borderColor: '#EBEFFF',
+                            color: '#3863FA',
+                            backgroundColor: '#EBEFFF',
                           },
                         }}
                       >
@@ -283,18 +283,18 @@ const GuardianListTable: React.FC<{
                         anchorEl={anchorEl}
                         onClose={handleClosePopover}
                         anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "left",
+                          vertical: 'bottom',
+                          horizontal: 'left',
                         }}
                       >
                         <Box sx={{ p: 1 }}>
                           <Button
                             sx={{
-                              color: "black",
-                              backgroundColor: "white",
-                              ":hover": {
-                                color: "#3863FA",
-                                backgroundColor: "white",
+                              color: 'black',
+                              backgroundColor: 'white',
+                              ':hover': {
+                                color: '#3863FA',
+                                backgroundColor: 'white',
                               },
                             }}
                             onClick={() => handleSponsorshipRequest()}
@@ -316,13 +316,13 @@ const GuardianListTable: React.FC<{
         open={openDialog}
         onClose={handleClickClose}
         onAgree={handleDelete}
-        title={"Delete"}
+        title={'Delete'}
         deleteColor={true}
         content={
-          "Do you wish to delete this orphan? A confirmation will be sent to the admin to confirm your actions."
+          'Do you wish to delete this orphan? A confirmation will be sent to the admin to confirm your actions.'
         }
-        disagreeText={"No"}
-        agreeText={"Yes, Delete"}
+        disagreeText={'No'}
+        agreeText={'Yes, Delete'}
       />
       <ViewOrphanDetailsSideModal
         orphanData={SelectedOrphan}
@@ -334,6 +334,9 @@ const GuardianListTable: React.FC<{
         openDeleteReason={openDeleteReason}
         setOpenDeleteReason={setOpenDeleteReason}
         SelectedOrphan={SelectedOrphan}
+        onDelete={function (reason: string, orphan: any): void {
+          throw new Error('Function not implemented.');
+        }}
       />
       <EditOrphanSideModal
         openSideModal={openEditSideModal}

@@ -1,4 +1,4 @@
-import { Close, MoreVert } from "@mui/icons-material";
+import { Close, MoreVert } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -11,26 +11,26 @@ import {
   Select,
   TextField,
   Typography,
-} from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import AlertDialog from "../../Reusable-Dialog";
-import { useAddOrphanStore } from "../../../utils/zustand/addOrphanstore";
-import { PhotoUploadFrame } from "../../common/image-frames";
-import { VisuallyHiddenInput } from "../../common/input";
-import { states_in_nigeria_dropdown } from "../../../utils";
-import DragUpload from "../../drag-upload";
-import dayjs from "dayjs";
-import { TextOnlyPill } from "../../pills";
-import EditPic from "../../../public/ediitProfile.svg";
-import { useSession } from "next-auth/react";
-import LoaderBackdrop from "../../common/loader";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import { EditOrphanApi } from "@/src/app/api/service/update-account";
+} from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import AlertDialog from '../../Reusable-Dialog';
+import { useAddOrphanStore } from '../../../utils/zustand/addOrphanstore';
+import { PhotoUploadFrame } from '../../common/image-frames';
+import { VisuallyHiddenInput } from '../../common/input';
+import { states_in_nigeria_dropdown } from '../../../utils';
+import DragUpload from '../../drag-upload';
+import dayjs from 'dayjs';
+import { TextOnlyPill } from '../../pills';
+import EditPic from '../../../public/ediitProfile.svg';
+import { useSession } from 'next-auth/react';
+import LoaderBackdrop from '../../common/loader';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
+import { EditOrphanApi } from '@/src/app/api/service/update-account';
 
 const EditOrphanSideModal: React.FC<{
   openSideModal: boolean;
@@ -71,21 +71,23 @@ const EditOrphanSideModal: React.FC<{
 
   useEffect(() => {
     if (openSideModal && SelectedOrphan) {
-      setFirstName(SelectedOrphan?.profile?.firstName || "");
-      setLastName(SelectedOrphan?.profile?.lastName || "");
-      setImage(SelectedOrphan?.profile?.picture || "");
-      setGender(SelectedOrphan?.profile?.gender || "");
-      setDateOfBirth(SelectedOrphan?.profile?.dateofBirth || "");
-      setStateOfOrigin(SelectedOrphan?.state_of_origin || "");
-      setLocalGovernmentArea(SelectedOrphan?.profile?.localGovernment?.name || "");
-    setInSchool(SelectedOrphan?.Orphan?.schoolName?.length > 0 ? "yes" : "no");
-      setSchoolName(SelectedOrphan?.Orphan?.schoolName || "");
-      setSchoolAddress(SelectedOrphan?.Orphan?.schoolAddress || "");
-      setSchoolContact(SelectedOrphan?.Orphan.schoolContactPerson || "");
-      setPhoneNumberOfSchool(
-        SelectedOrphan?.Orphan.schoolContactPhone  || "",
+      setFirstName(SelectedOrphan?.profile?.firstName || '');
+      setLastName(SelectedOrphan?.profile?.lastName || '');
+      setImage(SelectedOrphan?.profile?.picture || '');
+      setGender(SelectedOrphan?.profile?.gender || '');
+      setDateOfBirth(SelectedOrphan?.profile?.dateofBirth || '');
+      setStateOfOrigin(SelectedOrphan?.state_of_origin || '');
+      setLocalGovernmentArea(
+        SelectedOrphan?.profile?.localGovernment?.name || ''
       );
-      setUniqueCode(SelectedOrphan?.unique_code || "");
+      setInSchool(
+        SelectedOrphan?.Orphan?.schoolName?.length > 0 ? 'yes' : 'no'
+      );
+      setSchoolName(SelectedOrphan?.Orphan?.schoolName || '');
+      setSchoolAddress(SelectedOrphan?.Orphan?.schoolAddress || '');
+      setSchoolContact(SelectedOrphan?.Orphan.schoolContactPerson || '');
+      setPhoneNumberOfSchool(SelectedOrphan?.Orphan.schoolContactPhone || '');
+      setUniqueCode(SelectedOrphan?.unique_code || '');
     }
   }, [openSideModal, SelectedOrphan]);
 
@@ -114,13 +116,13 @@ const EditOrphanSideModal: React.FC<{
         toast.error(data.error);
         setIsLoading(false);
       } else {
-        toast.success("Orphan details updated successfully");
-        queryClient.invalidateQueries({ queryKey: ["orphans"] });
+        toast.success('Orphan details updated successfully');
+        queryClient.invalidateQueries({ queryKey: ['orphans'] });
         setIsLoading(false);
       }
     },
     onError: () => {
-      toast.error("Error occurred while creating the user");
+      toast.error('Error occurred while creating the user');
       setIsLoading(false);
     },
   });
@@ -137,8 +139,8 @@ const EditOrphanSideModal: React.FC<{
     }
   };
 
-  if (image.url?.indexOf("data:image") != undefined) {
-    if (image.url?.indexOf("data:image") > -1) {
+  if (image.url?.indexOf('data:image') != undefined) {
+    if (image.url?.indexOf('data:image') > -1) {
       // TODO: Upload image to google bucket and store response
     }
   }
@@ -190,10 +192,9 @@ const EditOrphanSideModal: React.FC<{
       setPhoneNumberOfSchoolError(true);
       isValid = false;
     }
-  
 
     if (!isValid) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
     }
 
     if (isValid) {
@@ -228,7 +229,7 @@ const EditOrphanSideModal: React.FC<{
       const payload = {
         first_name: firstName,
         last_name: lastName,
-        profile_photo: "https://example.com/profile.jpg",
+        profile_photo: 'https://example.com/profile.jpg',
         gender: gender,
         date_of_birth: dateOfBirth,
         state_of_origin: stateOfOrigin,
@@ -245,7 +246,7 @@ const EditOrphanSideModal: React.FC<{
 
       setOpenSideModal(false);
     } catch (error) {
-      toast.error("An error occurred. Please try again later");
+      toast.error('An error occurred. Please try again later');
     } finally {
       setIsLoading(false);
     }
@@ -257,63 +258,64 @@ const EditOrphanSideModal: React.FC<{
       <Dialog open={openSideModal} onClose={() => setOpenSideModal(false)}>
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "white",
-            padding: "20px",
-            position: "fixed",
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: 'white',
+            padding: '20px',
+            position: 'fixed',
             top: 0,
             right: 0,
             zIndex: 1102,
-            overflow: "scroll",
-            height: "100vh",
-            width: { sm: "621px" },
+            overflow: 'scroll',
+            height: '100vh',
+            width: { sm: '621px' },
           }}
         >
           <Box
             sx={{
-              backgroundColor: "#F5F5F5",
-              display: "flex",
-              mx: "-20px",
-              mt: "-20px",
-              px: "20px",
-              pt: "20px",
-              pb: "20px",
-              mb: "20px",
+              backgroundColor: '#F5F5F5',
+              display: 'flex',
+              mx: '-20px',
+              mt: '-20px',
+              px: '20px',
+              pt: '20px',
+              pb: '20px',
+              mb: '20px',
             }}
           >
-            <Box sx={{ flexGrow: 1, display: "flex" }}>
+            <Box sx={{ flexGrow: 1, display: 'flex' }}>
               <Box>
                 <PhotoUploadFrame image={image} />
               </Box>
               <Box>
                 <Box
                   sx={{
-                    marginLeft: "-20px",
+                    marginLeft: '-20px',
                   }}
                 >
-                  <Button component="label" htmlFor="image-upload-button">
+                  <Button component='label' htmlFor='image-upload-button'>
                     <VisuallyHiddenInput
-                      id="image-upload-button"
-                      type="file"
-                      accept=".png, .jpg, .jpeg"
+                      id='image-upload-button'
+                      type='file'
+                      accept='.png, .jpg, .jpeg'
                       onChange={handleImageSelection}
                     />
- <Image
-      src={EditPic.src}
-      alt="Hero Image"
-      width={50} 
-      height={50} 
-      style={{ objectFit: "cover" }} 
-    />                  </Button>
+                    <Image
+                      src={EditPic.src}
+                      alt='Hero Image'
+                      width={50}
+                      height={50}
+                      style={{ objectFit: 'cover' }}
+                    />{' '}
+                  </Button>
                 </Box>
 
                 <Box>
-                  <TextOnlyPill text={uniqueCode} bgColor={""} color={""} />
+                  <TextOnlyPill text={uniqueCode} bgColor={''} color={''} />
                 </Box>
               </Box>
             </Box>
-            <Box sx={{ display: "flex", gap: ".5rem" }}>
+            <Box sx={{ display: 'flex', gap: '.5rem' }}>
               <Box>
                 <MoreVert />
               </Box>
@@ -322,81 +324,81 @@ const EditOrphanSideModal: React.FC<{
               </Box>
             </Box>
           </Box>
-          <Box sx={{ paddingY: "30px" }}>
+          <Box sx={{ paddingY: '30px' }}>
             <Box>
               <Box sx={{}}>
-                <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
+                <Box sx={{ marginBottom: { xs: '18px', sm: '11.5px' } }}>
                   <Typography>Gender</Typography>
                 </Box>
                 <RadioGroup
                   value={gender}
-                  sx={{ display: "flex", flexDirection: "row" }}
+                  sx={{ display: 'flex', flexDirection: 'row' }}
                 >
                   <Box
-                    onClick={() => setGender("MALE")}
+                    onClick={() => setGender('MALE')}
                     sx={{
                       flexShrink: 1,
-                      cursor: "pointer",
-                      border: "2px solid",
-                      paddingY: "10px",
-                      paddingX: "15px",
-                      borderRadius: "10px",
-                      marginRight: "40px",
-                      ...(gender == "MALE"
-                        ? { borderColor: "#268500" }
-                        : { borderColor: "#D2D2D2" }),
-                      marginBottom: "30px",
+                      cursor: 'pointer',
+                      border: '2px solid',
+                      paddingY: '10px',
+                      paddingX: '15px',
+                      borderRadius: '10px',
+                      marginRight: '40px',
+                      ...(gender == 'MALE'
+                        ? { borderColor: '#268500' }
+                        : { borderColor: '#D2D2D2' }),
+                      marginBottom: '30px',
                     }}
                   >
                     <FormControlLabel
-                      onClick={() => setGender("MALE")}
-                      value="MALE"
+                      onClick={() => setGender('MALE')}
+                      value='MALE'
                       control={<Radio />}
-                      label="Male"
+                      label='Male'
                     />
                   </Box>
                   <Box
-                    onClick={() => setGender("FEMALE")}
+                    onClick={() => setGender('FEMALE')}
                     sx={{
-                      cursor: "pointer",
-                      border: "2px solid",
-                      paddingY: "10px",
-                      paddingX: "15px",
-                      borderRadius: "10px",
-                      ...(gender == "FEMALE"
-                        ? { borderColor: "#268500" }
-                        : { borderColor: "#D2D2D2" }),
-                      marginBottom: "30px",
+                      cursor: 'pointer',
+                      border: '2px solid',
+                      paddingY: '10px',
+                      paddingX: '15px',
+                      borderRadius: '10px',
+                      ...(gender == 'FEMALE'
+                        ? { borderColor: '#268500' }
+                        : { borderColor: '#D2D2D2' }),
+                      marginBottom: '30px',
                     }}
                   >
                     <FormControlLabel
-                      onClick={(e) => setGender("FEMALE")}
-                      value="FEMALE"
+                      onClick={(e) => setGender('FEMALE')}
+                      value='FEMALE'
                       control={<Radio />}
-                      label="Female"
+                      label='Female'
                     />
                   </Box>
                 </RadioGroup>
               </Box>
-              <Box sx={{ marginBottom: "30px" }}>
+              <Box sx={{ marginBottom: '30px' }}>
                 <Grid container spacing={5}>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>First Name</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder="Enter First Name"
+                          placeholder='Enter First Name'
                           value={firstName}
                           onChange={(event: {
                             target: {
@@ -408,7 +410,7 @@ const EditOrphanSideModal: React.FC<{
                           }}
                         />
                         {firstNameError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             First Name is required
                           </Typography>
                         )}
@@ -416,22 +418,22 @@ const EditOrphanSideModal: React.FC<{
                     </Box>
                   </Grid>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>Last Name</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder="Enter Last Name"
+                          placeholder='Enter Last Name'
                           value={lastName}
                           onChange={(event: {
                             target: {
@@ -443,7 +445,7 @@ const EditOrphanSideModal: React.FC<{
                           }}
                         />
                         {lastNameError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             Last Name is required
                           </Typography>
                         )}
@@ -452,25 +454,26 @@ const EditOrphanSideModal: React.FC<{
                   </Grid>
                 </Grid>
               </Box>
-              <Box sx={{ marginBottom: "60px", width: "100%" }}>
+              <Box sx={{ marginBottom: '60px', width: '100%' }}>
                 <DragUpload
-                  title={"Affidavit of Guardianship"}
-                  subtitle={"Drag and Drop Document"}
+                  onFileChange={function (file: File | null): void {
+                    throw new Error('Function not implemented.');
+                  }}
                 />
               </Box>
-              <Box sx={{ marginBottom: "10px" }}>
+              <Box sx={{ marginBottom: '10px' }}>
                 <Grid container spacing={5}>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>State of Origin</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <Select
                           value={stateOfOrigin}
                           sx={{
-                            borderRadius: "10px",
-                            width: "100%",
+                            borderRadius: '10px',
+                            width: '100%',
                           }}
                           onChange={(e) => {
                             setStateOfOrigin(e.target.value);
@@ -478,7 +481,7 @@ const EditOrphanSideModal: React.FC<{
                           }}
                           displayEmpty
                         >
-                          <MenuItem value="" disabled>
+                          <MenuItem value='' disabled>
                             -- Select --
                           </MenuItem>
                           {[...states_in_nigeria_dropdown].map(
@@ -486,11 +489,11 @@ const EditOrphanSideModal: React.FC<{
                               <MenuItem key={index} value={item}>
                                 {item}
                               </MenuItem>
-                            ),
+                            )
                           )}
                         </Select>
                         {stateOfOriginError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             State of Origin is required
                           </Typography>
                         )}
@@ -498,22 +501,22 @@ const EditOrphanSideModal: React.FC<{
                     </Box>
                   </Grid>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>LGA</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder={"Enter LGA"}
+                          placeholder={'Enter LGA'}
                           value={localGovernmentArea}
                           onChange={(event: {
                             target: {
@@ -525,7 +528,7 @@ const EditOrphanSideModal: React.FC<{
                           }}
                         />
                         {localGovernmentAreaError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             Local governmnet area is required
                           </Typography>
                         )}
@@ -534,32 +537,32 @@ const EditOrphanSideModal: React.FC<{
                   </Grid>
                 </Grid>
               </Box>
-              <Box sx={{ marginBottom: "50px" }}>
+              <Box sx={{ marginBottom: '50px' }}>
                 <Grid container spacing={5}>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '11.5px' }}>
                       <Typography>Date of Birth</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
+                    <Box sx={{ borderRadius: '10px' }}>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                           value={dayjs(dateOfBirth)}
                           onChange={(newDate) => {
                             setDateOfBirth(
                               newDate
-                                ? dayjs(newDate, "DD/MM/YYYY").format(
-                                    "YYYY-MM-DD",
+                                ? dayjs(newDate, 'DD/MM/YYYY').format(
+                                    'YYYY-MM-DD'
                                   )
-                                : "",
+                                : ''
                             );
                             setDateOfBirthError(false);
                           }}
-                          format="DD/MM/YYYY"
-                          sx={{ width: "100%" }}
+                          format='DD/MM/YYYY'
+                          sx={{ width: '100%' }}
                         />
                       </LocalizationProvider>
                       {dateOfBirthError && (
-                        <Typography component="p" color="error">
+                        <Typography component='p' color='error'>
                           Date of birth is required
                         </Typography>
                       )}
@@ -567,86 +570,86 @@ const EditOrphanSideModal: React.FC<{
                   </Grid>
                 </Grid>
               </Box>
-              <Box sx={{ marginBottom: "50px" }}>
-                <Typography variant={"h1"} sx={{ fontWeight: 400 }}>
+              <Box sx={{ marginBottom: '50px' }}>
+                <Typography variant={'h1'} sx={{ fontWeight: 400 }}>
                   School Information
                 </Typography>
               </Box>
-              <Box sx={{ marginBottom: "10px" }}>
+              <Box sx={{ marginBottom: '10px' }}>
                 <Grid container spacing={5}>
                   <Grid item lg={6}>
                     <Box sx={{}}>
-                      <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
+                      <Box sx={{ marginBottom: { xs: '18px', sm: '11.5px' } }}>
                         <Typography>Is he/she in school?</Typography>
                       </Box>
                       <RadioGroup
                         value={InSchool}
-                        sx={{ display: "flex", flexDirection: "row" }}
+                        sx={{ display: 'flex', flexDirection: 'row' }}
                       >
                         <Box
-                          onClick={() => setInSchool("YES")}
+                          onClick={() => setInSchool('YES')}
                           sx={{
                             flexShrink: 1,
-                            cursor: "pointer",
-                            border: "2px solid",
-                            paddingY: "10px",
-                            paddingX: "15px",
-                            borderRadius: "10px",
-                            marginRight: "40px",
-                            ...(InSchool == "YES"
-                              ? { borderColor: "#268500" }
-                              : { borderColor: "#D2D2D2" }),
-                            marginBottom: "30px",
+                            cursor: 'pointer',
+                            border: '2px solid',
+                            paddingY: '10px',
+                            paddingX: '15px',
+                            borderRadius: '10px',
+                            marginRight: '40px',
+                            ...(InSchool == 'YES'
+                              ? { borderColor: '#268500' }
+                              : { borderColor: '#D2D2D2' }),
+                            marginBottom: '30px',
                           }}
                         >
                           <FormControlLabel
-                            onClick={() => setInSchool("YES")}
-                            value="YES"
+                            onClick={() => setInSchool('YES')}
+                            value='YES'
                             control={<Radio />}
-                            label="Yes"
+                            label='Yes'
                           />
                         </Box>
                         <Box
-                          onClick={() => setInSchool("NO")}
+                          onClick={() => setInSchool('NO')}
                           sx={{
-                            cursor: "pointer",
-                            border: "2px solid",
-                            paddingY: "10px",
-                            paddingX: "15px",
-                            borderRadius: "10px",
-                            ...(InSchool == "NO"
-                              ? { borderColor: "#268500" }
-                              : { borderColor: "#D2D2D2" }),
-                            marginBottom: "30px",
+                            cursor: 'pointer',
+                            border: '2px solid',
+                            paddingY: '10px',
+                            paddingX: '15px',
+                            borderRadius: '10px',
+                            ...(InSchool == 'NO'
+                              ? { borderColor: '#268500' }
+                              : { borderColor: '#D2D2D2' }),
+                            marginBottom: '30px',
                           }}
                         >
                           <FormControlLabel
-                            onClick={(e) => setInSchool("NO")}
-                            value="NO"
+                            onClick={(e) => setInSchool('NO')}
+                            value='NO'
                             control={<Radio />}
-                            label="NO"
+                            label='NO'
                           />
                         </Box>
                       </RadioGroup>
                     </Box>
                   </Grid>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>School Name</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder={"Enter School Name"}
+                          placeholder={'Enter School Name'}
                           value={schoolName}
                           onChange={(event: {
                             target: {
@@ -658,7 +661,7 @@ const EditOrphanSideModal: React.FC<{
                           }}
                         />
                         {schoolNameError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             School Name is required
                           </Typography>
                         )}
@@ -666,24 +669,22 @@ const EditOrphanSideModal: React.FC<{
                     </Box>
                   </Grid>
                 </Grid>
-                <Grid item lg={6}>
-                  
-                </Grid>
+                <Grid item lg={6}></Grid>
               </Box>
-              <Box sx={{ marginBottom: "40px" }}>
-                <Box sx={{ marginBottom: "11.5px" }}>
+              <Box sx={{ marginBottom: '40px' }}>
+                <Box sx={{ marginBottom: '11.5px' }}>
                   <Typography>School Address</Typography>
                 </Box>
-                <Box sx={{ borderRadius: "10px" }}>
+                <Box sx={{ borderRadius: '10px' }}>
                   <TextField
-                    placeholder="Write in here..."
+                    placeholder='Write in here...'
                     sx={{
-                      width: "100%",
-                      borderRadius: "50px",
+                      width: '100%',
+                      borderRadius: '50px',
                     }}
                     inputProps={{
                       sx: {
-                        borderRadius: "10px",
+                        borderRadius: '10px',
                       },
                     }}
                     value={schoolAddress}
@@ -699,31 +700,31 @@ const EditOrphanSideModal: React.FC<{
                     rows={4}
                   />
                   {schoolAddressError && (
-                    <Typography component="p" color="error">
+                    <Typography component='p' color='error'>
                       School Address is required
                     </Typography>
                   )}
                 </Box>
               </Box>
-              <Box sx={{ marginBottom: "30px" }}>
+              <Box sx={{ marginBottom: '30px' }}>
                 <Grid container spacing={5}>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>School Contact Person</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder="Enter full name"
+                          placeholder='Enter full name'
                           value={schoolContact}
                           onChange={(event: {
                             target: {
@@ -735,7 +736,7 @@ const EditOrphanSideModal: React.FC<{
                           }}
                         />
                         {schoolContactError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             School Contact Person is required
                           </Typography>
                         )}
@@ -743,22 +744,22 @@ const EditOrphanSideModal: React.FC<{
                     </Box>
                   </Grid>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>Phone Number of Contact Person</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder="Enter phone number"
+                          placeholder='Enter phone number'
                           value={phoneNumberOfSchool}
                           onChange={(event: {
                             target: {
@@ -770,7 +771,7 @@ const EditOrphanSideModal: React.FC<{
                           }}
                         />
                         {phoneNumberOfSchoolError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             Phone Number of Contact Person is required
                           </Typography>
                         )}
@@ -780,23 +781,23 @@ const EditOrphanSideModal: React.FC<{
                 </Grid>
               </Box>
 
-              <Box sx={{ marginBottom: "100px" }}>
+              <Box sx={{ marginBottom: '100px' }}>
                 <Grid container spacing={5}>
                   <Grid item lg={6}>
                     <Grid container spacing={4}>
                       <Grid item lg={6}>
                         <Box>
                           <Button
-                            variant="contained"
+                            variant='contained'
                             sx={{
-                              boxShadow: "none",
-                              width: "100%",
-                              borderRadius: "2rem",
-                              textTransform: "none",
-                              paddingY: "10px",
-                              paddingX: "70px",
-                              background: "#000",
-                              ":hover": { backgroundColor: "#000" },
+                              boxShadow: 'none',
+                              width: '100%',
+                              borderRadius: '2rem',
+                              textTransform: 'none',
+                              paddingY: '10px',
+                              paddingX: '70px',
+                              background: '#000',
+                              ':hover': { backgroundColor: '#000' },
                             }}
                             onClick={handleCloseSideModal}
                           >
@@ -808,16 +809,16 @@ const EditOrphanSideModal: React.FC<{
                         <Box>
                           <Button
                             onClick={sendDataToParent}
-                            variant="contained"
+                            variant='contained'
                             sx={{
-                              boxShadow: "none",
-                              width: "100%",
-                              borderRadius: "2rem",
-                              textTransform: "none",
-                              paddingY: "10px",
-                              paddingX: "70px",
-                              backgroundColor: "#3863FA",
-                              ":hover": { backgroundColor: "#3863FA" },
+                              boxShadow: 'none',
+                              width: '100%',
+                              borderRadius: '2rem',
+                              textTransform: 'none',
+                              paddingY: '10px',
+                              paddingX: '70px',
+                              backgroundColor: '#3863FA',
+                              ':hover': { backgroundColor: '#3863FA' },
                             }}
                           >
                             Submit
@@ -832,12 +833,12 @@ const EditOrphanSideModal: React.FC<{
                 open={openDialog}
                 onClose={handleClickClose}
                 onAgree={handleYesClick}
-                title={"Edit Orphan Details"}
+                title={'Edit Orphan Details'}
                 content={
-                  "Before submitting your Application, Make sure to verify every data is correct."
+                  'Before submitting your Application, Make sure to verify every data is correct.'
                 }
-                disagreeText={" No, Cancel"}
-                agreeText={"Yes, continue"}
+                disagreeText={' No, Cancel'}
+                agreeText={'Yes, continue'}
               />
             </Box>
           </Box>

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Box,
   Button,
@@ -11,23 +11,26 @@ import {
   Select,
   TextField,
   Typography,
-} from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { PhotoUploadFrame } from "../../common/image-frames";
-import DragUpload from "../../drag-upload";
-import dayjs, { Dayjs } from "dayjs";
-import { useSession } from "next-auth/react";
-import LoaderBackdrop from "../../common/loader";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AlertDialog from "../../Reusable-Dialog";
-import { getOrphans, GetOphansDetails } from "@/src/app/api/service/orphan-list";
-import { CreateOrphanActivities } from "@/src/app/api/service/update-account";
+} from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { PhotoUploadFrame } from '../../common/image-frames';
+import DragUpload from '../../drag-upload';
+import dayjs, { Dayjs } from 'dayjs';
+import { useSession } from 'next-auth/react';
+import LoaderBackdrop from '../../common/loader';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AlertDialog from '../../Reusable-Dialog';
+import {
+  getOrphans,
+  GetOphansDetails,
+} from '@/src/app/api/service/orphan-list';
+import { CreateOrphanActivities } from '@/src/app/api/service/update-account';
 
 interface MyData {
   orphan?: any;
@@ -36,21 +39,21 @@ interface MyData {
 
 const Education = () => {
   const { data: session } = useSession();
-  const token = session?.user?.token?.accessToken ||  "";
+  const token = session?.user?.token?.accessToken || '';
   // to get all orphans id
   const {
     data: OrphanDatas,
     isLoading,
     status,
   } = useQuery({
-    queryKey: ["orphans"],
+    queryKey: ['orphans'],
     queryFn: () => getOrphans(token),
     enabled: !!token,
   });
 
-  const [insertLink, setInsertLink] = useState([""]);
-  const [sponsorFirstName, setSponsorFirstName] = useState("");
-  const [sponsorLastName, setSponsorLastName] = useState("");
+  const [insertLink, setInsertLink] = useState(['']);
+  const [sponsorFirstName, setSponsorFirstName] = useState('');
+  const [sponsorLastName, setSponsorLastName] = useState('');
   const [showSponsor, setShowSponsor] = useState(false);
   const [errorModal, setErroModal] = useState(false);
   const [Loading, setIsLoading] = useState(false);
@@ -68,18 +71,18 @@ const Education = () => {
   const [inSchoolError, setInSchoolError] = useState(false);
   const [dateOfEnrollmentError, setDateOfEnrollmentError] = useState(false);
   const [uniqueCodeError, setUniqueCodeError] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [image, setImage] = useState({ url: "", file: "" });
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [image, setImage] = useState({ url: '', file: '' });
   const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
-  const [gender, setGender] = useState("");
-  const [InSchool, setInSchool] = useState("");
-  const [schoolName, setSchoolName] = useState("");
-  const [schoolContact, setSchoolContact] = useState("");
-  const [phoneNumberOfSchool, setPhoneNumberOfSchool] = useState("");
-  const [uniqueCode, setUniqueCode] = useState("");
-const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
-  const [orphanClass, setOrphanClass] = useState("");
+  const [gender, setGender] = useState('');
+  const [InSchool, setInSchool] = useState('');
+  const [schoolName, setSchoolName] = useState('');
+  const [schoolContact, setSchoolContact] = useState('');
+  const [phoneNumberOfSchool, setPhoneNumberOfSchool] = useState('');
+  const [uniqueCode, setUniqueCode] = useState('');
+  const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
+  const [orphanClass, setOrphanClass] = useState('');
   const [singleData, setSingleData] = useState<MyData>({});
   const [loader, setLoader] = useState(false);
   const [getUploadFiles, setGetUploadedFiles] = useState<any[]>([]);
@@ -90,7 +93,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
       const response = await GetOphansDetails(token, uniqueCode);
       setSingleData(response);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoader(false);
     }
@@ -100,14 +103,14 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
     if (singleData) {
       setFirstName(singleData?.orphan?.first_name);
       setLastName(singleData?.orphan?.last_name);
-      setImage({ url: singleData?.orphan?.profile_photo, file: "" });
+      setImage({ url: singleData?.orphan?.profile_photo, file: '' });
       setDateOfBirth(singleData?.orphan?.date_of_birth);
       setGender(singleData?.orphan?.gender);
       setInSchool(singleData?.orphan?.in_school);
       setSchoolName(singleData?.orphan?.school_name);
       setSchoolContact(singleData?.orphan?.school_contact_person);
       setPhoneNumberOfSchool(
-        singleData?.orphan?.phone_number_of_contact_person,
+        singleData?.orphan?.phone_number_of_contact_person
       );
       setOrphanClass(singleData?.orphan?.class);
       setSponsorFirstName(singleData?.orphan?.sponsor_first_name);
@@ -120,7 +123,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
   };
 
   const addMoreLink = () => {
-    setInsertLink((prevLinks) => [...prevLinks, ""]);
+    setInsertLink((prevLinks) => [...prevLinks, '']);
   };
 
   // Function to handle deletion of a link input field
@@ -144,19 +147,19 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
         toast.error(data.error);
         setIsLoading(false);
       } else {
-        toast.success("Orphan activity created successfully");
-        queryClient.invalidateQueries({ queryKey: ["orphans"] });
+        toast.success('Orphan activity created successfully');
+        queryClient.invalidateQueries({ queryKey: ['orphans'] });
         setIsLoading(false);
       }
     },
     onError: () => {
-      toast.error("Error occurred while creating the user");
+      toast.error('Error occurred while creating the user');
       setIsLoading(false);
     },
   });
 
-  if (image.url?.indexOf("data:image") != undefined) {
-    if (image.url?.indexOf("data:image") > -1) {
+  if (image.url?.indexOf('data:image') != undefined) {
+    if (image.url?.indexOf('data:image') > -1) {
       // TODO: Upload image to google bucket and store response
     }
   }
@@ -187,7 +190,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
       setSchoolNameError(true);
       isValid = false;
     }
-    if (insertLink.some((link) => link === "")) {
+    if (insertLink.some((link) => link === '')) {
       setLinkError(true);
       isValid = false;
     }
@@ -217,7 +220,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
     // }
 
     if (!isValid) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
     }
 
     if (isValid) {
@@ -234,7 +237,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
     try {
       // Check if there's an EDUCATION need in the SponsorshipRequest array
       const hasEducationNeed = singleData?.SponsorshipRequest.some(
-        (request: { need: string }) => request.need == "EDUCATION",
+        (request: { need: string }) => request.need == 'EDUCATION'
       );
 
       if (!hasEducationNeed) {
@@ -247,13 +250,13 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
       const payload = {
         guardian_id: singleData?.orphan?.guardians_id,
         orphan_id: singleData?.orphan?.id,
-        activity: "EDUCATION",
-        description: "Educaiton",
+        activity: 'EDUCATION',
+        description: 'Educaiton',
         name_of_school_contact_person: schoolContact,
         phone_number_of_school_contact_person: phoneNumberOfSchool,
-        date_of_enrollment: dayjs(dateOfEnrollment).format("YYYY-MM-DD"), // Ensure date is in the correct format
+        date_of_enrollment: dayjs(dateOfEnrollment).format('YYYY-MM-DD'), // Ensure date is in the correct format
         // upload_document: getUploadFiles[0]?.url,
-        upload_document: "education.pdf", //for testing purposes
+        upload_document: 'education.pdf', //for testing purposes
       };
 
       console.log(payload);
@@ -261,7 +264,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
       // Make the API call with the payload
       await mutation.mutateAsync(payload);
     } catch (error) {
-      toast.error("An error occurred. Please try again later");
+      toast.error('An error occurred. Please try again later');
     } finally {
       setIsLoading(false);
     }
@@ -279,11 +282,11 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
         <Box sx={{ py: 2 }}>
           <Grid container spacing={5}>
             <Grid item lg={6}>
-              <Typography variant="h1">Education</Typography>
+              <Typography variant='h1'>Education</Typography>
             </Grid>
             <Grid item lg={6}>
               <Box
-                sx={{ display: "flex", justifyContent: "center", pr: "2rem" }}
+                sx={{ display: 'flex', justifyContent: 'center', pr: '2rem' }}
               >
                 <PhotoUploadFrame image={image} />
               </Box>
@@ -293,21 +296,21 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
         <Box>
           <Grid container spacing={5}>
             <Grid item lg={6}>
-              <Box sx={{ marginBottom: "21.5px" }}>
-                <Box sx={{ marginBottom: "11.5px" }}>
+              <Box sx={{ marginBottom: '21.5px' }}>
+                <Box sx={{ marginBottom: '11.5px' }}>
                   <Typography>Orphan ID</Typography>
                 </Box>
 
-                <Box sx={{ borderRadius: "10px" }}>
+                <Box sx={{ borderRadius: '10px' }}>
                   <Select
                     value={uniqueCode}
                     sx={{
-                      borderRadius: "10px",
-                      width: "100%",
+                      borderRadius: '10px',
+                      width: '100%',
                     }}
                     displayEmpty
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value='' disabled>
                       -- Select --
                     </MenuItem>
                     {OrphanDatas?.map((item: any, index: any) => (
@@ -320,19 +323,19 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                           fetchData(token, item.unique_code);
                         }}
                         sx={{
-                          textTransform: "capitalize",
-                          fontSize: "14px",
+                          textTransform: 'capitalize',
+                          fontSize: '14px',
                         }}
                       >
-                        {item.first_name} {item.last_name} -{" "}
-                        <Typography component="span" fontWeight="bold">
+                        {item.first_name} {item.last_name} -{' '}
+                        <Typography component='span' fontWeight='bold'>
                           {item.unique_code}
                         </Typography>
                       </MenuItem>
                     ))}
                   </Select>
                   {uniqueCodeError && (
-                    <Typography component="p" color="error">
+                    <Typography component='p' color='error'>
                       Orphan ID is required
                     </Typography>
                   )}
@@ -341,27 +344,27 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
             </Grid>
           </Grid>
         </Box>
-        <Box sx={{ paddingY: "30px" }}>
-          <Box sx={{ marginBottom: "30px" }}>
+        <Box sx={{ paddingY: '30px' }}>
+          <Box sx={{ marginBottom: '30px' }}>
             <Grid container spacing={5}>
               <Grid item lg={6}>
-                <Box sx={{ marginBottom: "21.5px" }}>
-                  <Box sx={{ marginBottom: "11.5px" }}>
+                <Box sx={{ marginBottom: '21.5px' }}>
+                  <Box sx={{ marginBottom: '11.5px' }}>
                     <Typography>First Name</Typography>
                   </Box>
-                  <Box sx={{ borderRadius: "10px" }}>
+                  <Box sx={{ borderRadius: '10px' }}>
                     <TextField
                       sx={{
-                        width: "100%",
-                        borderRadius: "50px",
-                        textDecoration: "capitalize",
+                        width: '100%',
+                        borderRadius: '50px',
+                        textDecoration: 'capitalize',
                       }}
                       inputProps={{
                         sx: {
-                          borderRadius: "10px",
+                          borderRadius: '10px',
                         },
                       }}
-                      placeholder="Enter First Name"
+                      placeholder='Enter First Name'
                       value={firstName}
                       onChange={(event: {
                         target: {
@@ -373,7 +376,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                       }}
                     />
                     {firstNameError && (
-                      <Typography component="p" color="error">
+                      <Typography component='p' color='error'>
                         First Name is required
                       </Typography>
                     )}
@@ -381,22 +384,22 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                 </Box>
               </Grid>
               <Grid item lg={6}>
-                <Box sx={{ marginBottom: "21.5px" }}>
-                  <Box sx={{ marginBottom: "11.5px" }}>
+                <Box sx={{ marginBottom: '21.5px' }}>
+                  <Box sx={{ marginBottom: '11.5px' }}>
                     <Typography>Last Name</Typography>
                   </Box>
-                  <Box sx={{ borderRadius: "10px" }}>
+                  <Box sx={{ borderRadius: '10px' }}>
                     <TextField
                       sx={{
-                        width: "100%",
-                        borderRadius: "50px",
+                        width: '100%',
+                        borderRadius: '50px',
                       }}
                       inputProps={{
                         sx: {
-                          borderRadius: "10px",
+                          borderRadius: '10px',
                         },
                       }}
-                      placeholder="Enter Last Name"
+                      placeholder='Enter Last Name'
                       value={lastName}
                       onChange={(event: {
                         target: {
@@ -408,7 +411,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                       }}
                     />
                     {lastNameError && (
-                      <Typography component="p" color="error">
+                      <Typography component='p' color='error'>
                         Last Name is required
                       </Typography>
                     )}
@@ -418,26 +421,26 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
             </Grid>
           </Box>
           <Box>
-            <Box sx={{ marginBottom: "30px" }}>
+            <Box sx={{ marginBottom: '30px' }}>
               <Grid container spacing={5}>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "11.5px" }}>
+                  <Box sx={{ marginBottom: '11.5px' }}>
                     <Typography>Date of Birth</Typography>
                   </Box>
-                  <Box sx={{ borderRadius: "10px" }}>
+                  <Box sx={{ borderRadius: '10px' }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
-            value={dateOfEnrollment}
-          onChange={(newDate) => {
-              setDateOfEnrollment(newDate);
-              setDateOfEnrollmentError(false);
-            }}
-            format="DD/MM/YYYY"
-            sx={{ width: "100%" }}
-          />
+                        value={dateOfEnrollment}
+                        onChange={(newDate) => {
+                          setDateOfEnrollment(newDate);
+                          setDateOfEnrollmentError(false);
+                        }}
+                        format='DD/MM/YYYY'
+                        sx={{ width: '100%' }}
+                      />
                     </LocalizationProvider>
                     {dateOfBirthError && (
-                      <Typography component="p" color="error">
+                      <Typography component='p' color='error'>
                         Date of birth is required
                       </Typography>
                     )}
@@ -445,55 +448,55 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                 </Grid>
                 <Grid item lg={6}>
                   <Box sx={{}}>
-                    <Box sx={{ marginBottom: { xs: "18px", sm: "11.5px" } }}>
+                    <Box sx={{ marginBottom: { xs: '18px', sm: '11.5px' } }}>
                       <Typography>Gender</Typography>
                     </Box>
                     <RadioGroup
                       value={gender}
-                      sx={{ display: "flex", flexDirection: "row" }}
+                      sx={{ display: 'flex', flexDirection: 'row' }}
                     >
                       <Box
-                        onClick={() => setGender("MALE")}
+                        onClick={() => setGender('MALE')}
                         sx={{
                           flexShrink: 1,
-                          cursor: "pointer",
-                          border: "2px solid",
-                          paddingY: "10px",
-                          paddingX: "15px",
-                          borderRadius: "10px",
-                          marginRight: "40px",
-                          ...(gender == "MALE"
-                            ? { borderColor: "#268500" }
-                            : { borderColor: "#D2D2D2" }),
-                          marginBottom: "30px",
+                          cursor: 'pointer',
+                          border: '2px solid',
+                          paddingY: '10px',
+                          paddingX: '15px',
+                          borderRadius: '10px',
+                          marginRight: '40px',
+                          ...(gender == 'MALE'
+                            ? { borderColor: '#268500' }
+                            : { borderColor: '#D2D2D2' }),
+                          marginBottom: '30px',
                         }}
                       >
                         <FormControlLabel
-                          onClick={() => setGender("MALE")}
-                          value="MALE"
+                          onClick={() => setGender('MALE')}
+                          value='MALE'
                           control={<Radio />}
-                          label="Male"
+                          label='Male'
                         />
                       </Box>
                       <Box
-                        onClick={() => setGender("FEMALE")}
+                        onClick={() => setGender('FEMALE')}
                         sx={{
-                          cursor: "pointer",
-                          border: "2px solid",
-                          paddingY: "10px",
-                          paddingX: "15px",
-                          borderRadius: "10px",
-                          ...(gender == "FEMALE"
-                            ? { borderColor: "#268500" }
-                            : { borderColor: "#D2D2D2" }),
-                          marginBottom: "30px",
+                          cursor: 'pointer',
+                          border: '2px solid',
+                          paddingY: '10px',
+                          paddingX: '15px',
+                          borderRadius: '10px',
+                          ...(gender == 'FEMALE'
+                            ? { borderColor: '#268500' }
+                            : { borderColor: '#D2D2D2' }),
+                          marginBottom: '30px',
                         }}
                       >
                         <FormControlLabel
-                          onClick={(e) => setGender("FEMALE")}
-                          value="FEMALE"
+                          onClick={(e) => setGender('FEMALE')}
+                          value='FEMALE'
                           control={<Radio />}
-                          label="Female"
+                          label='Female'
                         />
                       </Box>
                     </RadioGroup>
@@ -501,25 +504,25 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                 </Grid>
               </Grid>
             </Box>
-            <Box sx={{ marginBottom: "30px" }}>
+            <Box sx={{ marginBottom: '30px' }}>
               <Grid container spacing={5}>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "21.5px" }}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
+                  <Box sx={{ marginBottom: '21.5px' }}>
+                    <Box sx={{ marginBottom: '11.5px' }}>
                       <Typography>School Status</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
+                    <Box sx={{ borderRadius: '10px' }}>
                       <TextField
                         sx={{
-                          width: "100%",
-                          borderRadius: "50px",
+                          width: '100%',
+                          borderRadius: '50px',
                         }}
                         inputProps={{
                           sx: {
-                            borderRadius: "10px",
+                            borderRadius: '10px',
                           },
                         }}
-                        placeholder="In-School"
+                        placeholder='In-School'
                         value={InSchool}
                         onChange={(event: {
                           target: {
@@ -531,7 +534,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                         }}
                       />
                       {inSchoolError && (
-                        <Typography component="p" color="error">
+                        <Typography component='p' color='error'>
                           School Status is required
                         </Typography>
                       )}
@@ -539,22 +542,22 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                   </Box>
                 </Grid>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "21.5px" }}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
+                  <Box sx={{ marginBottom: '21.5px' }}>
+                    <Box sx={{ marginBottom: '11.5px' }}>
                       <Typography>Name of School</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
+                    <Box sx={{ borderRadius: '10px' }}>
                       <TextField
                         sx={{
-                          width: "100%",
-                          borderRadius: "50px",
+                          width: '100%',
+                          borderRadius: '50px',
                         }}
                         inputProps={{
                           sx: {
-                            borderRadius: "10px",
+                            borderRadius: '10px',
                           },
                         }}
-                        placeholder="L.E.A Primary School"
+                        placeholder='L.E.A Primary School'
                         value={schoolName}
                         onChange={(event: {
                           target: {
@@ -566,7 +569,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                         }}
                       />
                       {schoolNameError && (
-                        <Typography component="p" color="error">
+                        <Typography component='p' color='error'>
                           School name is required
                         </Typography>
                       )}
@@ -575,25 +578,25 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                 </Grid>
               </Grid>
             </Box>
-            <Box sx={{ marginBottom: "30px" }}>
+            <Box sx={{ marginBottom: '30px' }}>
               <Grid container spacing={5}>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "21.5px" }}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
+                  <Box sx={{ marginBottom: '21.5px' }}>
+                    <Box sx={{ marginBottom: '11.5px' }}>
                       <Typography>Class</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
+                    <Box sx={{ borderRadius: '10px' }}>
                       <TextField
                         sx={{
-                          width: "100%",
-                          borderRadius: "50px",
+                          width: '100%',
+                          borderRadius: '50px',
                         }}
                         inputProps={{
                           sx: {
-                            borderRadius: "10px",
+                            borderRadius: '10px',
                           },
                         }}
-                        placeholder="Primary Four"
+                        placeholder='Primary Four'
                         value={orphanClass}
                         onChange={(event: {
                           target: {
@@ -605,7 +608,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                         }}
                       />
                       {classError && (
-                        <Typography component="p" color="error">
+                        <Typography component='p' color='error'>
                           Class is required
                         </Typography>
                       )}
@@ -613,10 +616,10 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                   </Box>
                 </Grid>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "11.5px" }}>
+                  <Box sx={{ marginBottom: '11.5px' }}>
                     <Typography>Date of Enrollment</Typography>
                   </Box>
-                  <Box sx={{ borderRadius: "10px" }}>
+                  <Box sx={{ borderRadius: '10px' }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         value={dateOfEnrollment}
@@ -624,12 +627,12 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                           setDateOfEnrollment(newDate);
                           setDateOfEnrollmentError(false);
                         }}
-                        format="DD/MM/YYYY"
-                        sx={{ width: "100%" }}
+                        format='DD/MM/YYYY'
+                        sx={{ width: '100%' }}
                       />
                     </LocalizationProvider>
                     {dateOfEnrollmentError && (
-                      <Typography component="p" color="error">
+                      <Typography component='p' color='error'>
                         Date of Enrollment is required
                       </Typography>
                     )}
@@ -637,25 +640,25 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                 </Grid>
               </Grid>
             </Box>
-            <Box sx={{ marginBottom: "30px" }}>
+            <Box sx={{ marginBottom: '30px' }}>
               <Grid container spacing={5}>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "21.5px" }}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
+                  <Box sx={{ marginBottom: '21.5px' }}>
+                    <Box sx={{ marginBottom: '11.5px' }}>
                       <Typography>Name of School contact person</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
+                    <Box sx={{ borderRadius: '10px' }}>
                       <TextField
                         sx={{
-                          width: "100%",
-                          borderRadius: "50px",
+                          width: '100%',
+                          borderRadius: '50px',
                         }}
                         inputProps={{
                           sx: {
-                            borderRadius: "10px",
+                            borderRadius: '10px',
                           },
                         }}
-                        placeholder="Mr Bashir Ahmed"
+                        placeholder='Mr Bashir Ahmed'
                         value={schoolContact}
                         onChange={(event: {
                           target: {
@@ -667,7 +670,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                         }}
                       />
                       {schoolContactError && (
-                        <Typography component="p" color="error">
+                        <Typography component='p' color='error'>
                           School contact person is required
                         </Typography>
                       )}
@@ -675,22 +678,22 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                   </Box>
                 </Grid>
                 <Grid item lg={6}>
-                  <Box sx={{ marginBottom: "21.5px" }}>
-                    <Box sx={{ marginBottom: "11.5px" }}>
+                  <Box sx={{ marginBottom: '21.5px' }}>
+                    <Box sx={{ marginBottom: '11.5px' }}>
                       <Typography>Phone Number</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: "10px" }}>
+                    <Box sx={{ borderRadius: '10px' }}>
                       <TextField
                         sx={{
-                          width: "100%",
-                          borderRadius: "50px",
+                          width: '100%',
+                          borderRadius: '50px',
                         }}
                         inputProps={{
                           sx: {
-                            borderRadius: "10px",
+                            borderRadius: '10px',
                           },
                         }}
-                        placeholder="0812345678"
+                        placeholder='0812345678'
                         value={phoneNumberOfSchool}
                         onChange={(event: {
                           target: {
@@ -702,7 +705,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                         }}
                       />
                       {phoneNumberOfSchoolError && (
-                        <Typography component="p" color="error">
+                        <Typography component='p' color='error'>
                           Phone number is required
                         </Typography>
                       )}
@@ -712,42 +715,42 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
               </Grid>
             </Box>
 
-            <Box sx={{ marginBottom: "60px", width: "100%" }}>
-              <Box sx={{ marginBottom: "50px" }}>
-                <Typography variant={"h1"} sx={{ fontWeight: 400 }}>
+            <Box sx={{ marginBottom: '60px', width: '100%' }}>
+              <Box sx={{ marginBottom: '50px' }}>
+                <Typography variant={'h1'} sx={{ fontWeight: 400 }}>
                   School Performance
                 </Typography>
               </Box>
               <DragUpload
-                title={"Upload Document here"}
-                subtitle={"Drag and Drop Document"}
-                setGetUploadedFiles={setGetUploadedFiles}
+                onFileChange={function (file: File | null): void {
+                  throw new Error('Function not implemented.');
+                }}
               />
             </Box>
-            <Box sx={{ marginBottom: "30px" }}>
+            <Box sx={{ marginBottom: '30px' }}>
               <Grid container spacing={5}>
                 <Grid item lg={12} xs={12}>
                   {/* Render link input fields based on items in insertLink state */}
                   {insertLink.map((link, index) => (
                     <Box
                       key={index}
-                      sx={{ marginBottom: "21.5px", position: "relative" }}
+                      sx={{ marginBottom: '21.5px', position: 'relative' }}
                     >
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>or insert drive link</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px", position: "relative" }}>
+                      <Box sx={{ borderRadius: '10px', position: 'relative' }}>
                         <TextField
                           sx={{
-                            width: "calc(100% - 40px)",
-                            borderRadius: "50px",
+                            width: 'calc(100% - 40px)',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder="https://www.googledrive.org/wjrobvwjosbvojsdkb?sharing"
+                          placeholder='https://www.googledrive.org/wjrobvwjosbvojsdkb?sharing'
                           value={link}
                           onChange={(event) => {
                             const newLinks = [...insertLink];
@@ -757,7 +760,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                           }}
                         />
                         {linkError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             Link is required
                           </Typography>
                         )}
@@ -765,13 +768,13 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                         {/* Delete button */}
                         {insertLink.length > 1 && ( // Conditionally render delete button
                           <IconButton
-                            aria-label="delete"
-                            size="small"
+                            aria-label='delete'
+                            size='small'
                             sx={{
-                              position: "absolute",
-                              top: "50%",
+                              position: 'absolute',
+                              top: '50%',
                               right: 0,
-                              transform: "translateY(-50%)",
+                              transform: 'translateY(-50%)',
                             }}
                             onClick={() => deleteLink(index)}
                           >
@@ -784,19 +787,19 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                 </Grid>
               </Grid>
               <Button
-                variant="outlined"
+                variant='outlined'
                 disableElevation
                 sx={{
-                  textTransform: "none",
-                  borderRadius: "30px",
-                  paddingX: "20px",
-                  paddingY: "10px",
-                  color: "#3863FA",
-                  borderColor: "#3863FA",
+                  textTransform: 'none',
+                  borderRadius: '30px',
+                  paddingX: '20px',
+                  paddingY: '10px',
+                  color: '#3863FA',
+                  borderColor: '#3863FA',
                   zIndex: 0,
-                  "&:hover": {
-                    color: "#3863FA",
-                    borderColor: "#3863FA",
+                  '&:hover': {
+                    color: '#3863FA',
+                    borderColor: '#3863FA',
                   },
                 }}
                 startIcon={<AddIcon />}
@@ -805,24 +808,24 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                 Add
               </Button>
             </Box>
-            <Box sx={{ marginBottom: "30px" }}>
+            <Box sx={{ marginBottom: '30px' }}>
               <Box
                 sx={{
-                  marginBottom: "30px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  marginBottom: '30px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}
               >
-                <Typography variant={"h1"} sx={{ fontWeight: 400 }}>
+                <Typography variant={'h1'} sx={{ fontWeight: 400 }}>
                   Sponsor Details
                 </Typography>
                 {/* Add button to show sponsor details input fields */}
                 {!showSponsor && (
                   <Box
                     sx={{
-                      mr: "10rem",
-                      cursor: "pointer",
+                      mr: '10rem',
+                      cursor: 'pointer',
                     }}
                     onClick={handleShowSponsor}
                   >
@@ -834,22 +837,22 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
               {showSponsor && (
                 <Grid container spacing={5}>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>First Name</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder="Mr Ahmed"
+                          placeholder='Mr Ahmed'
                           value={sponsorFirstName}
                           onChange={(event: {
                             target: {
@@ -861,7 +864,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                           }}
                         />
                         {sponsorFirstNameError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             First Name is required
                           </Typography>
                         )}
@@ -869,22 +872,22 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                     </Box>
                   </Grid>
                   <Grid item lg={6}>
-                    <Box sx={{ marginBottom: "21.5px" }}>
-                      <Box sx={{ marginBottom: "11.5px" }}>
+                    <Box sx={{ marginBottom: '21.5px' }}>
+                      <Box sx={{ marginBottom: '11.5px' }}>
                         <Typography>Last Name</Typography>
                       </Box>
-                      <Box sx={{ borderRadius: "10px" }}>
+                      <Box sx={{ borderRadius: '10px' }}>
                         <TextField
                           sx={{
-                            width: "100%",
-                            borderRadius: "50px",
+                            width: '100%',
+                            borderRadius: '50px',
                           }}
                           inputProps={{
                             sx: {
-                              borderRadius: "10px",
+                              borderRadius: '10px',
                             },
                           }}
-                          placeholder="0812345678"
+                          placeholder='0812345678'
                           value={sponsorLastName}
                           onChange={(event: {
                             target: {
@@ -896,7 +899,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                           }}
                         />
                         {sponsorLastNameError && (
-                          <Typography component="p" color="error">
+                          <Typography component='p' color='error'>
                             Last is required
                           </Typography>
                         )}
@@ -907,7 +910,7 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
               )}
             </Box>
 
-            <Box sx={{ marginBottom: "100px" }}>
+            <Box sx={{ marginBottom: '100px' }}>
               <Grid container spacing={5}>
                 <Grid item lg={6} xs={12}></Grid>
                 <Grid item lg={6} xs={12}>
@@ -915,16 +918,16 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                     <Grid item lg={6}>
                       <Box>
                         <Button
-                          variant="contained"
+                          variant='contained'
                           sx={{
-                            boxShadow: "none",
-                            width: "100%",
-                            borderRadius: "2rem",
-                            textTransform: "none",
-                            paddingY: "10px",
-                            paddingX: "70px",
-                            background: "#000",
-                            ":hover": { backgroundColor: "#000" },
+                            boxShadow: 'none',
+                            width: '100%',
+                            borderRadius: '2rem',
+                            textTransform: 'none',
+                            paddingY: '10px',
+                            paddingX: '70px',
+                            background: '#000',
+                            ':hover': { backgroundColor: '#000' },
                           }}
                           //   onClick={handleCloseSideModal}
                         >
@@ -936,16 +939,16 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
                       <Box>
                         <Button
                           onClick={sendDataToParent}
-                          variant="contained"
+                          variant='contained'
                           sx={{
-                            boxShadow: "none",
-                            width: "100%",
-                            borderRadius: "2rem",
-                            textTransform: "none",
-                            paddingY: "10px",
-                            paddingX: "70px",
-                            backgroundColor: "#3863FA",
-                            ":hover": { backgroundColor: "#3863FA" },
+                            boxShadow: 'none',
+                            width: '100%',
+                            borderRadius: '2rem',
+                            textTransform: 'none',
+                            paddingY: '10px',
+                            paddingX: '70px',
+                            backgroundColor: '#3863FA',
+                            ':hover': { backgroundColor: '#3863FA' },
                           }}
                         >
                           Save
@@ -963,9 +966,9 @@ const [dateOfEnrollment, setDateOfEnrollment] = useState<Dayjs | null>(null);
         open={errorModal}
         onClose={handleCloseErrorModal}
         content={
-          "This Orphan currently lacks any sponsorship requests related to Educational needs."
+          'This Orphan currently lacks any sponsorship requests related to Educational needs.'
         }
-        disagreeText={"Close"}
+        disagreeText={'Close'}
       />
     </>
   );
