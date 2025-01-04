@@ -7,7 +7,10 @@ const WebsiteNav = () => {
       <div className="flex items-center flex-grow justify-end font-semibold">
         <div className="flex gap-8">
           {navItems.map((item) => (
-            <button className="px-8 py-2 text-[#006837] border-2 border-[#006837] rounded-md hover:bg-[#006837] hover:text-white">
+            <button
+              key={item.name}
+              className="px-8 py-2 text-[#006837] border-2 border-[#006837] rounded-md hover:bg-[#006837] hover:text-white"
+            >
               {item.name}
             </button>
           ))}
