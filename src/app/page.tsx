@@ -1,3 +1,9 @@
+import WebsiteNav from '@/components/website/nav';
+
 export default function Home() {
-  return <main></main>;
+  return (
+    <div>
+      <WebsiteNav />
+    </div>
+  );
 }
