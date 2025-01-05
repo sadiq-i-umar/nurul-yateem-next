@@ -1,3 +1,4 @@
+"use client";
 import HeroSection from "@/components/website/(pages)/home/hero";
 import WebsiteNav from "@/components/website/(pages)/home/nav";
 
