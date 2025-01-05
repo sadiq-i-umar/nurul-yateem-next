@@ -13,7 +13,7 @@ const WebsiteNav = () => {
             <button
               key={index}
               className="px-8 py-2 text-[#006837] border-2 border-[#006837] rounded-md hover:bg-[#006837] hover:text-white"
-              onClick={() => router.push(`/${item.route}`)}
+              onClick={() => router.push(item.route)}
             >
               {item.name}
             </button>
