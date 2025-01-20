@@ -1,14 +1,13 @@
+import { baseUrl } from "@/constants";
+import { Profile, rolesMap, UserWithToken } from "@/types"; // Adjust the import based on your file structure
+import { request } from "@/utils/request";
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
   NextApiResponse,
 } from "next";
-import { AuthOptions } from "next-auth";
-import { getServerSession } from "next-auth";
+import { AuthOptions, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { Profile, rolesMap, UserWithToken } from "@/types"; // Adjust the import based on your file structure
-import { request } from "@/utils/request";
-import { baseUrl } from "@/utils/constant";
 
 // Provider options
 const credentialsProviderOptions: any = {
