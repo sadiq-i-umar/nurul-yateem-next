@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { SessionProvider, useSession } from "next-auth/react";
-import { baseUrl } from "../../../utils/constant";
-import toast from "react-hot-toast";
+import { baseUrl } from "@/constants";
 import axios from "axios";
+import { SessionProvider, useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import LoaderBackdrop from "../../../components/common/loader";
 
 const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
@@ -41,7 +41,7 @@ const MainDashboardLayout = ({ children }: { children: React.ReactNode }) => {
               if (orphans?.length === 0) {
                 handleLoginSuccess();
                 toast.success(
-                  "Please complete your profile first. You have no orphans.",
+                  "Please complete your profile first. You have no orphans."
                 );
                 router.push("/dashboard/add-an-orphan");
                 router.refresh();
