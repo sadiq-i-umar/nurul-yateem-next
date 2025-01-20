@@ -1,17 +1,10 @@
 "use client";
-import { useState } from "react";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import {
-  HeroImageFramePlaceHolder,
-  LogoImageFrame,
-} from "../common/image-frames";
-import { toast } from "react-hot-toast";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import Link from "next/link";
+import { useState } from "react";
+import { LogoImageFrame } from "../common/image-frames";
 
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { baseUrl } from "../../utils/constant";
 import LoaderBackdrop from "../common/loader";
 
 const ForgotPassword: React.FC = () => {
