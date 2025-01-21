@@ -18,14 +18,15 @@ export async function POST(request: NextRequest) {
   const timestamp = Date.now(); // Get the current timestamp
   const uniqueFileName = `${timestamp}${originalExtension}`;
 
-  // const path = join(process.cwd(), 'public/uploads', uniqueFileName);
-  const path = join(process.cwd(), "tmp/uploads", uniqueFileName);
+  // Use the /tmp directory for storing files on Vercel
+  const path = join("/tmp", uniqueFileName);
   await writeFile(path, buffer);
   console.log(`File uploaded to: ${path}`);
 
+  // Since files in /tmp are not accessible via the browser, you may need to process or move them elsewhere
+
   return NextResponse.json({
     success: true,
-    // fileName: `/uploads/${uniqueFileName}`,
     fileName: path,
   });
 }
