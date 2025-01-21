@@ -1,13 +1,13 @@
-import { writeFile } from 'fs/promises';
-import { NextRequest, NextResponse } from 'next/server';
-import { join, extname } from 'path';
+import { writeFile } from "fs/promises";
+import { NextRequest, NextResponse } from "next/server";
+import { extname, join } from "path";
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
-  const file: File | null = data.get('file') as unknown as File;
+  const file: File | null = data.get("file") as unknown as File;
 
   if (!file) {
-    return NextResponse.json({ success: false, error: 'No file uploaded' });
+    return NextResponse.json({ success: false, error: "No file uploaded" });
   }
 
   const bytes = await file.arrayBuffer();
@@ -18,12 +18,14 @@ export async function POST(request: NextRequest) {
   const timestamp = Date.now(); // Get the current timestamp
   const uniqueFileName = `${timestamp}${originalExtension}`;
 
-  const path = join(process.cwd(), 'public/uploads', uniqueFileName);
+  // const path = join(process.cwd(), 'public/uploads', uniqueFileName);
+  const path = join(process.cwd(), "tmp/uploads", uniqueFileName);
   await writeFile(path, buffer);
   console.log(`File uploaded to: ${path}`);
 
   return NextResponse.json({
     success: true,
-    fileName: `/uploads/${uniqueFileName}`,
+    // fileName: `/uploads/${uniqueFileName}`,
+    fileName: path,
   });
 }
