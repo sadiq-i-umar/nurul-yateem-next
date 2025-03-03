@@ -102,7 +102,7 @@ const CompleteAccount: React.FC = () => {
           homeAddress: homeAddress,
           // state_of_origin: stateOfOrigin,
           localGovernment: localGovernmentArea,
-          employmentStatus: employmentStatus?.toLowerCase(),
+          employementStatus: employmentStatus?.toLowerCase(),
           natureOfJob: natureOfOccupation,
           annualIncome: annualIncome,
           employerName: employerName,
