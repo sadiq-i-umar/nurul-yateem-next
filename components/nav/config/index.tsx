@@ -53,9 +53,9 @@ export const navConfig = [
     path: "/dashboard/guardian/orphan-list",
   },
   {
-    title: "Activity",
+    title: "Sponsorship Requests",
     icon: "/folder_open.svg",
-    path: "/dashboard/guardian/activity",
+    path: "/dashboard/guardian/sponsorship-requests",
   },
   {
     title: "Settings",
