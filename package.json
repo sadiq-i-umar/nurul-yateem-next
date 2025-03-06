@@ -37,6 +37,7 @@
     "react-hook-form": "^7.53.1",
     "react-hot-toast": "^2.4.1",
     "react-is": "^18.2.0",
+    "react-multi-select-component": "^4.3.4",
     "simplebar-react": "^3.2.4",
     "swiper": "^11.1.1",
     "zustand": "^4.5.2"
