@@ -1,7 +1,8 @@
 import Button, { ButtonType } from "@/components/button";
 import EmptyState from "@/components/empty-state";
+import { icon as imageIcon } from "@/constants/icon";
 import { getImage } from "@/utils";
-import { ImageProps } from "next/image";
+import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import { HookFormProps } from "../..";
 
@@ -13,10 +14,9 @@ export enum FileUploadType {
 export type FileUploadFieldProps = {
   fileType: FileUploadType;
   icon: ImageProps;
-  name: string;
   text: string;
-  value?: string | File;
-  hookForm?: HookFormProps;
+  name?: string;
+  hookForm?: Pick<HookFormProps, "setValue" | "watch" | "register">;
 };
 
 const containerStyle =
@@ -32,21 +32,22 @@ const FileUploadField = ({
   fileType,
   icon,
   text,
-  value,
   name,
   hookForm,
 }: FileUploadFieldProps) => {
+  const _name = name ?? "";
+  const value = hookForm?.watch?.(_name);
+  const isFileListValue = value instanceof FileList;
   const isImageType = fileType === FileUploadType.IMAGE;
   const [imagePreview, setImagePreview] = useState<string>();
 
-  const simulateInputClick = () =>
-    document.getElementById("fileInput")?.click();
+  const simulateInputClick = () => document.getElementById(_name)?.click();
 
   const getContainerStyle = () => {
-    if (isImageType) {
+    if (isImageType && !isFileListValue) {
       return {
         backgroundImage: value
-          ? `url(${value instanceof File ? imagePreview : value})`
+          ? `url(${typeof value !== "string" ? imagePreview : value})`
           : dashedBorder,
         backgroundSize: value ? "100% 100%" : "auto",
         ...(value && { border: "1px solid grey" }),
@@ -73,7 +74,7 @@ const FileUploadField = ({
 
   const setFile = (file: File) => {
     if (file) {
-      hookForm?.setValue(name, file);
+      hookForm?.setValue?.(_name, file);
       if (isImageType) {
         getImage(
           file,
@@ -84,35 +85,54 @@ const FileUploadField = ({
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <div
         className={containerStyle}
         style={{ ...getContainerStyle(), height: 200 }}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleFileDrop}
-        onClick={() => (!value && isImageType ? simulateInputClick() : {})}
+        onClick={() => (!value || isFileListValue ? simulateInputClick() : {})}
       >
         <div>
           <input
-            id="fileInput"
+            id={name}
             type="file"
-            onChange={handleFileSelection}
+            {...hookForm?.register(_name, {
+              onChange: handleFileSelection,
+            })}
             hidden
           />
-          {value ? (
-            isImageType && (
+          {value && !isFileListValue ? (
+            isImageType ? (
               <Button
                 type={ButtonType.PAPER}
                 text="Upload cover image"
                 onClick={() => simulateInputClick()}
               />
+            ) : (
+              <EmptyState image={icon} title={text} gap={4} />
             )
           ) : (
             <EmptyState image={icon} title={text} gap={4} />
           )}
         </div>
       </div>
-    </>
+      {value && !isFileListValue && !isImageType && (
+        <div className="flex items-center">
+          <p className="flex-grow">
+            {typeof value === "string" ? value : value.name}
+          </p>
+          <div className="cursor-pointer">
+            <Image
+              {...imageIcon.trash}
+              onClick={() => {
+                hookForm?.setValue?.(_name, undefined); // resetField from hookForm is not working here. That is why setValue is used to explicitly clear the field i.e. by setting the value of the field to undefined
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

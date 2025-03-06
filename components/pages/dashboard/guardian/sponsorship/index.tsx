@@ -6,15 +6,31 @@ import { FileUploadType } from "@/components/form/input-field/file-upload";
 import SideModal from "@/components/side-modals";
 import { icon } from "@/constants/icon";
 import { image } from "@/constants/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Option } from "react-multi-select-component";
 
 const GuardianSponsorshipRequestPage = () => {
+  const {
+    register,
+    setValue,
+    watch,
+    reset,
+    resetField,
+    unregister,
+    getValues,
+    control,
+  } = useForm();
   const [openCreateModal, setOpenCreateModal] = useState(false);
-  const { setValue, watch, reset } = useForm();
-  const [selectedOrphans, setSelectedOrphans] = useState([]);
-  const myOrphans: Option[] = [];
+  const myOrphans: Option[] = [
+    { label: "John Doe", value: "uuid-1" },
+    { label: "Frank Doe", value: "uuid-2" },
+  ];
+
+  useEffect(() => {
+    console.log("Watched Values:");
+    console.log(watch());
+  }, [watch()]);
 
   return (
     <div className="flex justify-center">
@@ -28,12 +44,7 @@ const GuardianSponsorshipRequestPage = () => {
         title="You haven't created a sponsorship request yet!"
         button={{
           type: ButtonType.CONTAINED,
-          icon: {
-            src: icon.plus,
-            alt: "add",
-            width: 20,
-            height: 20,
-          },
+          icon: icon.plus,
           text: "Create sponsorship request",
           onClick: () => setOpenCreateModal(true),
         }}
@@ -47,20 +58,23 @@ const GuardianSponsorshipRequestPage = () => {
           }}
           title="Create Sponsorship Request"
           form={{
+            hookForm: {
+              register: register,
+              setValue: setValue,
+              watch: watch,
+              reset: reset,
+              resetField: resetField,
+              unregister: unregister,
+              getValues: getValues,
+              control: control,
+            },
             inputFields: [
               {
+                name: "Cover Image",
                 fileUploadField: {
-                  name: "cover-image",
                   fileType: FileUploadType.IMAGE,
-                  icon: {
-                    src: icon.picture,
-                    alt: "image-upload",
-                    height: 36,
-                    width: 36,
-                  },
-                  text: "Add image not less than 4mb",
-                  value: watch("cover-image"),
-                  hookForm: { setValue: setValue },
+                  icon: icon.picture,
+                  text: "Add an image not greater than 4mb",
                 },
               },
               {
@@ -89,8 +103,28 @@ const GuardianSponsorshipRequestPage = () => {
                 label: "Orphans",
                 multiSelectField: {
                   options: myOrphans,
-                  value: selectedOrphans,
-                  onChange: setSelectedOrphans,
+                },
+              },
+              {
+                groupField: {
+                  name: "Supporting Documents",
+                  inputFields: [
+                    { label: "Title", textField: { type: "text" } },
+                    { label: "Description", textField: { type: "message" } },
+                    {
+                      label: "Uploaded Document",
+                      fileUploadField: {
+                        fileType: FileUploadType.DOC,
+                        icon: icon.doc,
+                        text: "Drag and Drop .pdf, .png, .jpeg",
+                      },
+                    },
+                  ],
+                  actionButton: {
+                    icon: icon.plus,
+                    type: ButtonType.CONTAINED,
+                    text: "Add Supporting Document",
+                  },
                 },
               },
             ],
