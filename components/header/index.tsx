@@ -48,11 +48,7 @@ const Header: React.FC<{
       </Box>
       <Box sx={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
         <Box sx={{ display: "flex" }}>
-          {[
-            { src: "/search_icon.svg", alt: "Search Icon" },
-            { src: "/message.svg", alt: "Message Icon" },
-            { src: "/bell.svg", alt: "Bell Icon" },
-          ].map((item) => (
+          {[].map((item) => (
             <Box key={item.src} sx={{ marginRight: "40px" }}>
               <Image alt={item.alt} width={24} height={24} src={item.src} />
             </Box>
