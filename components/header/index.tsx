@@ -60,7 +60,7 @@ const Header: React.FC<{
           ))}
         </Box>
       </Box>
-      {/* <Box sx={{ display: { xs: "none", sm: "flex" }, marginRight: "30px" }}>
+      <Box sx={{ display: { xs: "none", sm: "flex" }, marginRight: "30px" }}>
         <Box
           sx={{
             padding: "5px 20px 5px 20px",
@@ -83,7 +83,7 @@ const Header: React.FC<{
         >
           <IconHolder icon={"/sun.svg"} />
         </Box>
-      </Box> */}
+      </Box>
     </Box>
   );
 };
