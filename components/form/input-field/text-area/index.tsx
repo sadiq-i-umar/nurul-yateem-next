@@ -1,19 +1,31 @@
+import { HookFormRequired, InputFieldProps } from "..";
 import { HookFormProps } from "../..";
 import { textFieldStyle } from "../text";
 
 export type TextAreaFieldProps = {
-  rows: number;
-  name?: string;
+  name?: InputFieldProps["name"];
+  rows?: number;
+  required?: HookFormRequired;
+  disabled?: boolean;
   hookForm?: HookFormProps;
 };
 
-const TextAreaField = ({ name, hookForm, rows }: TextAreaFieldProps) => {
+const TextAreaField = ({
+  name,
+  required,
+  disabled,
+  hookForm,
+  rows,
+}: TextAreaFieldProps) => {
   return (
     <div>
       <textarea
+        disabled={disabled}
         className={`${textFieldStyle} w-full`}
-        rows={rows}
-        {...hookForm?.register(name ?? "")}
+        rows={rows ?? 4}
+        {...hookForm?.register(name ?? "", {
+          required: required,
+        })}
       ></textarea>
     </div>
   );

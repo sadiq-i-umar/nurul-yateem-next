@@ -1,15 +1,9 @@
-import { Box, Grid } from "@mui/material";
-import {
-  GenderPieChartCard,
-  SponsorshipsCard,
-  SummaryCard,
-} from "../../../../../../components/cards";
-import { summaryCardData } from "../../../../../../data/summary-card";
-import HeaderSection from "../../../../../../components/GreetingSectionWithButton/HeaderSection";
-
 export default function GuardianDashboard() {
-  return (
-    <Box>
+  return <></>;
+}
+
+{
+  /* <Box>
       <Box>
         <HeaderSection />
       </Box>
@@ -40,6 +34,5 @@ export default function GuardianDashboard() {
           </Grid>
         </Grid>
       </Box>
-    </Box>
-  );
+    </Box> */
 }

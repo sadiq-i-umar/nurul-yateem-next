@@ -9,16 +9,7 @@ export type GroupFieldProps = {
   actionButton: ButtonProps;
   defaultGroups?: InputFieldProps[][];
   getGroups?: (groups: InputFieldProps[][]) => void;
-  hookForm?: Pick<
-    HookFormProps,
-    | "watch"
-    | "getValues"
-    | "reset"
-    | "resetField"
-    | "setValue"
-    | "unregister"
-    | "register"
-  >;
+  hookForm?: HookFormProps;
 };
 
 const GroupField = ({
@@ -112,7 +103,7 @@ const GroupField = ({
             ))}
             <div>
               <Button
-                type={ButtonType.PAPER}
+                variant={ButtonType.PAPER}
                 text="Remove"
                 onClick={() => {
                   //Unregister the group's fields before invoking the removeGroup function
@@ -123,7 +114,7 @@ const GroupField = ({
                   });
                   removeGroup(groupIndex);
                 }}
-              ></Button>
+              />
             </div>
           </div>
         ))}

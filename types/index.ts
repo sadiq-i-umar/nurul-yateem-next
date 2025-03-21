@@ -66,15 +66,13 @@ export interface UserWithToken {
   profile: Profile; // Profile object
 }
 
-
 export interface FetchedResponse<T> extends Array<T> {}
-
 
 type State = {
   id: string;
   name: string;
-  createdAt: string;  // ISO date string
-  updatedAt: string;  // ISO date string
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   createdByUserId: string;
   updatedByUserId: string;
 };
@@ -83,8 +81,8 @@ type LocalGovernment = {
   id: string;
   name: string;
   stateId: string;
-  createdAt: string;  // ISO date string
-  updatedAt: string;  // ISO date string
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   createdByUserId: string;
   updatedByUserId: string;
   state: State;
@@ -104,7 +102,7 @@ export interface OrphanProps {
   profile: UserProfile;
 }
 
-export type Orphan =  {
+export type Orphan = {
   affidavitOfGuardianship: string;
   createdAt: string;
   createdBy: {
@@ -122,7 +120,7 @@ export type Orphan =  {
   isAccepted: boolean;
   isDeleted: boolean;
   picture: string;
-  requests: Array<any>; 
+  requests: Array<any>;
   schoolAddress: string;
   schoolContactPerson: string;
   schoolContactPhone: string;
@@ -136,7 +134,6 @@ export type Orphan =  {
   authStrategy: string | null;
 };
 
-
 export type UserProfile = {
   id: string;
   createdAt: string;
@@ -144,7 +141,7 @@ export type UserProfile = {
   firstName: string;
   middleName: string | null;
   lastName: string;
-  gender: "MALE" | "FEMALE" | string; 
+  gender: "MALE" | "FEMALE" | string;
   localGovernment: LocalGovernment;
   dateOfBirth: string;
   homeAddress: string | null;
@@ -154,4 +151,13 @@ export type UserProfile = {
   userId: string;
   createdByUserId: string | null;
   updatedByUserId: string | null;
+};
+
+export type User = {
+  id: string;
+  email: string;
+  profile: {
+    firstName: string;
+    homeAddress: string;
+  };
 };

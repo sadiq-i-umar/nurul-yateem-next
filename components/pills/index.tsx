@@ -50,3 +50,21 @@ export const TextOnlyPill: React.FC<{
     </Typography>
   );
 };
+
+type PillProps = {
+  text: string;
+  status?: string;
+};
+
+type Status = "success" | "warning" | "error";
+
+export const Pill = ({ text }: PillProps) => {
+  return (
+    <div
+      className={`flex items-center text-[10px] font-bold px-2 rounded-xl capitalize`}
+    >
+      <Dot />
+      <p>{text}</p>
+    </div>
+  );
+};

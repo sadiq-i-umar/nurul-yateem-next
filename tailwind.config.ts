@@ -18,6 +18,18 @@ const config: Config = {
         "primary-100": "#A3B7FD",
         "tetiary-100": "#E7E7E7",
         "tetiary-300": "#59555D",
+        success: {
+          primary: "#007A27",
+          secondary: "#E8FFEF",
+        },
+        warning: {
+          primary: "#E6A807",
+          secondary: "#FFF8E4",
+        },
+        error: {
+          primary: "#F00000",
+          secondary: "#FEE6E6",
+        },
       },
     },
   },

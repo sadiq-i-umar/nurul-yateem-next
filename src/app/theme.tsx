@@ -13,10 +13,19 @@ declare module "@mui/material/styles" {
       danger?: string;
     };
   }
+
+  interface PaletteOptions {
+    status: {
+      error: string;
+    };
+  }
 }
 
 const theme = createTheme({
   palette: {
+    status: {
+      error: "",
+    },
     primary: {
       main: "#268600",
     },

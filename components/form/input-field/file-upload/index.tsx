@@ -2,6 +2,8 @@ import Button, { ButtonType } from "@/components/button";
 import EmptyState from "@/components/empty-state";
 import { icon as imageIcon } from "@/constants/icon";
 import { getImage } from "@/utils";
+import { validateFileType } from "@/utils/form/validation";
+import { Avatar } from "@mui/material";
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import { HookFormProps } from "../..";
@@ -16,7 +18,13 @@ export type FileUploadFieldProps = {
   icon: ImageProps;
   text: string;
   name?: string;
-  hookForm?: Pick<HookFormProps, "setValue" | "watch" | "register">;
+  hookForm?: Pick<
+    HookFormProps,
+    "setValue" | "watch" | "register" | "setError"
+  >;
+  required?: boolean;
+  maxSize?: number;
+  isAvatar?: boolean;
 };
 
 const containerStyle =
@@ -34,12 +42,19 @@ const FileUploadField = ({
   text,
   name,
   hookForm,
+  required,
+  maxSize,
+  isAvatar,
 }: FileUploadFieldProps) => {
   const _name = name ?? "";
   const value = hookForm?.watch?.(_name);
   const isFileListValue = value instanceof FileList;
   const isImageType = fileType === FileUploadType.IMAGE;
   const [imagePreview, setImagePreview] = useState<string>();
+  const allowedImageFiles = ["image/jpeg", "image/png", "image/jpg"];
+  const allowedDocFiles = ["application/pdf", ...allowedImageFiles];
+  const _maxSize = maxSize ?? 3;
+  const requiredError = `${_name} is required`;
 
   const simulateInputClick = () => document.getElementById(_name)?.click();
 
@@ -84,39 +99,81 @@ const FileUploadField = ({
     }
   };
 
+  const hiddenInput = () => {
+    return (
+      <input
+        id={name}
+        type="file"
+        accept={isImageType ? ".png,.jpg,.jpeg" : ".pdf,.png,.jpg,.jpeg"}
+        {...hookForm?.register(_name, {
+          validate: {
+            [requiredError]: (value) =>
+              required && value && value instanceof File,
+            [`Only ${
+              isImageType ? "JPG," : "PDF, JPG,"
+            } JPEG, and PNG files are allowed`]: (value) =>
+              value instanceof File &&
+              validateFileType(
+                value,
+                isImageType ? allowedImageFiles : allowedDocFiles
+              ),
+            [`File must not exceed the ${_maxSize}MB limit`]: (
+              value: File | string
+            ) =>
+              (value && typeof value === "string") ||
+              (value &&
+                value instanceof File &&
+                value.size < _maxSize * 1024 * 1024),
+          },
+          onChange: handleFileSelection,
+        })}
+        hidden
+      />
+    );
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      <div
-        className={containerStyle}
-        style={{ ...getContainerStyle(), height: 200 }}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleFileDrop}
-        onClick={() => (!value || isFileListValue ? simulateInputClick() : {})}
-      >
-        <div>
-          <input
-            id={name}
-            type="file"
-            {...hookForm?.register(_name, {
-              onChange: handleFileSelection,
-            })}
-            hidden
-          />
-          {value && !isFileListValue ? (
-            isImageType ? (
-              <Button
-                type={ButtonType.PAPER}
-                text="Upload cover image"
-                onClick={() => simulateInputClick()}
-              />
+      {!isAvatar ? (
+        <div
+          className={containerStyle}
+          style={{ ...getContainerStyle(), height: 200 }}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleFileDrop}
+          onClick={() =>
+            !value || isFileListValue ? simulateInputClick() : {}
+          }
+        >
+          <div>
+            {hiddenInput()}
+            {value && !isFileListValue ? (
+              isImageType ? (
+                <Button
+                  variant={ButtonType.PAPER}
+                  text="Upload cover image"
+                  onClick={() => simulateInputClick()}
+                />
+              ) : (
+                <EmptyState image={icon} title={text} gap={4} />
+              )
             ) : (
               <EmptyState image={icon} title={text} gap={4} />
-            )
-          ) : (
-            <EmptyState image={icon} title={text} gap={4} />
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div>
+          <Avatar src={imagePreview} />
+          <div>
+            <Button
+              variant={ButtonType.CONTAINED}
+              text="Upload Image"
+              onClick={() => simulateInputClick()}
+            />
+            {hiddenInput()}
+          </div>
+        </div>
+      )}
       {value && !isFileListValue && !isImageType && (
         <div className="flex items-center">
           <p className="flex-grow">
@@ -127,6 +184,11 @@ const FileUploadField = ({
               {...imageIcon.trash}
               onClick={() => {
                 hookForm?.setValue?.(_name, undefined); // resetField from hookForm is not working here. That is why setValue is used to explicitly clear the field i.e. by setting the value of the field to undefined
+                if (required) {
+                  hookForm?.setError(_name, {
+                    type: requiredError,
+                  });
+                }
               }}
             />
           </div>

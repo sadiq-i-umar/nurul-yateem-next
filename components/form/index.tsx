@@ -1,47 +1,40 @@
 import {
-  Control,
   FieldValues,
-  UseFormGetValues,
-  UseFormRegister,
-  UseFormReset,
-  UseFormResetField,
-  UseFormSetValue,
-  UseFormUnregister,
-  UseFormWatch,
+  SubmitErrorHandler,
+  SubmitHandler,
+  UseFormReturn,
 } from "react-hook-form";
-import Button, { ButtonProps } from "../button";
+import ButtonGroup, { ButtonGroupProps } from "../button/group";
 import InputField, { InputFieldProps } from "./input-field";
 
 export type FormProps = {
   inputFields: InputFieldProps[];
-  buttons?: ButtonProps[];
+  buttonGroup?: ButtonGroupProps[];
   hookForm?: HookFormProps;
+  submit?: {
+    onValid: OnValidSubmit;
+    onInvalid?: SubmitErrorHandler<FieldValues> | undefined;
+  };
 };
 
-export type HookFormProps = {
-  register: UseFormRegister<FieldValues>;
-  setValue?: UseFormSetValue<any>;
-  watch?: UseFormWatch<FieldValues>;
-  resetField?: UseFormResetField<FieldValues>;
-  reset?: UseFormReset<FieldValues>;
-  unregister?: UseFormUnregister<FieldValues>;
-  getValues?: UseFormGetValues<FieldValues>;
-  control?: Control<FieldValues, any>;
-};
+export type HookFormProps = UseFormReturn;
 
-const Form = ({ inputFields, buttons, hookForm }: FormProps) => {
+export type OnValidSubmit = SubmitHandler<FieldValues>;
+
+const Form = ({ inputFields, buttonGroup, hookForm, submit }: FormProps) => {
   return (
-    <form className="flex flex-col gap-8">
+    <form
+      onSubmit={
+        submit
+          ? hookForm?.handleSubmit(submit.onValid, submit.onInvalid)
+          : undefined
+      }
+      className="flex flex-col gap-8"
+    >
       {inputFields.map((inputField, index) => (
         <InputField key={index} {...inputField} hookForm={hookForm} />
       ))}
-      {buttons && (
-        <div className="flex items-center justify-end gap-4">
-          {buttons?.map((button, index) => (
-            <Button key={index} {...button} />
-          ))}
-        </div>
-      )}
+      {buttonGroup && <ButtonGroup {...buttonGroup} />}
     </form>
   );
 };

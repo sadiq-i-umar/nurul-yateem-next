@@ -1,6 +1,4 @@
-export const Dot: React.FC<{ dotColor?: string }> = ({
-  dotColor = "#908E8F",
-}) => {
+export const Dot: React.FC<{ dotColor?: string }> = ({ dotColor }) => {
   return (
     <span
       style={{
@@ -8,7 +6,7 @@ export const Dot: React.FC<{ dotColor?: string }> = ({
         fontWeight: "900",
         marginRight: "6px",
         verticalAlign: "middle",
-        color: dotColor,
+        color: dotColor ?? "inherit",
       }}
     >
       &#x2022;
