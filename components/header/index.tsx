@@ -46,15 +46,6 @@ const Header: React.FC<{
       >
         <Image src={"/menu.svg"} width={24} height={24} alt={"Menu Icon"} />
       </Box>
-      <Box sx={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
-        <Box sx={{ display: "flex" }}>
-          {[].map((item) => (
-            <Box key={item.src} sx={{ marginRight: "40px" }}>
-              <Image alt={item.alt} width={24} height={24} src={item.src} />
-            </Box>
-          ))}
-        </Box>
-      </Box>
     </Box>
   );
 };
