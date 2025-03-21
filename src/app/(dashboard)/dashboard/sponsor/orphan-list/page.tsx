@@ -1,5 +1,4 @@
-import OrphanSponsorshipCard from "../../../../../../components/cards/orphan-sponsorship";
-import OrphanListPage from "../../../../../../components/orphan-list/page";
+import OrphanListPage from "../../../../../../components/orphan-list";
 
 const cardData = [
   {
