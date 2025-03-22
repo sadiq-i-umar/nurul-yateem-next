@@ -11,6 +11,7 @@ export type DateFieldProps = {
   validate?: HookFormValidate;
   hookForm?: InputFieldProps["hookForm"];
   maxDate?: dayjs.Dayjs;
+  defaultValue?: dayjs.Dayjs;
 };
 
 const DateField = ({
@@ -19,12 +20,14 @@ const DateField = ({
   validate,
   hookForm,
   maxDate,
+  defaultValue,
 }: DateFieldProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Controller
         name={name ?? ""}
         control={hookForm?.control}
+        defaultValue={defaultValue}
         rules={{
           required: required,
           validate: validate,

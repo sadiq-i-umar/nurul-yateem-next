@@ -6,6 +6,7 @@ export type SelectFieldProps = {
   required?: HookFormRequired;
   validate?: HookFormValidate;
   hookForm?: InputFieldProps["hookForm"];
+  defaultValue?: string;
   options: Option[];
 };
 
@@ -15,6 +16,7 @@ const SelectField = ({
   validate,
   hookForm,
   options,
+  defaultValue,
 }: SelectFieldProps) => {
   return (
     <select
@@ -25,6 +27,7 @@ const SelectField = ({
           ...validate,
         },
       })}
+      defaultValue={defaultValue}
     >
       <option value="">--Select--</option>
       {options?.map((option) => (

@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Option } from "react-multi-select-component";
 
-const GuardianSponsorshipRequestPage = () => {
+const GuardianSponsorshipRequest = () => {
   const { ...hookForm } = useForm();
 
   const [showEmptyState] = useState(false);
@@ -200,4 +200,4 @@ const GuardianSponsorshipRequestPage = () => {
   );
 };
 
-export default GuardianSponsorshipRequestPage;
+export default GuardianSponsorshipRequest;

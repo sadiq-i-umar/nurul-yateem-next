@@ -39,13 +39,38 @@ export const post = async (endpoint: string, data?: object) => {
   }
 };
 
-export const put = async (endpoint: string, data: object) => {
+export const put = async (endpoint: string, data?: object) => {
   const authHeader = await getAuthHeader();
-  const res = await axios.put(`${baseUrl}/${endpoint}`, data, {
-    headers: {
-      Accept: "*/*",
-      ...authHeader.headers,
-    },
-  });
-  return res;
+  try {
+    const res = await axios.put(`${baseUrl}/${endpoint}`, data, {
+      headers: {
+        Accept: "*/*",
+        ...authHeader.headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return Promise.reject(error.response?.data || error.message);
+    }
+    return Promise.reject(error);
+  }
+};
+
+export const deleteRequest = async (endpoint: string) => {
+  const authHeader = await getAuthHeader();
+  try {
+    const res = await axios.delete(`${baseUrl}/${endpoint}`, {
+      headers: {
+        Accept: "*/*",
+        ...authHeader.headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return Promise.reject(error.response?.data || error.message);
+    }
+    return Promise.reject(error);
+  }
 };

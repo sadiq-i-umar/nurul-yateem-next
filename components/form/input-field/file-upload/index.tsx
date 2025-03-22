@@ -5,7 +5,7 @@ import { getImage } from "@/utils";
 import { validateFileType } from "@/utils/form/validation";
 import { Avatar } from "@mui/material";
 import Image, { ImageProps } from "next/image";
-import { useState } from "react";
+import { useEffect } from "react";
 import { HookFormProps } from "../..";
 
 export enum FileUploadType {
@@ -20,11 +20,12 @@ export type FileUploadFieldProps = {
   name?: string;
   hookForm?: Pick<
     HookFormProps,
-    "setValue" | "watch" | "register" | "setError"
+    "setValue" | "watch" | "register" | "setError" | "resetField"
   >;
   required?: boolean;
   maxSize?: number;
   isAvatar?: boolean;
+  defaultValue?: string;
 };
 
 const containerStyle =
@@ -45,16 +46,20 @@ const FileUploadField = ({
   required,
   maxSize,
   isAvatar,
+  defaultValue,
 }: FileUploadFieldProps) => {
   const _name = name ?? "";
   const value = hookForm?.watch?.(_name);
   const isFileListValue = value instanceof FileList;
   const isImageType = fileType === FileUploadType.IMAGE;
-  const [imagePreview, setImagePreview] = useState<string>();
+  const imagePreviewName = `${_name}Preview`;
+  const imagePreview = hookForm?.watch(imagePreviewName);
   const allowedImageFiles = ["image/jpeg", "image/png", "image/jpg"];
   const allowedDocFiles = ["application/pdf", ...allowedImageFiles];
   const _maxSize = maxSize ?? 3;
   const requiredError = `${_name} is required`;
+  const setValue = hookForm?.setValue;
+  const isDefaultValue = typeof value === "string";
 
   const simulateInputClick = () => document.getElementById(_name)?.click();
 
@@ -89,38 +94,49 @@ const FileUploadField = ({
 
   const setFile = (file: File) => {
     if (file) {
-      hookForm?.setValue?.(_name, file);
+      setValue?.(_name, file);
       if (isImageType) {
         getImage(
           file,
-          (image) => typeof image === "string" && setImagePreview(image)
+          (image) =>
+            typeof image === "string" && setValue?.(imagePreviewName, image)
         );
       }
     }
   };
 
+  useEffect(() => {
+    if (defaultValue) {
+      setValue?.(_name, defaultValue);
+      if (isImageType) {
+        setValue?.(imagePreviewName, defaultValue);
+      }
+    }
+  }, []);
+
   const hiddenInput = () => {
     return (
       <input
-        id={name}
+        id={_name}
         type="file"
         accept={isImageType ? ".png,.jpg,.jpeg" : ".pdf,.png,.jpg,.jpeg"}
         {...hookForm?.register(_name, {
           validate: {
             [requiredError]: (value) =>
-              required && value && value instanceof File,
+              (required && value && value instanceof File) || isDefaultValue,
             [`Only ${
               isImageType ? "JPG," : "PDF, JPG,"
             } JPEG, and PNG files are allowed`]: (value) =>
-              value instanceof File &&
-              validateFileType(
-                value,
-                isImageType ? allowedImageFiles : allowedDocFiles
-              ),
+              (value instanceof File &&
+                validateFileType(
+                  value,
+                  isImageType ? allowedImageFiles : allowedDocFiles
+                )) ||
+              isDefaultValue,
             [`File must not exceed the ${_maxSize}MB limit`]: (
               value: File | string
             ) =>
-              (value && typeof value === "string") ||
+              isDefaultValue ||
               (value &&
                 value instanceof File &&
                 value.size < _maxSize * 1024 * 1024),
@@ -172,6 +188,17 @@ const FileUploadField = ({
             />
             {hiddenInput()}
           </div>
+          {value instanceof File && (
+            <button
+              onClick={() => {
+                [_name, imagePreviewName].map((name) => {
+                  setValue?.(name, defaultValue);
+                });
+              }}
+            >
+              Remove
+            </button>
+          )}
         </div>
       )}
       {value && !isFileListValue && !isImageType && (

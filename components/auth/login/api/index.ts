@@ -23,6 +23,8 @@ const useLoginApi = () => {
           if (roles.includes("guardian")) {
             const userId = session?.user.id;
             if (userId) getProfile.mutateAsync(userId);
+          } else if (roles.includes("admin")) {
+            router.push("/dashboard/admin/home");
           }
           break;
         case 401:
@@ -48,26 +50,11 @@ const useLoginApi = () => {
         alert("Complete your account"),
           router.push("/dashboard/complete-account");
       } else {
-        getMyOrphans.mutateAsync();
+        router.push("/dashboard/guardian/home");
       }
     },
     onError: (error) => {
       alert(getApiErrorMessage(error)), signOut({ redirect: false });
-    },
-  });
-
-  const getMyOrphans = useMutation({
-    mutationFn: (): Promise<AxiosResponse> => get("v1/orphan/mine"), //TODO: Include Orphan interface in the promise
-    onSuccess: (res) => {
-      const orphans = res.data;
-      if (orphans.length < 1) {
-        router.push("/dashboard/add-orphans");
-      } else {
-        router.push("/dashboard/guardian/home");
-      }
-    },
-    onError: () => {
-      alert("An error occured");
     },
   });
 

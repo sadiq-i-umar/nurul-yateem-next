@@ -8,6 +8,7 @@ export type TextAreaFieldProps = {
   required?: HookFormRequired;
   disabled?: boolean;
   hookForm?: HookFormProps;
+  defaultValue?: string;
 };
 
 const TextAreaField = ({
@@ -16,12 +17,14 @@ const TextAreaField = ({
   disabled,
   hookForm,
   rows,
+  defaultValue,
 }: TextAreaFieldProps) => {
   return (
     <div>
       <textarea
         disabled={disabled}
         className={`${textFieldStyle} w-full`}
+        defaultValue={defaultValue}
         rows={rows ?? 4}
         {...hookForm?.register(name ?? "", {
           required: required,

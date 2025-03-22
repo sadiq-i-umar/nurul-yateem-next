@@ -8,7 +8,7 @@ export type AccountSetupPayload = {
   maritalStatus: "Single" | "Married" | "Divorced" | "Widowed";
   phoneNumber: string;
   picture: string;
-  employementStatus: "Employed" | "Unemployed" | "Self-Employed";
+  employmentStatus: "Employed" | "Unemployed" | "Self-Employed";
   natureOfJob?: string;
   annualIncome?: string;
   employerName?: string;

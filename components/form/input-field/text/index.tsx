@@ -15,6 +15,7 @@ export type TextFieldProps = {
   required?: HookFormRequired;
   validate?: HookFormValidate;
   disabled?: boolean;
+  defaultValue?: string | number;
   type: TextFieldType;
 };
 
@@ -28,6 +29,7 @@ const TextField = ({
   validate,
   disabled,
   hookForm,
+  defaultValue,
 }: TextFieldProps) => {
   const [showText, setShowText] = useState(false);
 
@@ -41,6 +43,7 @@ const TextField = ({
           required: required,
           validate: validate,
         })}
+        defaultValue={defaultValue}
       />
       {type === "password" && (
         <span

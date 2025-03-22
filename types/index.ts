@@ -141,7 +141,7 @@ export type UserProfile = {
   firstName: string;
   middleName: string | null;
   lastName: string;
-  gender: "MALE" | "FEMALE" | string;
+  gender: Gender;
   localGovernment: LocalGovernment;
   dateOfBirth: string;
   homeAddress: string | null;
@@ -161,3 +161,5 @@ export type User = {
     homeAddress: string;
   };
 };
+
+export type Gender = "Male" | "Female";

@@ -5,6 +5,7 @@ export type RadioGroupFieldProps = {
   name?: InputFieldProps["name"];
   required?: HookFormRequired;
   hookForm?: InputFieldProps["hookForm"];
+  defaultValue?: string;
   options: Option[];
 };
 
@@ -13,6 +14,7 @@ const RadioGroupField = ({
   required,
   options,
   hookForm,
+  defaultValue,
 }: RadioGroupFieldProps) => {
   return (
     <div>
@@ -22,6 +24,7 @@ const RadioGroupField = ({
             type="radio"
             name={name}
             value={option.value}
+            defaultChecked={defaultValue === option.value}
             {...hookForm?.register(name ?? "", {
               required: required,
             })}

@@ -30,8 +30,7 @@ const Nav: React.FC<{
       ? navConfig
       : account === UserRole.Admin
       ? navConfigAdmin
-      : navConfig;
-  // [];
+      : [];
 
   return (
     <Box
