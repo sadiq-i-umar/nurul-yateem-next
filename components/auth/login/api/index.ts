@@ -45,7 +45,6 @@ const useLoginApi = () => {
       get(`v1/user/${id}`),
     onSuccess: (res) => {
       const homeAddress = res.data.profile.homeAddress;
-      console.log(res);
       if (homeAddress === null) {
         alert("Complete your account"),
           router.push("/dashboard/complete-account");

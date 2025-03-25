@@ -1,4 +1,5 @@
 import Button, { ButtonProps, ButtonType } from "@/components/button";
+import { getGroupValuesToFieldsMap } from "@/utils/form/group-field";
 import { useState } from "react";
 import InputField, { InputFieldProps } from "..";
 import { HookFormProps } from "../..";
@@ -36,38 +37,17 @@ const GroupField = ({
     //Align form values with updated groups
     if (typeof hookForm?.watch?.() === "object") {
       const labels = inputFields.map((inputField) => inputField.label);
-      const groupKeys = Object.keys(hookForm.watch()).map((key) => key);
-      const matchedKeys: string[] = [];
 
-      //Get form keys related to the input fields
-      labels.map((label) =>
-        groupKeys.map((key) => {
-          if (label && key.includes(label)) {
-            matchedKeys.push(key);
-          }
-        })
-      );
-
-      //Map group values to input field
-      const groupsToInputFields = inputFields.map((inputField) => {
-        return matchedKeys.map((matchedKey) => {
-          if (inputField.label && matchedKey.includes(inputField.label)) {
-            if (hookForm.getValues?.(matchedKey)) {
-              const fieldValue = hookForm.getValues?.(matchedKey);
-              hookForm.unregister?.(matchedKey);
-              return fieldValue;
-            }
-          }
-        });
-      });
-
-      //Remove undefined values
-      const cleanedGroupsToInputFields = groupsToInputFields.map((inputField) =>
-        inputField.filter((value) => value !== undefined)
+      //Map group values to input fields
+      const groupValuesToFieldsMap = getGroupValuesToFieldsMap(
+        hookForm,
+        name,
+        labels,
+        true
       );
 
       //Set form values
-      cleanedGroupsToInputFields.map((inputField, inputFieldIndex) =>
+      groupValuesToFieldsMap.map((inputField, inputFieldIndex) =>
         inputField.map((group, groupIndex) => {
           hookForm.setValue?.(
             `${name}${inputFields[inputFieldIndex].label}${groupIndex}`,

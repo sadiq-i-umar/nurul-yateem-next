@@ -123,7 +123,9 @@ const FileUploadField = ({
         {...hookForm?.register(_name, {
           validate: {
             [requiredError]: (value) =>
-              (required && value && value instanceof File) || isDefaultValue,
+              (required && value && value instanceof File) ||
+              isDefaultValue ||
+              !required,
             [`Only ${
               isImageType ? "JPG," : "PDF, JPG,"
             } JPEG, and PNG files are allowed`]: (value) =>
@@ -132,11 +134,15 @@ const FileUploadField = ({
                   value,
                   isImageType ? allowedImageFiles : allowedDocFiles
                 )) ||
-              isDefaultValue,
+              isDefaultValue ||
+              (!required && value instanceof FileList) ||
+              (!required && value === undefined),
             [`File must not exceed the ${_maxSize}MB limit`]: (
               value: File | string
             ) =>
               isDefaultValue ||
+              (!required && value === undefined) ||
+              (!required && value instanceof FileList) ||
               (value &&
                 value instanceof File &&
                 value.size < _maxSize * 1024 * 1024),
@@ -188,18 +194,18 @@ const FileUploadField = ({
             />
             {hiddenInput()}
           </div>
-          {value instanceof File && (
-            <button
-              onClick={() => {
-                [_name, imagePreviewName].map((name) => {
-                  setValue?.(name, defaultValue);
-                });
-              }}
-            >
-              Remove
-            </button>
-          )}
         </div>
+      )}
+      {value instanceof File && isImageType && (
+        <button
+          onClick={() => {
+            [_name, imagePreviewName].map((name) => {
+              setValue?.(name, defaultValue);
+            });
+          }}
+        >
+          Remove
+        </button>
       )}
       {value && !isFileListValue && !isImageType && (
         <div className="flex items-center">

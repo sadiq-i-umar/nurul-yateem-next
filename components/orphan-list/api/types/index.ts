@@ -48,20 +48,6 @@ type User = {
   profile: UserProfile;
 };
 
-type CreatedBy = {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  isVerified: boolean;
-  isDeleted: boolean;
-  isAchieved: boolean;
-  phoneNumber: string | null;
-  email: string;
-  password: string;
-  isActive: boolean;
-  authStrategy: string | null;
-};
-
 export type Status = "draft" | "pending" | "approved" | "rejected";
 
 export type Orphan = {

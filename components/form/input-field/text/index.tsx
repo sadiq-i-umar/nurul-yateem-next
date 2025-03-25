@@ -2,12 +2,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { HookFormRequired, HookFormValidate, InputFieldProps } from "..";
 
-export type TextFieldType =
-  | "text"
-  | "number"
-  | "message"
-  | "password"
-  | "email";
+export type TextFieldType = "text" | "number" | "password" | "email";
 
 export type TextFieldProps = {
   name?: InputFieldProps["name"];
