@@ -1,4 +1,4 @@
-import { ButtonType } from "@/components/button";
+import { ButtonVariant } from "@/components/button";
 import { ButtonGroupProps } from "@/components/button/group";
 import { FormProps, OnValidSubmit } from "@/components/form";
 import { InputFieldProps } from "@/components/form/input-field";
@@ -85,7 +85,7 @@ const useRegistrationForm = () => {
     buttons: [
       {
         type: "submit",
-        variant: ButtonType.CONTAINED,
+        variant: ButtonVariant.CONTAINED,
         text: "Sign Up",
       },
     ],

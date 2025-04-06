@@ -1,6 +1,6 @@
 import Image, { ImageProps } from "next/image";
 
-export enum ButtonType {
+export enum ButtonVariant {
   CONTAINED,
   CONTAINED_DARK,
   DELETE,
@@ -8,7 +8,7 @@ export enum ButtonType {
 }
 
 export type ButtonProps = {
-  variant: ButtonType;
+  variant: ButtonVariant;
   type?: "button" | "submit";
   icon?: ImageProps;
   text?: string;
@@ -34,11 +34,11 @@ const Button = ({
         flex items-center gap-2 rounded-3xl ${
           icon ? "px-4" : "px-8"
         } py-2 text-sm text-white
-        ${variant === ButtonType.CONTAINED && "bg-primary"}
-        ${variant === ButtonType.CONTAINED_DARK && "bg-black"}
-        ${variant === ButtonType.DELETE && "bg-red-600"}
+        ${variant === ButtonVariant.CONTAINED && "bg-primary"}
+        ${variant === ButtonVariant.CONTAINED_DARK && "bg-black"}
+        ${variant === ButtonVariant.DELETE && "bg-red-600"}
         ${
-          variant === ButtonType.PAPER &&
+          variant === ButtonVariant.PAPER &&
           "bg-white !text-black border-2 border-black"
         }
         `}

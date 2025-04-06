@@ -1,10 +1,11 @@
 "use client";
 
-import Button, { ButtonProps, ButtonType } from "@/components/button";
+import Button, { ButtonProps, ButtonVariant } from "@/components/button";
 import { InputFieldProps } from "@/components/form/input-field";
 import { FileUploadType } from "@/components/form/input-field/file-upload";
 import Modal from "@/components/modal";
 import useOrphanListApi from "@/components/orphan-list/api";
+import { Status } from "@/components/orphan-list/api/types";
 import { icon } from "@/constants/icon";
 import { image } from "@/constants/image";
 import { SponsorshipRequest } from "@/types/sponsorship-requests";
@@ -12,7 +13,7 @@ import { getUrl } from "@/utils/api";
 import { getGroupPayload } from "@/utils/form/group-field";
 import { getOrphansMultiSelectOptions } from "@/utils/form/options";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Option } from "react-multi-select-component";
 import useSponsorshipRequestApi from "./api";
@@ -43,31 +44,49 @@ const GuardianSponsorshipRequest = () => {
   const { ...hookForm } = useForm();
 
   const { getMyOrphans } = useOrphanListApi();
-  const { createSponsorshipRequest, getMySponsorshipRequests } =
-    useSponsorshipRequestApi({
-      hookForm: hookForm,
-      onSuccess: () => setOpenCreateModal({ open: false, isEdit: false }),
-    });
 
   const [selectedRequest, setSelectedRequest] = useState<SponsorshipRequest>();
+
+  const {
+    createEditSponsorshipRequest,
+    getMySponsorshipRequests,
+    deleteSponsorshipRequest,
+    deleteSupportingDocument,
+    submitSponsorshipRequest,
+  } = useSponsorshipRequestApi({
+    onSuccess: () => {
+      if (!selectedRequest) {
+        setOpenCreateModal({
+          open: false,
+          isEdit: false,
+          isRequestEdit: false,
+        });
+      }
+    },
+    selectedRequestId: selectedRequest?.id,
+  });
+
+  const mySponsorshipRequests = getMySponsorshipRequests.data?.data;
 
   const [openCreateModal, setOpenCreateModal] = useState({
     open: false,
     isEdit: false,
+    isRequestEdit: false,
   });
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   const createButton: ButtonProps = {
-    variant: ButtonType.CONTAINED,
+    variant: ButtonVariant.CONTAINED,
     icon: icon.plus,
     text: "Create sponsorship request",
-    onClick: () => setOpenCreateModal({ open: true, isEdit: false }),
+    onClick: () =>
+      setOpenCreateModal({ open: true, isEdit: false, isRequestEdit: false }),
   };
 
   const selectedRequestSupportingDocuments =
     selectedRequest?.SupportingDocument.map((doc) => {
-      const keysToUse = Object.keys(doc).filter((key) =>
-        ["title", "description", "url"].includes(key)
+      const keysToUse = Object.keys(doc).filter((formKey) =>
+        ["title", "description", "url"].includes(formKey)
       );
       return keysToUse.map((_, keyIndex) => {
         const field = supportingDocumentsInputFields[keyIndex];
@@ -86,35 +105,97 @@ const GuardianSponsorshipRequest = () => {
       });
     });
 
+  //For re-rendering the form when a sponsorship request is updated
+  const [formKey, setFormKey] = useState(0);
+
+  useEffect(() => {
+    if (mySponsorshipRequests) {
+      hookForm.reset();
+      hookForm.unregister();
+      const editedRequest = mySponsorshipRequests.find(
+        (request) => request.id === selectedRequest?.id
+      );
+      setSelectedRequest(editedRequest);
+      setFormKey(formKey + 1);
+    } else {
+      hookForm.reset();
+    }
+  }, [mySponsorshipRequests]);
+
   return (
     <>
       <div className="flex flex-col gap-12 p-10">
         <div className="flex justify-end">
           <Button {...createButton} />
         </div>
-        {getMySponsorshipRequests?.data?.data.map((request) => (
-          <div>
-            <p>{request.title}</p>
-            <p>{request.description}</p>
-            <p>{request.targetAmount}</p>
-            <p>{request.status}</p>
-            <button>Submit for approval</button>
-            <button
-              onClick={() => {
-                setSelectedRequest(request);
-                setOpenCreateModal({ open: true, isEdit: true });
-              }}
-            >
-              Edit
-            </button>
-          </div>
-        ))}
+        {getMySponsorshipRequests?.data?.data.map((request) => {
+          const isRequiredStatus = (statuses: Status[]) => {
+            return statuses.includes(request.status);
+          };
+          return (
+            <div>
+              <p>{request.title}</p>
+              <p>{request.description}</p>
+              <p>{request.targetAmount}</p>
+              <p>{request.status}</p>
+              {isRequiredStatus(["draft", "pending"]) && (
+                <>
+                  <button
+                    onClick={() =>
+                      submitSponsorshipRequest.mutateAsync(request.id)
+                    }
+                  >
+                    Submit for approval
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSelectedRequest(request);
+                      setOpenCreateModal({
+                        open: true,
+                        isEdit: true,
+                        isRequestEdit: false,
+                      });
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() =>
+                      deleteSponsorshipRequest.mutateAsync(request.id)
+                    }
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+              {isRequiredStatus(["approved", "published"]) && (
+                <button
+                  onClick={() => {
+                    setOpenCreateModal({
+                      open: true,
+                      isEdit: false,
+                      isRequestEdit: true,
+                    });
+                    setSelectedRequest(request);
+                  }}
+                >
+                  Request Edit
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
       {openCreateModal.open && (
         <Modal
           open={openCreateModal.open}
           onClose={() => {
-            setOpenCreateModal({ open: false, isEdit: false });
+            setOpenCreateModal({
+              open: false,
+              isEdit: false,
+              isRequestEdit: false,
+            });
             if (openCreateModal.isEdit) {
               setSelectedRequest(undefined);
             }
@@ -122,12 +203,13 @@ const GuardianSponsorshipRequest = () => {
           }}
           sideModal
           title={
-            openCreateModal.isEdit
+            openCreateModal.isEdit || openCreateModal.isRequestEdit
               ? "Edit Sponsorship Request"
               : "Create Sponsorship Request"
           }
           form={{
             hookForm: hookForm,
+            key: formKey,
             submit: {
               onValid: async (values) => {
                 const supportingDocuments = await Promise.all(
@@ -135,13 +217,19 @@ const GuardianSponsorshipRequest = () => {
                     field.supportingDocuments.title.label,
                     field.supportingDocuments.description.label,
                     field.supportingDocuments.uploadedDocument.label,
-                  ]).map(async (doc) => ({
+                  ]).map(async (doc, index) => ({
+                    id: openCreateModal.isEdit
+                      ? selectedRequest?.SupportingDocument[index].id
+                      : undefined,
                     title: doc[field.supportingDocuments.title.label],
                     description:
                       doc[field.supportingDocuments.description.label],
                     url: await getUrl(
                       doc[field.supportingDocuments.uploadedDocument.label]
                     ),
+                    isArchived:
+                      selectedRequest?.SupportingDocument[index].isArchived ??
+                      false,
                   }))
                 );
                 const payload: CreateSponsorshipRequestDto = {
@@ -154,7 +242,7 @@ const GuardianSponsorshipRequest = () => {
                   ),
                   supportingDocuments: supportingDocuments,
                 };
-                createSponsorshipRequest.mutateAsync(payload);
+                createEditSponsorshipRequest.mutateAsync(payload);
               },
             },
             inputFields: [
@@ -218,8 +306,15 @@ const GuardianSponsorshipRequest = () => {
                   defaultGroups: selectedRequestSupportingDocuments,
                   actionButton: {
                     icon: icon.plus,
-                    variant: ButtonType.CONTAINED,
+                    variant: ButtonVariant.CONTAINED,
                     text: "Add Supporting Document",
+                  },
+                  onDeleteClick: (groupIndex) => {
+                    deleteSupportingDocument.mutateAsync({
+                      id: selectedRequest?.id,
+                      attachmentId:
+                        selectedRequest?.SupportingDocument[groupIndex].id,
+                    });
                   },
                 },
               },
@@ -227,15 +322,23 @@ const GuardianSponsorshipRequest = () => {
             buttonGroup: {
               buttons: [
                 {
-                  variant: ButtonType.CONTAINED_DARK,
+                  variant: ButtonVariant.CONTAINED_DARK,
                   text: "Cancel",
                   onClick: () =>
-                    setOpenCreateModal({ open: false, isEdit: false }),
+                    setOpenCreateModal({
+                      open: false,
+                      isEdit: false,
+                      isRequestEdit: false,
+                    }),
                 },
                 {
-                  variant: ButtonType.CONTAINED,
+                  variant: ButtonVariant.CONTAINED,
                   type: "submit",
-                  text: "Add",
+                  text: selectedRequest
+                    ? openCreateModal.isEdit
+                      ? "Edit"
+                      : "Request Edit"
+                    : "Add",
                 },
               ],
               position: "end",
@@ -258,7 +361,7 @@ const GuardianSponsorshipRequest = () => {
             subtitle:
               "You have successfully added a sponsorship request and is currently under review.",
             button: {
-              variant: ButtonType.CONTAINED,
+              variant: ButtonVariant.CONTAINED,
               text: "Continue",
               onClick: () => {},
             },

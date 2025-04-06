@@ -1,4 +1,4 @@
-import { ButtonType } from "@/components/button";
+import { ButtonVariant } from "@/components/button";
 import { FormProps } from "@/components/form";
 import { useForm } from "react-hook-form";
 import useLoginApi from "../api";
@@ -39,7 +39,7 @@ const useLoginForm = () => {
       buttons: [
         {
           type: "submit",
-          variant: ButtonType.CONTAINED,
+          variant: ButtonVariant.CONTAINED,
           text: "Login",
         },
       ],

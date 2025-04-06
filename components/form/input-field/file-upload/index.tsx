@@ -1,4 +1,4 @@
-import Button, { ButtonType } from "@/components/button";
+import Button, { ButtonVariant } from "@/components/button";
 import EmptyState from "@/components/empty-state";
 import { icon as imageIcon } from "@/constants/icon";
 import { getImage } from "@/utils";
@@ -171,7 +171,7 @@ const FileUploadField = ({
             {value && !isFileListValue ? (
               isImageType ? (
                 <Button
-                  variant={ButtonType.PAPER}
+                  variant={ButtonVariant.PAPER}
                   text="Upload cover image"
                   onClick={() => simulateInputClick()}
                 />
@@ -188,7 +188,7 @@ const FileUploadField = ({
           <Avatar src={imagePreview} />
           <div>
             <Button
-              variant={ButtonType.CONTAINED}
+              variant={ButtonVariant.CONTAINED}
               text="Upload Image"
               onClick={() => simulateInputClick()}
             />

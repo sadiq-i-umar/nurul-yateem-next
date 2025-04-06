@@ -1,4 +1,4 @@
-import { ButtonType } from "@/components/button";
+import { ButtonVariant } from "@/components/button";
 import { FormProps } from "@/components/form";
 import { FileUploadType } from "@/components/form/input-field/file-upload";
 import { icon } from "@/constants/icon";
@@ -53,13 +53,13 @@ const useIdentitySection = ({
       buttons: [
         {
           text: "Back",
-          variant: ButtonType.CONTAINED_DARK,
+          variant: ButtonVariant.CONTAINED_DARK,
           onClick: onPrevClick,
         },
         {
           type: "submit",
           text: "Submit",
-          variant: ButtonType.CONTAINED,
+          variant: ButtonVariant.CONTAINED,
         },
       ],
     },

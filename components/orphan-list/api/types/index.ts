@@ -48,7 +48,13 @@ type User = {
   profile: UserProfile;
 };
 
-export type Status = "draft" | "pending" | "approved" | "rejected";
+export type Status =
+  | "draft"
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "published"
+  | "closed";
 
 export type Orphan = {
   id: string;

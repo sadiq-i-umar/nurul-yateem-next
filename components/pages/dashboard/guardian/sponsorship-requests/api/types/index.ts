@@ -2,6 +2,7 @@ type SupportingDocumentDto = {
   title: string;
   description: string;
   url: string;
+  isArchived: boolean;
 };
 
 export type CreateSponsorshipRequestDto = {

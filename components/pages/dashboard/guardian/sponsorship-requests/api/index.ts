@@ -1,31 +1,46 @@
 import { HookFormProps } from "@/components/form";
 import { queryKey } from "@/constants/query-key";
-import { get, post } from "@/src/app/api/http-requests";
+import { deleteRequest, get, post, put } from "@/src/app/api/http-requests";
 import { Response } from "@/types/api";
 import { SponsorshipRequest } from "@/types/sponsorship-requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateSponsorshipRequestDto } from "./types";
 
 const useSponsorshipRequestApi = ({
-  hookForm,
   onSuccess,
+  selectedRequestId,
+  hookForm,
 }: {
-  hookForm: HookFormProps;
-  onSuccess: () => void;
+  onSuccess?: () => void;
+  selectedRequestId?: string;
+  hookForm?: HookFormProps;
 }) => {
   const queryClient = useQueryClient();
-  const createSponsorshipRequest = useMutation({
+  const createEditSponsorshipRequest = useMutation({
     mutationFn: (payload: CreateSponsorshipRequestDto): Response =>
-      post("sponsorship-requests/request", payload),
+      (selectedRequestId ? put : post)(
+        `sponsorship-requests/${
+          selectedRequestId ? `${selectedRequestId}` : "request"
+        }`,
+        payload
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKey.mySponsorshipRequests],
       });
-      alert("Sponsorship request created successfully");
+      alert(
+        `Sponsorship request ${
+          selectedRequestId ? "edited" : "created"
+        } successfully`
+      );
       onSuccess?.();
-      hookForm.reset();
     },
     onError: () => alert("An error occurred"),
+  });
+
+  const getAllSponsorshipRequests = useQuery({
+    queryKey: [queryKey.sponsorshipRequests],
+    queryFn: (): Response<SponsorshipRequest[]> => get("sponsorship-requests"),
   });
 
   const getMySponsorshipRequests = useQuery({
@@ -34,7 +49,92 @@ const useSponsorshipRequestApi = ({
       get("sponsorship-requests/mine"),
   });
 
-  return { createSponsorshipRequest, getMySponsorshipRequests };
+  const deleteSponsorshipRequest = useMutation({
+    mutationFn: (id: string): Response =>
+      deleteRequest(`sponsorship-requests/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.mySponsorshipRequests],
+      });
+      alert("Sponsorship request deleted successfully");
+      hookForm?.reset();
+    },
+    onError: () => {
+      alert("An error occured");
+    },
+  });
+
+  const deleteSupportingDocument = useMutation({
+    mutationFn: (payload: { id?: string; attachmentId?: string }) =>
+      deleteRequest(
+        `sponsorship-requests/${payload.id}/attachments/${payload.attachmentId}`
+      ),
+    onSuccess: () => {
+      queryClient.resetQueries({
+        queryKey: [queryKey.mySponsorshipRequests],
+      });
+      alert("Supporting document deleted successfully");
+      onSuccess?.();
+    },
+    onError: () => {
+      alert("An error occured");
+    },
+  });
+
+  const submitSponsorshipRequest = useMutation({
+    mutationFn: (id: string): Response =>
+      post(`sponsorship-requests/${id}/submit`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.mySponsorshipRequests],
+      });
+      alert("Sponsorship request submitted successfully");
+    },
+    onError: () => alert("An  error occured"),
+  });
+
+  const rejectSponsorshipRequest = useMutation({
+    mutationFn: (payload: { id?: string; reason: string }): Response =>
+      post(`sponsorship-requests/${payload.id}/reject`, {
+        reason: payload.reason,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.sponsorshipRequests],
+      });
+      alert("Sponsorship request rejected");
+      hookForm?.reset();
+      onSuccess?.();
+    },
+    onError: () => {
+      alert("An error occured");
+    },
+  });
+
+  const approveSponsorshipRequest = useMutation({
+    mutationFn: (id: string): Response =>
+      post(`sponsorship-requests/${id}/approve`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.sponsorshipRequests],
+      });
+      alert("Sponsorship request approved successfully");
+    },
+    onError: () => {
+      alert("An error occured");
+    },
+  });
+
+  return {
+    createEditSponsorshipRequest,
+    getAllSponsorshipRequests,
+    getMySponsorshipRequests,
+    deleteSponsorshipRequest,
+    deleteSupportingDocument,
+    submitSponsorshipRequest,
+    rejectSponsorshipRequest,
+    approveSponsorshipRequest,
+  };
 };
 
 export default useSponsorshipRequestApi;

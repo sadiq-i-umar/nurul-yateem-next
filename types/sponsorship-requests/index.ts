@@ -8,13 +8,16 @@ export type SponsorshipRequest = {
   targetAmount: number;
   amountReceived: number;
   deadline: string;
-  status: "draft" | "active" | "approved" | "completed";
+  editRequested: boolean;
+  status: "draft" | "pending" | "approved" | "rejected" | "closed";
   orphans: Orphan[];
   SupportingDocument: SupportingDocument[];
 };
 
 type SupportingDocument = {
+  id: string;
   title: string;
   description: string;
   url: string;
+  isArchived: boolean;
 };

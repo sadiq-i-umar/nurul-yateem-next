@@ -1,4 +1,4 @@
-import { ButtonType } from "@/components/button";
+import { ButtonVariant } from "@/components/button";
 import { FormProps } from "@/components/form";
 import { FileUploadType } from "@/components/form/input-field/file-upload";
 import { icon } from "@/constants/icon";
@@ -90,7 +90,7 @@ const usePersonalInformationSection = ({
         {
           type: "submit",
           text: "Next",
-          variant: ButtonType.CONTAINED,
+          variant: ButtonVariant.CONTAINED,
         },
       ],
     },

@@ -1,4 +1,5 @@
-import Button, { ButtonProps, ButtonType } from "@/components/button";
+import Button, { ButtonProps, ButtonVariant } from "@/components/button";
+import ButtonGroup from "@/components/button/group";
 import { getGroupValuesToFieldsMap } from "@/utils/form/group-field";
 import { useState } from "react";
 import InputField, { InputFieldProps } from "..";
@@ -11,6 +12,7 @@ export type GroupFieldProps = {
   defaultGroups?: InputFieldProps[][];
   getGroups?: (groups: InputFieldProps[][]) => void;
   hookForm?: HookFormProps;
+  onDeleteClick?: (groupIndex: number) => void;
 };
 
 const GroupField = ({
@@ -20,7 +22,9 @@ const GroupField = ({
   defaultGroups,
   getGroups,
   hookForm,
+  onDeleteClick,
 }: GroupFieldProps) => {
+  const labels = inputFields.map((inputField) => inputField.label);
   const [groups, setGroups] = useState(defaultGroups ?? []);
   const addGroup = () => {
     const updatedGroups = [...groups, [...inputFields]];
@@ -36,8 +40,6 @@ const GroupField = ({
 
     //Align form values with updated groups
     if (typeof hookForm?.watch?.() === "object") {
-      const labels = inputFields.map((inputField) => inputField.label);
-
       //Map group values to input fields
       const groupValuesToFieldsMap = getGroupValuesToFieldsMap(
         hookForm,
@@ -61,6 +63,10 @@ const GroupField = ({
     setGroups(updatedGroups);
   };
 
+  const isDefaultGroup = (index: number) => {
+    return defaultGroups ? index < defaultGroups.length : false;
+  };
+
   return (
     <div
       className={`flex flex-col ${
@@ -81,21 +87,34 @@ const GroupField = ({
                 {...groupInputField}
               />
             ))}
-            <div>
-              <Button
-                variant={ButtonType.PAPER}
-                text="Remove"
-                onClick={() => {
-                  //Unregister the group's fields before invoking the removeGroup function
-                  groupInputFields.map((inputField) => {
-                    hookForm?.unregister?.(
-                      `${name}${inputField.label}${groupIndex}`
-                    );
-                  });
-                  removeGroup(groupIndex);
-                }}
+            {isDefaultGroup(groupIndex) ? (
+              <ButtonGroup
+                position="end"
+                buttons={[
+                  {
+                    variant: ButtonVariant.DELETE,
+                    text: "Delete",
+                    onClick: () => onDeleteClick?.(groupIndex),
+                  },
+                ]}
               />
-            </div>
+            ) : (
+              <div>
+                <Button
+                  variant={ButtonVariant.PAPER}
+                  text="Remove"
+                  onClick={() => {
+                    //Unregister the group's fields before invoking the removeGroup function
+                    groupInputFields.map((inputField) => {
+                      hookForm?.unregister?.(
+                        `${name}${inputField.label}${groupIndex}`
+                      );
+                    });
+                    removeGroup(groupIndex);
+                  }}
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>

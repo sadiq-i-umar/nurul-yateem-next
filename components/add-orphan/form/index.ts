@@ -1,4 +1,4 @@
-import { ButtonType } from "@/components/button";
+import { ButtonVariant } from "@/components/button";
 import { FormProps } from "@/components/form";
 import { FileUploadType } from "@/components/form/input-field/file-upload";
 import { Orphan } from "@/components/orphan-list/api/types";
@@ -192,7 +192,7 @@ const useAddOrphansForm = ({
       position: "end",
       buttons: [
         {
-          variant: ButtonType.CONTAINED,
+          variant: ButtonVariant.CONTAINED,
           type: "submit",
           text: "Submit",
         },
