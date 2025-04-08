@@ -40,18 +40,13 @@ export const navConfigSponsor = [
     path: "/dashboard/sponsor/home",
   },
   {
-    title: "Orphan List",
-    icon: "/users.svg",
-    path: "/dashboard/sponsor/orphan-list",
+    title: "Sponsorship Requests",
+    icon: "/folder_open.svg",
+    path: "/dashboard/sponsor/sponsorship-requests",
   },
   {
     title: "Donations",
     icon: "/wallet-money.svg",
-    path: "/dashboard/sponsor/donation",
-  },
-  {
-    title: "Settings",
-    icon: "/gear.svg",
-    path: "/dashboard/sponsor/settings",
+    path: "/dashboard/sponsor/donations",
   },
 ];

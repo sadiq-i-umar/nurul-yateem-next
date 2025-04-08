@@ -25,6 +25,8 @@ const useLoginApi = () => {
             if (userId) getProfile.mutateAsync(userId);
           } else if (roles.includes("admin")) {
             router.push("/dashboard/admin/home");
+          } else if (roles.includes("sponsor")) {
+            router.push("/dashboard/sponsor/home");
           }
           break;
         case 401:

@@ -11,7 +11,13 @@ export type SponsorshipRequest = {
   amountReceived: number;
   deadline: string;
   editRequested: boolean;
-  status: "draft" | "pending" | "approved" | "rejected" | "closed";
+  status:
+    | "draft"
+    | "pending"
+    | "approved"
+    | "rejected"
+    | "published"
+    | "closed";
   orphans: Orphan[];
   SupportingDocument: SupportingDocument[];
   ActionLog: ActionLog[];

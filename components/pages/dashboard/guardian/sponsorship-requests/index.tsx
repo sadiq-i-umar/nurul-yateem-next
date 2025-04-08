@@ -88,6 +88,7 @@ const GuardianSponsorshipRequest = () => {
     deleteSponsorshipRequest,
     deleteSupportingDocument,
     submitSponsorshipRequest,
+    publishSponsorshipRequest,
   } = useSponsorshipRequestApi({
     onSuccess: () => {
       if (!selectedRequest) {
@@ -215,7 +216,16 @@ const GuardianSponsorshipRequest = () => {
                   )}
                 </>
               )}
-              {isRequiredStatus(["approved", "published"]) &&
+              {request.status === "approved" && (
+                <button
+                  onClick={() =>
+                    publishSponsorshipRequest.mutateAsync(request.id)
+                  }
+                >
+                  Publish
+                </button>
+              )}
+              {/* {isRequiredStatus(["approved", "published"]) &&
                 (request.editRequested ? (
                   <p>Edit Requested</p>
                 ) : (
@@ -236,7 +246,7 @@ const GuardianSponsorshipRequest = () => {
                       Request Edit
                     </button>
                   </div>
-                ))}
+                ))} */}
             </div>
           );
         })}
