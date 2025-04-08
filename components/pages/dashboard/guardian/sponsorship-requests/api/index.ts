@@ -2,7 +2,10 @@ import { HookFormProps } from "@/components/form";
 import { queryKey } from "@/constants/query-key";
 import { deleteRequest, get, post, put } from "@/src/app/api/http-requests";
 import { Response } from "@/types/api";
-import { SponsorshipRequest } from "@/types/sponsorship-requests";
+import {
+  SponsorshipRequest,
+  SponsorshipRequestEditRequest,
+} from "@/types/sponsorship-requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateSponsorshipRequestDto } from "./types";
 
@@ -33,6 +36,22 @@ const useSponsorshipRequestApi = ({
           selectedRequestId ? "edited" : "created"
         } successfully`
       );
+      onSuccess?.();
+    },
+    onError: () => alert("An error occurred"),
+  });
+
+  const requestEdit = useMutation({
+    mutationFn: (payload: {
+      edit: CreateSponsorshipRequestDto;
+      reason: string;
+    }): Response =>
+      post(`sponsorship-requests/${selectedRequestId}/request-edit`, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.mySponsorshipRequests],
+      });
+      alert("Edit requested successfully");
       onSuccess?.();
     },
     onError: () => alert("An error occurred"),
@@ -125,6 +144,52 @@ const useSponsorshipRequestApi = ({
     },
   });
 
+  const getEditRequests = useQuery({
+    queryKey: [queryKey.editRequestsSponsorship],
+    queryFn: (): Response<SponsorshipRequestEditRequest[]> =>
+      get("sponsorship-requests/edit-requests"),
+  });
+
+  const approveEditRequest = useMutation({
+    mutationFn: (id: string): Response =>
+      post(`sponsorship-requests/${id}/approve-edit`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.editRequestsSponsorship],
+      });
+      alert("Edit request approved successfully");
+    },
+    onError: () => alert("An error occured"),
+  });
+
+  const rejectEditRequest = useMutation({
+    mutationFn: (payload: { id?: string; reason: string }): Response =>
+      post(`sponsorship-requests/${payload.id}/reject-edit`, {
+        reason: payload.reason,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.editRequestsSponsorship],
+      });
+      alert("Edit request rejected successfully");
+      hookForm?.reset();
+      onSuccess?.();
+    },
+    onError: () => alert("An error occured"),
+  });
+
+  const publishSponsorshipRequest = useMutation({
+    mutationFn: (id: string): Response =>
+      post(`sponsorship-requests/${id}/publish`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.mySponsorshipRequests],
+      });
+      alert("Sponsorship request published successfully");
+    },
+    onError: () => alert("An error occured"),
+  });
+
   return {
     createEditSponsorshipRequest,
     getAllSponsorshipRequests,
@@ -134,6 +199,11 @@ const useSponsorshipRequestApi = ({
     submitSponsorshipRequest,
     rejectSponsorshipRequest,
     approveSponsorshipRequest,
+    publishSponsorshipRequest,
+    requestEdit,
+    getEditRequests,
+    approveEditRequest,
+    rejectEditRequest,
   };
 };
 

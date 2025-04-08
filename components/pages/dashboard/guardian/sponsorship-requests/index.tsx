@@ -1,5 +1,6 @@
 "use client";
 
+import useCommentForm from "@/components/approvals/forms/rejection";
 import Button, { ButtonProps, ButtonVariant } from "@/components/button";
 import { InputFieldProps } from "@/components/form/input-field";
 import { FileUploadType } from "@/components/form/input-field/file-upload";
@@ -41,11 +42,45 @@ const supportingDocumentsInputFields: InputFieldProps[] = [
 ];
 
 const GuardianSponsorshipRequest = () => {
-  const { ...hookForm } = useForm();
-
   const { getMyOrphans } = useOrphanListApi();
-
   const [selectedRequest, setSelectedRequest] = useState<SponsorshipRequest>();
+  const [editPayload, setEditPayload] = useState<CreateSponsorshipRequestDto>();
+
+  const [openCreateModal, setOpenCreateModal] = useState({
+    open: false,
+    isEdit: false,
+    isRequestEdit: false,
+  });
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [openReasonModal, setOpenReasonModal] = useState<{
+    open: boolean;
+    isPublishRequest?: boolean;
+  }>({ open: false, isPublishRequest: false });
+
+  const { ...hookForm } = useForm();
+  const { form: commentForm } = useCommentForm({
+    onSuccess: () => {
+      if (openCreateModal.isRequestEdit) {
+        setOpenCreateModal({
+          open: false,
+          isEdit: false,
+          isRequestEdit: false,
+        });
+        setOpenReasonModal({ open: false, isPublishRequest: false });
+        setEditPayload(undefined);
+        setSelectedRequest(undefined);
+        hookForm.reset();
+        commentForm.hookForm?.reset();
+      }
+    },
+    sponsorshipRequestId: selectedRequest?.id,
+    sponsorshipRequestEditPayload: editPayload,
+    commentFieldLabel: `Reason for ${
+      openReasonModal.isPublishRequest
+        ? "publishing without edit"
+        : "requesting the edit"
+    }`,
+  });
 
   const {
     createEditSponsorshipRequest,
@@ -67,13 +102,6 @@ const GuardianSponsorshipRequest = () => {
   });
 
   const mySponsorshipRequests = getMySponsorshipRequests.data?.data;
-
-  const [openCreateModal, setOpenCreateModal] = useState({
-    open: false,
-    isEdit: false,
-    isRequestEdit: false,
-  });
-  const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   const createButton: ButtonProps = {
     variant: ButtonVariant.CONTAINED,
@@ -132,13 +160,29 @@ const GuardianSponsorshipRequest = () => {
           const isRequiredStatus = (statuses: Status[]) => {
             return statuses.includes(request.status);
           };
+          const lastEditRequest =
+            request.EditRequest[request.EditRequest.length - 1];
           return (
             <div>
               <p>{request.title}</p>
               <p>{request.description}</p>
               <p>{request.targetAmount}</p>
               <p>{request.status}</p>
-              {isRequiredStatus(["draft", "pending"]) && (
+              {lastEditRequest?.status === "rejected" && (
+                <div>
+                  <button
+                    onClick={() =>
+                      setOpenReasonModal({ open: true, isPublishRequest: true })
+                    }
+                  >
+                    Request publish without edit
+                  </button>
+                  <span>
+                    Edit Request Rejected. Reason: {lastEditRequest?.reason}
+                  </span>
+                </div>
+              )}
+              {isRequiredStatus(["draft", "rejected"]) && (
                 <>
                   <button
                     onClick={() =>
@@ -160,29 +204,39 @@ const GuardianSponsorshipRequest = () => {
                   >
                     Edit
                   </button>
-                  <button
-                    onClick={() =>
-                      deleteSponsorshipRequest.mutateAsync(request.id)
-                    }
-                  >
-                    Delete
-                  </button>
+                  {request.status !== "rejected" && (
+                    <button
+                      onClick={() =>
+                        deleteSponsorshipRequest.mutateAsync(request.id)
+                      }
+                    >
+                      Delete
+                    </button>
+                  )}
                 </>
               )}
-              {isRequiredStatus(["approved", "published"]) && (
-                <button
-                  onClick={() => {
-                    setOpenCreateModal({
-                      open: true,
-                      isEdit: false,
-                      isRequestEdit: true,
-                    });
-                    setSelectedRequest(request);
-                  }}
-                >
-                  Request Edit
-                </button>
-              )}
+              {isRequiredStatus(["approved", "published"]) &&
+                (request.editRequested ? (
+                  <p>Edit Requested</p>
+                ) : (
+                  <div>
+                    {lastEditRequest?.status !== "rejected" && (
+                      <button>Publish</button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setOpenCreateModal({
+                          open: true,
+                          isEdit: false,
+                          isRequestEdit: true,
+                        });
+                        setSelectedRequest(request);
+                      }}
+                    >
+                      Request Edit
+                    </button>
+                  </div>
+                ))}
             </div>
           );
         })}
@@ -196,7 +250,7 @@ const GuardianSponsorshipRequest = () => {
               isEdit: false,
               isRequestEdit: false,
             });
-            if (openCreateModal.isEdit) {
+            if (openCreateModal.isEdit || openCreateModal.isRequestEdit) {
               setSelectedRequest(undefined);
             }
             hookForm.reset();
@@ -242,7 +296,12 @@ const GuardianSponsorshipRequest = () => {
                   ),
                   supportingDocuments: supportingDocuments,
                 };
-                createEditSponsorshipRequest.mutateAsync(payload);
+                if (openCreateModal.isRequestEdit) {
+                  setEditPayload(payload);
+                  setOpenReasonModal({ open: true });
+                } else {
+                  createEditSponsorshipRequest.mutateAsync(payload);
+                }
               },
             },
             inputFields: [
@@ -366,6 +425,18 @@ const GuardianSponsorshipRequest = () => {
               onClick: () => {},
             },
           }}
+        />
+      )}
+      {openReasonModal.open && (
+        <Modal
+          open={openReasonModal.open}
+          onClose={() =>
+            setOpenReasonModal({ open: false, isPublishRequest: false })
+          }
+          title={`Request ${
+            openReasonModal.isPublishRequest ? "Publish" : "Edit"
+          }`}
+          form={commentForm}
         />
       )}
     </>

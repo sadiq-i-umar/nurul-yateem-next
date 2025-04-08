@@ -9,6 +9,7 @@ type ModalProps = {
   onClose: () => void;
   sideModal?: boolean;
   title?: string;
+  subtitle?: string;
   form?: FormProps;
   centerContent?: CenterContent;
 };
@@ -30,15 +31,22 @@ const Modal = ({
   onClose,
   sideModal,
   title,
+  subtitle,
   form,
   centerContent,
 }: ModalProps) => {
   return (
     <Dialog open={open} onClose={onClose}>
       <div className={sideModal ? sideModalStyle : defaultStyle}>
-        <div className="flex items-center">
-          <p className="flex-grow font-bold text-lg">{title}</p>
-          <span onClick={onClose} className="cursor-pointer">
+        <div className="flex items-center gap-8">
+          <div className="flex-grow flex flex-col gap-1">
+            <p className="font-bold text-lg">{title}</p>
+            <p className="text-sm">{subtitle}</p>
+          </div>
+          <span
+            onClick={onClose}
+            className={`cursor-pointer ${subtitle ? "self-start" : ""}`}
+          >
             <Close />
           </span>
         </div>

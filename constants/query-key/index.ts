@@ -3,4 +3,5 @@ export const queryKey = {
   myOrphans: "my-orphans",
   sponsorshipRequests: "sponsorship-requests",
   mySponsorshipRequests: "my-sponsorship-requests",
+  editRequestsSponsorship: "sponsorship-requests-edit-requests",
 };

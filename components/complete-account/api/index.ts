@@ -11,7 +11,7 @@ const useCompleteAccountApi = () => {
       post("v1/user/account-setup", payload),
     onSuccess: () => {
       alert("Profile submitted successfully");
-      router.push("/dashboard/add-orphans");
+      router.push("/login");
     },
     onError: () => {
       alert("An error occured");
