@@ -11,23 +11,35 @@ const useCommentForm = ({
   onSuccess,
   sponsorshipRequestId,
   editRequestId,
+  publishRequestId,
   sponsorshipRequestEditPayload,
+  resubmit,
+  publishRequest,
 }: {
   commentFieldLabel?: string;
   orphanId?: string;
   sponsorshipRequestId?: string;
   editRequestId?: string;
+  publishRequestId?: string;
   sponsorshipRequestEditPayload?: CreateSponsorshipRequestDto;
+  resubmit?: boolean;
+  publishRequest?: boolean;
   onSuccess?: () => void;
 }) => {
   const { ...hookForm } = useForm();
   const { rejectOrphan } = useOrphanListApi(hookForm, onSuccess);
-  const { rejectSponsorshipRequest, requestEdit, rejectEditRequest } =
-    useSponsorshipRequestApi({
-      hookForm,
-      onSuccess,
-      selectedRequestId: sponsorshipRequestId,
-    });
+  const {
+    rejectSponsorshipRequest,
+    requestEdit,
+    rejectEditRequest,
+    resubmitEditRequest,
+    requestPublish,
+    rejectPublishRequest,
+  } = useSponsorshipRequestApi({
+    hookForm,
+    onSuccess,
+    selectedRequestId: sponsorshipRequestId,
+  });
   const _commentFieldLabel = commentFieldLabel ?? "Rejection Message";
   const getCommentFieldValue = () => {
     return hookForm.getValues(_commentFieldLabel);
@@ -49,13 +61,21 @@ const useCommentForm = ({
               reason: getCommentFieldValue(),
             });
           if (sponsorshipRequestId)
-            rejectSponsorshipRequest.mutateAsync({
+            (publishRequest
+              ? requestPublish
+              : rejectSponsorshipRequest
+            ).mutateAsync({
               id: sponsorshipRequestId,
               reason: getCommentFieldValue(),
             });
           if (editRequestId)
-            rejectEditRequest.mutateAsync({
+            (resubmit ? resubmitEditRequest : rejectEditRequest).mutateAsync({
               id: editRequestId,
+              reason: getCommentFieldValue(),
+            });
+          if (publishRequestId)
+            rejectPublishRequest.mutateAsync({
+              id: publishRequestId,
               reason: getCommentFieldValue(),
             });
         }

@@ -22,6 +22,17 @@ export type SponsorshipRequest = {
   SupportingDocument: SupportingDocument[];
   ActionLog: ActionLog[];
   EditRequest: SponsorshipRequestEditRequest[];
+  PublishRequest: SponsorshipRequestPublishRequest[];
+  canSubmit: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+  canPublish: boolean;
+  canRequestApproval: boolean;
+  canRequestEdit: boolean;
+  canRequestPublish: boolean;
+  showApprovalRejectionMessage: boolean;
+  showEditRejectionMessage: boolean;
+  showPublishRejectionMessage: boolean;
 };
 
 type SupportingDocument = {
@@ -42,5 +53,11 @@ export type SponsorshipRequestEditRequest = {
   reason: string;
   sponsorshipRequestId: string;
   createdByUserId: string;
-  actionLog: ActionLog;
+  ActionLog: ActionLog[];
+};
+
+export type SponsorshipRequestPublishRequest = {
+  id: string;
+  status: Status;
+  ActionLog: ActionLog[];
 };

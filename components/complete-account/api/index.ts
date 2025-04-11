@@ -10,8 +10,8 @@ const useCompleteAccountApi = () => {
     mutationFn: (payload: AccountSetupPayload): Promise<AxiosResponse> =>
       post("v1/user/account-setup", payload),
     onSuccess: () => {
-      alert("Profile submitted successfully");
-      router.push("/login");
+      alert("Profile completed successfully");
+      router.push("/dashboard/guardian/home");
     },
     onError: () => {
       alert("An error occured");

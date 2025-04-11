@@ -3,13 +3,14 @@
 import {
   SponsorshipRequest,
   SponsorshipRequestEditRequest,
+  SponsorshipRequestPublishRequest,
 } from "@/types/sponsorship-requests";
 import { useState } from "react";
 import Form from "../form";
 import useOrphanListApi from "../orphan-list/api";
 import { Orphan } from "../orphan-list/api/types";
 import useSponsorshipRequestApi from "../pages/dashboard/guardian/sponsorship-requests/api";
-import useCommentForm from "./forms/rejection";
+import useCommentForm from "./forms/comment";
 
 const Approvals = () => {
   const { getAllOrphans, approveOrphan } = useOrphanListApi();
@@ -18,12 +19,16 @@ const Approvals = () => {
     getEditRequests,
     approveSponsorshipRequest,
     approveEditRequest,
+    getPublishRequests,
+    approvePublishRequest,
   } = useSponsorshipRequestApi({});
   const [selectedOrphan, setSelectedOrphan] = useState<Orphan>();
   const [selectedSponsorshipRequest, setSelectedSponsorshipRequest] =
     useState<SponsorshipRequest>();
   const [selectedEditRequest, setSelectedEditRequest] =
     useState<SponsorshipRequestEditRequest>();
+  const [selectedPublishRequest, setSelectedPublishRequest] =
+    useState<SponsorshipRequestPublishRequest>();
 
   const { form } = useCommentForm({
     orphanId: selectedOrphan?.id,
@@ -31,9 +36,11 @@ const Approvals = () => {
       setSelectedOrphan(undefined);
       setSelectedSponsorshipRequest(undefined);
       setSelectedEditRequest(undefined);
+      setSelectedPublishRequest(undefined);
     },
     sponsorshipRequestId: selectedSponsorshipRequest?.id,
     editRequestId: selectedEditRequest?.id,
+    publishRequestId: selectedPublishRequest?.id,
   });
 
   const sponsorshipRequests = getAllSponsorshipRequests.data?.data.filter(
@@ -44,8 +51,12 @@ const Approvals = () => {
     (editRequest) => editRequest.status === "pending"
   );
 
+  const publishRequests = getPublishRequests.data?.data.filter(
+    (request) => request.status === "pending"
+  );
+
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <div>
         <p className="font-bold">Orphans</p>
         {getAllOrphans.data?.data.map(
@@ -73,7 +84,8 @@ const Approvals = () => {
       </div>
       {(selectedSponsorshipRequest ||
         selectedOrphan ||
-        selectedEditRequest) && (
+        selectedEditRequest ||
+        selectedPublishRequest) && (
         <div>
           <button
             onClick={() => {
@@ -81,6 +93,7 @@ const Approvals = () => {
               if (selectedSponsorshipRequest)
                 setSelectedSponsorshipRequest(undefined);
               if (selectedEditRequest) setSelectedEditRequest(undefined);
+              if (selectedPublishRequest) setSelectedPublishRequest(undefined);
             }}
           >
             Close Form
@@ -116,7 +129,7 @@ const Approvals = () => {
         <p className="font-bold">Edit Requests</p>
         {editRequests?.map((request) => (
           <div>
-            <p>{request.reason}</p>
+            <p>{request.ActionLog?.[0].reason}</p>
             <button onClick={() => approveEditRequest?.mutateAsync(request.id)}>
               Approve
             </button>
@@ -130,7 +143,23 @@ const Approvals = () => {
           </div>
         ))}
       </div>
-    </>
+      <div>
+        <p className="font-bold">Publish Requests</p>
+        {publishRequests?.map((request) => (
+          <div>
+            <p>{request.ActionLog.at(0)?.reason}</p>
+            <button
+              onClick={() => approvePublishRequest.mutateAsync(request.id)}
+            >
+              Approve
+            </button>
+            <button onClick={() => setSelectedPublishRequest(request)}>
+              Reject
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
