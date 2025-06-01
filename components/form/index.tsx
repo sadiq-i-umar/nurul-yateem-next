@@ -9,7 +9,7 @@ import InputField, { InputFieldProps } from "./input-field";
 
 export type FormProps = {
   inputFields: InputFieldProps[];
-  buttonGroup?: ButtonGroupProps[];
+  buttonGroup?: ButtonGroupProps;
   hookForm?: HookFormProps;
   submit?: {
     onValid: OnValidSubmit;
