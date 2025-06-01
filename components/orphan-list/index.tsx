@@ -51,9 +51,8 @@ const OrphanList: React.FC = () => {
             {orphan.status === "rejected" && (
               <p>
                 {
-                  orphan.ActionLog?.findLast(
-                    (log) => log.actionType === "rejection"
-                  )?.reason
+                  orphan.ActionLog?.findLast((log) => log.action === "reject")
+                    ?.comment
                 }
               </p>
             )}

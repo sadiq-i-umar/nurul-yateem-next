@@ -62,7 +62,7 @@ const CompleteAccount = () => {
       };
 
       const occupation = {
-        employementStatus: getValue1(field.employmentStatus.label),
+        employmentStatus: getValue1(field.employmentStatus.label),
         natureOfJob: getValue1(field.natureOfJob.label),
         annualIncome: getValue1(field.annualIncome.label),
         employerName: getValue1(field.employerName.label),

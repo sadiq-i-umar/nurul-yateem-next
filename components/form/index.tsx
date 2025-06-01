@@ -11,6 +11,7 @@ export type FormProps = {
   inputFields: InputFieldProps[];
   buttonGroup?: ButtonGroupProps;
   hookForm?: HookFormProps;
+  key?: number;
   submit?: {
     onValid: OnValidSubmit;
     onInvalid?: SubmitErrorHandler<FieldValues> | undefined;

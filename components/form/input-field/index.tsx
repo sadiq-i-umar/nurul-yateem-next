@@ -84,9 +84,9 @@ const InputField = ({
       {groupField && <GroupField {...groupField} hookForm={hookForm} />}
       {errors?.[_name] && (
         <p>
-          {errors[_name].type === "required"
+          {errors[_name]?.type === "required"
             ? `${_name} is required`
-            : `${errors[_name].type}`}
+            : `${errors[_name]?.type}`}
         </p>
       )}
     </div>
