@@ -19,7 +19,7 @@ const RadioGroupField = ({
   return (
     <div>
       {options.map((option) => (
-        <label>
+        <label key={option.value}>
           <input
             type="radio"
             name={name}

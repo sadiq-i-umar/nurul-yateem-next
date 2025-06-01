@@ -1,5 +1,6 @@
 import { Gender } from "@/types";
-import { ActionLog } from "@/types/action-log";
+import { ActionLog } from "@/types/action";
+import { Status } from "@/types/status";
 
 type UserProfile = {
   id: string;
@@ -47,14 +48,6 @@ type User = {
   authStrategy: string | null;
   profile: UserProfile;
 };
-
-export type Status =
-  | "draft"
-  | "pending"
-  | "approved"
-  | "rejected"
-  | "published"
-  | "closed";
 
 export type Orphan = {
   id: string;

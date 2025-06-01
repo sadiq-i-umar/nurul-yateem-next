@@ -21,7 +21,11 @@ export const get = async (endpoint: string, params?: object) => {
   }
 };
 
-export const post = async (endpoint: string, data?: object) => {
+export const post = async (
+  endpoint: string,
+  data?: object,
+  params?: object
+) => {
   const authHeader = await getAuthHeader();
   try {
     const res = await axios.post(`${baseUrl}/${endpoint}`, data, {
@@ -29,6 +33,7 @@ export const post = async (endpoint: string, data?: object) => {
         Accept: "*/*",
         ...authHeader.headers,
       },
+      params: params,
     });
     return res.data;
   } catch (error) {
@@ -39,7 +44,7 @@ export const post = async (endpoint: string, data?: object) => {
   }
 };
 
-export const put = async (endpoint: string, data?: object) => {
+export const put = async (endpoint: string, data?: object, params?: object) => {
   const authHeader = await getAuthHeader();
   try {
     const res = await axios.put(`${baseUrl}/${endpoint}`, data, {
@@ -47,6 +52,7 @@ export const put = async (endpoint: string, data?: object) => {
         Accept: "*/*",
         ...authHeader.headers,
       },
+      params: params,
     });
     return res.data;
   } catch (error) {

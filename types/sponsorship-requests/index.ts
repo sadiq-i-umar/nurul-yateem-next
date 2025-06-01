@@ -1,6 +1,6 @@
-import { Orphan, Status } from "@/components/orphan-list/api/types";
-import { CreateSponsorshipRequestDto } from "@/components/pages/dashboard/guardian/sponsorship-requests/api/types";
-import { ActionLog } from "../action-log";
+import { Orphan } from "@/components/orphan-list/api/types";
+import { ActionLog } from "../action";
+import { Status } from "../status";
 
 export type SponsorshipRequest = {
   id: string;
@@ -10,29 +10,10 @@ export type SponsorshipRequest = {
   targetAmount: number;
   amountReceived: number;
   deadline: string;
-  editRequested: boolean;
-  status:
-    | "draft"
-    | "pending"
-    | "approved"
-    | "rejected"
-    | "published"
-    | "closed";
+  status: Status;
   orphans: Orphan[];
-  SupportingDocument: SupportingDocument[];
-  ActionLog: ActionLog[];
-  EditRequest: SponsorshipRequestEditRequest[];
-  PublishRequest: SponsorshipRequestPublishRequest[];
-  canSubmit: boolean;
-  canEdit: boolean;
-  canDelete: boolean;
-  canPublish: boolean;
-  canRequestApproval: boolean;
-  canRequestEdit: boolean;
-  canRequestPublish: boolean;
-  showApprovalRejectionMessage: boolean;
-  showEditRejectionMessage: boolean;
-  showPublishRejectionMessage: boolean;
+  supportingDocuments: SupportingDocument[];
+  actionLogs: ActionLog[];
 };
 
 type SupportingDocument = {
@@ -41,23 +22,4 @@ type SupportingDocument = {
   description: string;
   url: string;
   isArchived: boolean;
-};
-
-export type SponsorshipRequestEditRequest = {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  current: SponsorshipRequest;
-  edit: CreateSponsorshipRequestDto;
-  status: Status;
-  reason: string;
-  sponsorshipRequestId: string;
-  createdByUserId: string;
-  ActionLog: ActionLog[];
-};
-
-export type SponsorshipRequestPublishRequest = {
-  id: string;
-  status: Status;
-  ActionLog: ActionLog[];
 };

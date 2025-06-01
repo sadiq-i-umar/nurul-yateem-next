@@ -32,7 +32,7 @@ const OrphanList: React.FC = () => {
       {getMyOrphans.data?.data.map((orphan) => {
         const profile = orphan.user.profile;
         return (
-          <div>
+          <div key={orphan.id}>
             <p>{`${profile.firstName} ${profile.lastName}`}</p>
             <p>{`${orphan.status}`}</p>
             {["draft", "rejected"].includes(orphan.status) && (

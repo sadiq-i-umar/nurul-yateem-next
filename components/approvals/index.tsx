@@ -1,11 +1,12 @@
 "use client";
 
-import {
-  SponsorshipRequest,
-  SponsorshipRequestEditRequest,
-  SponsorshipRequestPublishRequest,
-} from "@/types/sponsorship-requests";
+import { Action } from "@/types/action";
+import { Entity } from "@/types/entity";
+import { Status } from "@/types/status";
 import { useState } from "react";
+import useActionApi from "../action/api";
+import { PerformActionMutationProps } from "../action/types";
+import { getSnapshot } from "../action/utils";
 import Form from "../form";
 import useOrphanListApi from "../orphan-list/api";
 import { Orphan } from "../orphan-list/api/types";
@@ -15,45 +16,30 @@ import useCommentForm from "./forms/comment";
 const Approvals = () => {
   const { getAllOrphans, approveOrphan } = useOrphanListApi();
   const {
-    getAllSponsorshipRequests,
+    getApprovalRequests,
     getEditRequests,
-    approveSponsorshipRequest,
-    approveEditRequest,
     getPublishRequests,
-    approvePublishRequest,
+    getReopenPublishRequests,
+    getReopenRequests,
   } = useSponsorshipRequestApi({});
+  const { performActionMutation } = useActionApi({});
   const [selectedOrphan, setSelectedOrphan] = useState<Orphan>();
-  const [selectedSponsorshipRequest, setSelectedSponsorshipRequest] =
-    useState<SponsorshipRequest>();
-  const [selectedEditRequest, setSelectedEditRequest] =
-    useState<SponsorshipRequestEditRequest>();
-  const [selectedPublishRequest, setSelectedPublishRequest] =
-    useState<SponsorshipRequestPublishRequest>();
+  const [actionMutationProps, setActionMutationProps] =
+    useState<PerformActionMutationProps>();
 
   const { form } = useCommentForm({
-    orphanId: selectedOrphan?.id,
     onSuccess: () => {
       setSelectedOrphan(undefined);
-      setSelectedSponsorshipRequest(undefined);
-      setSelectedEditRequest(undefined);
-      setSelectedPublishRequest(undefined);
+      setActionMutationProps(undefined);
     },
-    sponsorshipRequestId: selectedSponsorshipRequest?.id,
-    editRequestId: selectedEditRequest?.id,
-    publishRequestId: selectedPublishRequest?.id,
+    performActionMutationProps: actionMutationProps,
   });
 
-  const sponsorshipRequests = getAllSponsorshipRequests.data?.data.filter(
-    (request) => request.status === "pending"
-  );
-
-  const editRequests = getEditRequests.data?.data.filter(
-    (editRequest) => editRequest.status === "pending"
-  );
-
-  const publishRequests = getPublishRequests.data?.data.filter(
-    (request) => request.status === "pending"
-  );
+  const approvalRequests = getApprovalRequests.data?.data;
+  const editRequests = getEditRequests.data?.data;
+  const publishRequests = getPublishRequests.data?.data;
+  const reopenPublishRequests = getReopenPublishRequests.data?.data;
+  const reopenRequests = getReopenRequests.data?.data;
 
   return (
     <div className="flex flex-col gap-4">
@@ -61,8 +47,8 @@ const Approvals = () => {
         <p className="font-bold">Orphans</p>
         {getAllOrphans.data?.data.map(
           (orphan) =>
-            orphan.status === "pending" && (
-              <div>
+            orphan.status === Status.pending && (
+              <div key={orphan.id}>
                 <p>{`${orphan.user.profile.firstName} ${orphan.user.profile.lastName}`}</p>
                 <p>{`${orphan.status}`}</p>
                 <button onClick={() => approveOrphan.mutateAsync(orphan.id)}>
@@ -70,9 +56,6 @@ const Approvals = () => {
                 </button>
                 <button
                   onClick={() => {
-                    if (selectedSponsorshipRequest) {
-                      setSelectedSponsorshipRequest(undefined);
-                    }
                     setSelectedOrphan(orphan);
                   }}
                 >
@@ -82,18 +65,12 @@ const Approvals = () => {
             )
         )}
       </div>
-      {(selectedSponsorshipRequest ||
-        selectedOrphan ||
-        selectedEditRequest ||
-        selectedPublishRequest) && (
+      {(actionMutationProps || selectedOrphan) && (
         <div>
           <button
             onClick={() => {
               if (selectedOrphan) setSelectedOrphan(undefined);
-              if (selectedSponsorshipRequest)
-                setSelectedSponsorshipRequest(undefined);
-              if (selectedEditRequest) setSelectedEditRequest(undefined);
-              if (selectedPublishRequest) setSelectedPublishRequest(undefined);
+              setActionMutationProps(undefined);
             }}
           >
             Close Form
@@ -102,23 +79,40 @@ const Approvals = () => {
         </div>
       )}
       <div>
-        <p className="font-bold">Sponsorship Requests</p>
-        {sponsorshipRequests?.map((request) => (
-          <div>
+        <p className="font-bold">Sponsorship Requests Approval</p>
+        {approvalRequests?.map((request) => (
+          <div key={request.id}>
             <p>{request.title}</p>
             <p>{request.status}</p>
             <button
-              onClick={() => approveSponsorshipRequest.mutateAsync(request.id)}
+              onClick={() =>
+                performActionMutation.mutateAsync({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.approve,
+                  },
+                })
+              }
             >
               Approve
             </button>
             <button
-              onClick={() => {
-                if (selectedOrphan) {
-                  setSelectedOrphan(undefined);
-                }
-                setSelectedSponsorshipRequest(request);
-              }}
+              onClick={() =>
+                setActionMutationProps({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.reject,
+                  },
+                })
+              }
             >
               Reject
             </button>
@@ -128,15 +122,40 @@ const Approvals = () => {
       <div>
         <p className="font-bold">Edit Requests</p>
         {editRequests?.map((request) => (
-          <div>
-            <p>{request.ActionLog?.[0].reason}</p>
-            <button onClick={() => approveEditRequest?.mutateAsync(request.id)}>
+          <div key={request.id}>
+            <p>{request.title}</p>
+            <p>{request.status}</p>
+            <button
+              onClick={() =>
+                performActionMutation.mutateAsync({
+                  data: {
+                    snapshot: getSnapshot(request),
+                    change: request.actionLogs.at(0)?.change,
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.approve_edit,
+                  },
+                })
+              }
+            >
               Approve
             </button>
             <button
-              onClick={() => {
-                setSelectedEditRequest(request);
-              }}
+              onClick={() =>
+                setActionMutationProps({
+                  data: {
+                    snapshot: getSnapshot(request),
+                    change: request.actionLogs.at(0)?.change,
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.reject_edit,
+                  },
+                })
+              }
             >
               Reject
             </button>
@@ -146,14 +165,121 @@ const Approvals = () => {
       <div>
         <p className="font-bold">Publish Requests</p>
         {publishRequests?.map((request) => (
-          <div>
-            <p>{request.ActionLog.at(0)?.reason}</p>
+          <div key={request.id}>
+            <p>{request.title}</p>
+            <p>{request.status}</p>
             <button
-              onClick={() => approvePublishRequest.mutateAsync(request.id)}
+              onClick={() =>
+                performActionMutation.mutateAsync({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.approve_publish,
+                  },
+                })
+              }
             >
               Approve
             </button>
-            <button onClick={() => setSelectedPublishRequest(request)}>
+            <button
+              onClick={() =>
+                setActionMutationProps({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.reject_publish,
+                  },
+                })
+              }
+            >
+              Reject
+            </button>
+          </div>
+        ))}
+      </div>
+      <div>
+        <p className="font-bold">Reopen (Publish) Requests</p>
+        {reopenPublishRequests?.map((request) => (
+          <div key={request.id}>
+            <p>{request.title}</p>
+            <p>{request.status}</p>
+            <button
+              onClick={() =>
+                performActionMutation.mutateAsync({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.approve_reopen_publish,
+                  },
+                })
+              }
+            >
+              Approve
+            </button>
+            <button
+              onClick={() =>
+                setActionMutationProps({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.reject_reopen_publish,
+                  },
+                })
+              }
+            >
+              Reject
+            </button>
+          </div>
+        ))}
+      </div>
+      <div>
+        <p className="font-bold">Reopen Requests</p>
+        {reopenRequests?.map((request) => (
+          <div key={request.id}>
+            <p>{request.title}</p>
+            <p>{request.status}</p>
+            <button
+              onClick={() =>
+                performActionMutation.mutateAsync({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.approve_reopen,
+                  },
+                })
+              }
+            >
+              Approve
+            </button>
+            <button
+              onClick={() =>
+                setActionMutationProps({
+                  data: {
+                    snapshot: getSnapshot(request),
+                  },
+                  params: {
+                    entity: Entity.sponsorshipRequest,
+                    entityId: request.id,
+                    action: Action.reject_reopen,
+                  },
+                })
+              }
+            >
               Reject
             </button>
           </div>

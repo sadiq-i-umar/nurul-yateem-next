@@ -6,23 +6,34 @@ import { SponsorshipRequest } from "@/types/sponsorship-requests";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useSponsorshipRequestApi from "../../guardian/sponsorship-requests/api";
+import useSponsorshipRequestSponsorApi from "./api";
 
 const SponsorSponsorshipRequests = () => {
-  const { getAllSponsorshipRequests } = useSponsorshipRequestApi({});
+  const { getPublishedRequests } = useSponsorshipRequestApi({});
+  const { initializeTransaction } = useSponsorshipRequestSponsorApi();
 
-  const sponsorshipRequests = getAllSponsorshipRequests.data?.data.filter(
-    (request) => request.status === "published"
-  );
+  const sponsorshipRequests = getPublishedRequests.data?.data;
 
   const { ...hookForm } = useForm();
 
   const [selectedRequest, setSelectedRequest] = useState<SponsorshipRequest>();
 
+  const field = {
+    amount: {
+      label: "Amount",
+    },
+    message: {
+      label: "Message (Optional)",
+    },
+  };
+
   return (
     <div>
-      {sponsorshipRequests?.map((request) => (
-        <div>
-          <p>{JSON.stringify(request)}</p>
+      {sponsorshipRequests?.map((request, index) => (
+        <div key={index}>
+          <p>{request.title}</p>
+          <p>{request.description}</p>
+          <p>{request.targetAmount}</p>
           <button onClick={() => setSelectedRequest(request)}>Donate</button>
         </div>
       ))}
@@ -34,19 +45,23 @@ const SponsorSponsorshipRequests = () => {
             hookForm: hookForm,
             submit: {
               onValid: () => {
-                alert("Redirecting to third party payment platform...");
+                // alert("Redirecting to third party payment platform...");
+                initializeTransaction.mutateAsync({
+                  sponsorshipRequestId: selectedRequest.id,
+                  amount: hookForm.getValues(field.amount.label),
+                });
               },
             },
             inputFields: [
               {
-                label: "Amount",
+                label: field.amount.label,
                 textField: {
                   type: "number",
                   required: true,
                 },
               },
               {
-                label: "Message (Optional)",
+                label: field.message.label,
                 textAreaField: {},
               },
             ],

@@ -1,18 +1,19 @@
 "use client";
 
+import useActionApi from "@/components/action/api";
+import { PerformActionMutationProps } from "@/components/action/types";
+import { getSnapshot } from "@/components/action/utils";
 import useCommentForm from "@/components/approvals/forms/comment";
 import Button, { ButtonProps, ButtonVariant } from "@/components/button";
-import { InputFieldProps } from "@/components/form/input-field";
 import { FileUploadType } from "@/components/form/input-field/file-upload";
 import Modal from "@/components/modal";
 import useOrphanListApi from "@/components/orphan-list/api";
-import { Status } from "@/components/orphan-list/api/types";
 import { icon } from "@/constants/icon";
 import { image } from "@/constants/image";
-import {
-  SponsorshipRequest,
-  SponsorshipRequestEditRequest,
-} from "@/types/sponsorship-requests";
+import { Action } from "@/types/action";
+import { Entity } from "@/types/entity";
+import { SponsorshipRequest } from "@/types/sponsorship-requests";
+import { Status } from "@/types/status";
 import { getUrl } from "@/utils/api";
 import { getGroupPayload } from "@/utils/form/group-field";
 import { getOrphansMultiSelectOptions } from "@/utils/form/options";
@@ -23,114 +24,57 @@ import { Option } from "react-multi-select-component";
 import useSponsorshipRequestApi from "./api";
 import { CreateSponsorshipRequestDto } from "./api/types";
 import field from "./fields";
-
-const supportingDocumentsInputFields: InputFieldProps[] = [
-  {
-    label: field.supportingDocuments.title.label,
-    textField: { type: "text", required: true },
-  },
-  {
-    label: field.supportingDocuments.description.label,
-    textAreaField: { required: true },
-  },
-  {
-    label: field.supportingDocuments.uploadedDocument.label,
-    fileUploadField: {
-      fileType: FileUploadType.DOC,
-      icon: icon.doc,
-      text: "Drag and Drop .pdf, .png, .jpeg",
-      required: true,
-    },
-  },
-];
+import { supportingDocumentsInputFields } from "./fields/input";
 
 const GuardianSponsorshipRequest = () => {
-  const { getMyOrphans } = useOrphanListApi();
   const [selectedRequest, setSelectedRequest] = useState<SponsorshipRequest>();
-  const [selectedEditRequest, setSelectedEditRequest] =
-    useState<SponsorshipRequestEditRequest>();
-  const [editPayload, setEditPayload] = useState<CreateSponsorshipRequestDto>();
 
-  const [openCreateModal, setOpenCreateModal] = useState({
-    open: false,
-    isEdit: false,
-    isRequestEdit: false,
-  });
+  const [actionMutationProps, setActionMutationProps] =
+    useState<PerformActionMutationProps>();
+
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
+  const [isRequestEditModal, setIsRequestEditModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-  const [openReasonModal, setOpenReasonModal] = useState<{
-    open: boolean;
-    isResubmit?: boolean;
-    isPublishRequest?: boolean;
-  }>({ open: false });
+  const [openCommentModal, setOpenCommentModal] = useState(false);
+
+  const { getMySponsorshipRequests, deleteSupportingDocument } =
+    useSponsorshipRequestApi({});
+  const { getMyOrphans } = useOrphanListApi();
+  const { performActionMutation } = useActionApi({
+    onSuccess: () => {
+      setOpenCreateModal(false);
+      setIsEditModal(false);
+      setSelectedRequest(undefined);
+      hookForm.reset();
+    },
+  });
+
+  const mySponsorshipRequests = getMySponsorshipRequests.data?.data;
 
   const { ...hookForm } = useForm();
   const { form: commentForm } = useCommentForm({
     onSuccess: () => {
-      if (
-        openCreateModal.isRequestEdit ||
-        openReasonModal.isResubmit ||
-        openReasonModal.isPublishRequest
-      ) {
-        setOpenCreateModal({
-          open: false,
-          isEdit: false,
-          isRequestEdit: false,
-        });
-        setOpenReasonModal({
-          open: false,
-          isPublishRequest: false,
-          isResubmit: false,
-        });
-        setEditPayload(undefined);
-        setSelectedRequest(undefined);
-        setSelectedEditRequest(undefined);
-      }
+      setOpenCommentModal(false);
+      setActionMutationProps(undefined);
+      setOpenCreateModal(false);
+      setSelectedRequest(undefined);
       hookForm.reset();
       commentForm.hookForm?.reset();
     },
-    sponsorshipRequestId: selectedRequest?.id,
-    sponsorshipRequestEditPayload: editPayload,
-    commentFieldLabel: `Reason for ${
-      openReasonModal.isPublishRequest
-        ? "publishing without edit"
-        : "requesting the edit"
-    }`,
-    editRequestId: selectedEditRequest?.id,
-    resubmit: openReasonModal.isResubmit,
-    publishRequest: openReasonModal.isPublishRequest,
+    commentFieldLabel: "Additional Comment",
+    performActionMutationProps: actionMutationProps,
   });
-
-  const {
-    createEditSponsorshipRequest,
-    getMySponsorshipRequests,
-    deleteSponsorshipRequest,
-    deleteSupportingDocument,
-    submitSponsorshipRequest,
-  } = useSponsorshipRequestApi({
-    onSuccess: () => {
-      if (!selectedRequest) {
-        setOpenCreateModal({
-          open: false,
-          isEdit: false,
-          isRequestEdit: false,
-        });
-      }
-    },
-    selectedRequestId: selectedRequest?.id,
-  });
-
-  const mySponsorshipRequests = getMySponsorshipRequests.data?.data;
 
   const createButton: ButtonProps = {
     variant: ButtonVariant.CONTAINED,
     icon: icon.plus,
     text: "Create sponsorship request",
-    onClick: () =>
-      setOpenCreateModal({ open: true, isEdit: false, isRequestEdit: false }),
+    onClick: () => setOpenCreateModal(true),
   };
 
   const selectedRequestSupportingDocuments =
-    selectedRequest?.SupportingDocument.map((doc) => {
+    selectedRequest?.supportingDocuments.map((doc) => {
       const keysToUse = Object.keys(doc).filter((formKey) =>
         ["title", "description", "url"].includes(formKey)
       );
@@ -175,148 +119,236 @@ const GuardianSponsorshipRequest = () => {
           <Button {...createButton} />
         </div>
         {getMySponsorshipRequests?.data?.data.map((request) => {
-          const isRequiredStatus = (statuses: Status[]) => {
-            return statuses.includes(request.status);
-          };
-
-          const mostRecentEditRequest = request.EditRequest.at(0);
-
-          const mostRecentEditRequestActionLog =
-            mostRecentEditRequest?.ActionLog.at(0);
-
           return (
-            <div>
+            <div key={request.id}>
               <p>{request.title}</p>
               <p>{request.description}</p>
               <p>{request.targetAmount}</p>
               <p>{request.status}</p>
-              {mostRecentEditRequest?.status === "rejected" &&
-                request.PublishRequest.at(0)?.status !== "pending" && (
-                  <div>
-                    <button
-                      onClick={() => {
-                        setOpenReasonModal({
-                          open: true,
-                          isPublishRequest: true,
-                        });
-                        setSelectedRequest(request);
-                      }}
-                    >
-                      Request publish without edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setOpenReasonModal({ open: true, isResubmit: true });
-                        setSelectedEditRequest(mostRecentEditRequest);
-                      }}
-                    >
-                      Request last edit with different reason
-                    </button>
-                    <span>
-                      Edit Request Rejected. Reason:
-                      {mostRecentEditRequestActionLog?.reason}
-                    </span>
-                    {request.PublishRequest.at(0)?.status === "rejected" && (
-                      <p>
-                        Publish Reject Reason:{" "}
-                        {request.PublishRequest.at(0)?.ActionLog.at(0)?.reason}
-                      </p>
-                    )}
-                  </div>
-                )}
-              {isRequiredStatus(["draft", "rejected"]) && (
-                <>
-                  <button
-                    onClick={() =>
-                      submitSponsorshipRequest.mutateAsync(request.id)
-                    }
-                  >
-                    Submit for approval
-                  </button>
-
+              <div className="flex gap-2 font-bold underline">
+                {[Status.draft, Status.rejected].includes(request.status) && (
                   <button
                     onClick={() => {
-                      setSelectedRequest(request);
-                      setOpenCreateModal({
-                        open: true,
-                        isEdit: true,
-                        isRequestEdit: false,
+                      setOpenCommentModal(true);
+                      setActionMutationProps({
+                        data: {
+                          snapshot: getSnapshot(request),
+                        },
+                        params: {
+                          entityId: request.id,
+                          entity: Entity.sponsorshipRequest,
+                          action: Action.request_approval,
+                        },
                       });
+                    }}
+                  >
+                    Request Approval
+                  </button>
+                )}
+                {request.status === Status.draft && (
+                  <button
+                    onClick={() => {
+                      setOpenCreateModal(true);
+                      setIsEditModal(true);
+                      setSelectedRequest(request);
                     }}
                   >
                     Edit
                   </button>
-                  {request.status !== "rejected" && (
-                    <button
-                      onClick={() =>
-                        deleteSponsorshipRequest.mutateAsync(request.id)
-                      }
-                    >
-                      Delete
-                    </button>
-                  )}
-                </>
-              )}
-              {/* {request.status === "approved" && (
-                <button
-                  onClick={() =>
-                    publishSponsorshipRequest.mutateAsync(request.id)
-                  }
-                >
-                  Publish
-                </button>
-              )} */}
-              {isRequiredStatus(["approved", "published"]) &&
-                (request.editRequested ? (
-                  <p>Edit Requested</p>
-                ) : (
-                  request.PublishRequest.at(0)?.status !== "pending" && (
-                    <div>
-                      {mostRecentEditRequest?.status !== "rejected" && (
-                        <button>Publish</button>
-                      )}
+                )}
+                {request.status === Status.draft && (
+                  <button
+                    onClick={() =>
+                      performActionMutation.mutateAsync({
+                        data: {
+                          snapshot: getSnapshot(request),
+                        },
+                        params: {
+                          entity: Entity.sponsorshipRequest,
+                          entityId: request.id,
+                          action: Action.delete,
+                        },
+                      })
+                    }
+                  >
+                    Delete
+                  </button>
+                )}
+                {[Status.approved, Status.edit_approved].includes(
+                  request.status
+                ) && (
+                  <button
+                    onClick={() =>
+                      performActionMutation.mutateAsync({
+                        data: {
+                          snapshot: getSnapshot(request),
+                        },
+                        params: {
+                          entity: Entity.sponsorshipRequest,
+                          entityId: request.id,
+                          action: Action.publish,
+                        },
+                      })
+                    }
+                  >
+                    Publish
+                  </button>
+                )}
+                {[
+                  Status.edit_rejected,
+                  Status.publish_rejected,
+                  Status.reopened,
+                ].includes(request.status) && (
+                  <button
+                    onClick={() => {
+                      setOpenCommentModal(true);
+                      setActionMutationProps({
+                        data: {
+                          snapshot: getSnapshot(request),
+                        },
+                        params: {
+                          entityId: request.id,
+                          entity: Entity.sponsorshipRequest,
+                          action: Action.request_publish,
+                        },
+                      });
+                    }}
+                  >
+                    {" "}
+                    Request Publish
+                  </button>
+                )}
+                {[
+                  Status.approved,
+                  Status.rejected,
+                  Status.edit_rejected,
+                  Status.edit_approved,
+                  Status.published,
+                  Status.publish_rejected,
+                  Status.reopened,
+                ].includes(request.status) && (
+                  <>
+                    {request.actionLogs.at(0)?.toStatus ===
+                      Status.edit_rejected && (
                       <button
                         onClick={() => {
-                          setOpenCreateModal({
-                            open: true,
-                            isEdit: false,
-                            isRequestEdit: true,
+                          setOpenCommentModal(true);
+                          setActionMutationProps({
+                            data: {
+                              snapshot: getSnapshot(request),
+                              change: request.actionLogs.at(0)?.change,
+                            },
+                            params: {
+                              entityId: request.id,
+                              entity: Entity.sponsorshipRequest,
+                              action: Action.request_edit,
+                            },
                           });
-                          setSelectedRequest(request);
                         }}
                       >
-                        Request Edit
+                        Request Last Edit
                       </button>
-                    </div>
-                  )
-                ))}
-              {request.PublishRequest.at(0)?.status === "pending" && (
-                <div>Publish Requested</div>
-              )}
+                    )}
+                    <button
+                      onClick={() => {
+                        setIsRequestEditModal(true);
+                        setSelectedRequest(request);
+                        setOpenCreateModal(true);
+                      }}
+                    >
+                      Request Edit
+                    </button>
+                  </>
+                )}
+                {![
+                  Status.draft,
+                  Status.approval_requested,
+                  Status.edit_requested,
+                  Status.publish_requested,
+                  Status.closed,
+                  Status.reopen_publish_requested,
+                  Status.reopen_publish_rejected,
+                  Status.reopen_requested,
+                  Status.reopen_rejected,
+                ].includes(request.status) && (
+                  <button
+                    onClick={() => {
+                      setOpenCommentModal(true);
+                      setActionMutationProps({
+                        data: {
+                          snapshot: getSnapshot(request),
+                        },
+                        params: {
+                          entityId: request.id,
+                          entity: Entity.sponsorshipRequest,
+                          action: Action.close,
+                        },
+                      });
+                    }}
+                  >
+                    Close
+                  </button>
+                )}
+                {[
+                  Status.closed,
+                  Status.reopen_publish_rejected,
+                  Status.reopen_rejected,
+                ].includes(request.status) && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setOpenCommentModal(true);
+                        setActionMutationProps({
+                          data: {
+                            snapshot: getSnapshot(request),
+                          },
+                          params: {
+                            entityId: request.id,
+                            entity: Entity.sponsorshipRequest,
+                            action: Action.request_reopen_publish,
+                          },
+                        });
+                      }}
+                    >
+                      Re-open (Publish)
+                    </button>
+                    <button
+                      onClick={() => {
+                        setOpenCommentModal(true);
+                        setActionMutationProps({
+                          data: {
+                            snapshot: getSnapshot(request),
+                          },
+                          params: {
+                            entityId: request.id,
+                            entity: Entity.sponsorshipRequest,
+                            action: Action.request_reopen,
+                          },
+                        });
+                      }}
+                    >
+                      Re-open
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           );
         })}
       </div>
-      {openCreateModal.open && (
+      {openCreateModal && (
         <Modal
-          open={openCreateModal.open}
+          open={openCreateModal}
           onClose={() => {
-            setOpenCreateModal({
-              open: false,
-              isEdit: false,
-              isRequestEdit: false,
-            });
-            if (openCreateModal.isEdit || openCreateModal.isRequestEdit) {
-              setSelectedRequest(undefined);
-            }
+            setOpenCreateModal(false);
+            setIsEditModal(false);
+            setIsRequestEditModal(false);
             hookForm.reset();
           }}
           sideModal
-          title={
-            openCreateModal.isEdit || openCreateModal.isRequestEdit
-              ? "Edit Sponsorship Request"
-              : "Create Sponsorship Request"
-          }
+          title={`${
+            isEditModal || isRequestEditModal ? "Edit" : "Create"
+          } Sponsorship Request`}
           form={{
             hookForm: hookForm,
             key: formKey,
@@ -328,9 +360,10 @@ const GuardianSponsorshipRequest = () => {
                     field.supportingDocuments.description.label,
                     field.supportingDocuments.uploadedDocument.label,
                   ]).map(async (doc, index) => ({
-                    id: openCreateModal.isEdit
-                      ? selectedRequest?.SupportingDocument[index].id
-                      : undefined,
+                    id:
+                      isEditModal || isRequestEditModal
+                        ? selectedRequest?.supportingDocuments[index].id
+                        : undefined,
                     title: doc[field.supportingDocuments.title.label],
                     description:
                       doc[field.supportingDocuments.description.label],
@@ -338,7 +371,7 @@ const GuardianSponsorshipRequest = () => {
                       doc[field.supportingDocuments.uploadedDocument.label]
                     ),
                     isArchived:
-                      selectedRequest?.SupportingDocument[index].isArchived ??
+                      selectedRequest?.supportingDocuments[index].isArchived ??
                       false,
                   }))
                 );
@@ -352,11 +385,31 @@ const GuardianSponsorshipRequest = () => {
                   ),
                   supportingDocuments: supportingDocuments,
                 };
-                if (openCreateModal.isRequestEdit) {
-                  setEditPayload(payload);
-                  setOpenReasonModal({ open: true });
+                if (isRequestEditModal) {
+                  setActionMutationProps({
+                    data: {
+                      snapshot: getSnapshot(selectedRequest),
+                      change: payload,
+                    },
+                    params: {
+                      entity: Entity.sponsorshipRequest,
+                      entityId: selectedRequest?.id,
+                      action: Action.request_edit,
+                    },
+                  });
+                  setOpenCommentModal(true);
                 } else {
-                  createEditSponsorshipRequest.mutateAsync(payload);
+                  performActionMutation.mutateAsync({
+                    data: {
+                      snapshot: getSnapshot(selectedRequest),
+                      change: payload,
+                    },
+                    params: {
+                      entityId: isEditModal ? selectedRequest?.id : undefined,
+                      entity: Entity.sponsorshipRequest,
+                      action: isEditModal ? Action.edit : Action.create,
+                    },
+                  });
                 }
               },
             },
@@ -428,7 +481,7 @@ const GuardianSponsorshipRequest = () => {
                     deleteSupportingDocument.mutateAsync({
                       id: selectedRequest?.id,
                       attachmentId:
-                        selectedRequest?.SupportingDocument[groupIndex].id,
+                        selectedRequest?.supportingDocuments[groupIndex].id,
                     });
                   },
                 },
@@ -439,20 +492,15 @@ const GuardianSponsorshipRequest = () => {
                 {
                   variant: ButtonVariant.CONTAINED_DARK,
                   text: "Cancel",
-                  onClick: () =>
-                    setOpenCreateModal({
-                      open: false,
-                      isEdit: false,
-                      isRequestEdit: false,
-                    }),
+                  onClick: () => {},
                 },
                 {
                   variant: ButtonVariant.CONTAINED,
                   type: "submit",
-                  text: selectedRequest
-                    ? openCreateModal.isEdit
-                      ? "Edit"
-                      : "Request Edit"
+                  text: isEditModal
+                    ? "Edit"
+                    : isRequestEditModal
+                    ? "Request Edit"
                     : "Add",
                 },
               ],
@@ -483,20 +531,14 @@ const GuardianSponsorshipRequest = () => {
           }}
         />
       )}
-      {openReasonModal.open && (
+      {openCommentModal && (
         <Modal
-          open={openReasonModal.open}
+          open={openCommentModal}
           onClose={() => {
-            setOpenReasonModal({
-              open: false,
-              isPublishRequest: false,
-              isResubmit: false,
-            });
+            setOpenCommentModal(false);
             commentForm.hookForm?.reset();
           }}
-          title={`Request ${
-            openReasonModal.isPublishRequest ? "Publish" : "Edit"
-          }`}
+          title="Request Action"
           form={commentForm}
         />
       )}
