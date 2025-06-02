@@ -1,13 +1,7 @@
-import CompleteAccount from '@/components/complete-profile/completeProfile';
-import React from 'react';
-// import CompleteAccount from "../../../../../../components/complete-profile/completeProfile";
+import CompleteAccount from "@/components/complete-account";
 
-const page = () => {
-  return (
-    <div>
-      <CompleteAccount />
-    </div>
-  );
+const CompleteAccountPage = () => {
+  return <CompleteAccount />;
 };
 
-export default page;
+export default CompleteAccountPage;

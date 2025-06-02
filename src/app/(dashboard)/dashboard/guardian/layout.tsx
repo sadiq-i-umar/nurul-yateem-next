@@ -2,9 +2,9 @@
 
 import { Box } from "@mui/material";
 import { ReactNode, useState } from "react";
+import DashboardFooter from "../../../../../components/footer/dashboard";
 import Header from "../../../../../components/header";
 import MainContent from "../../../../../components/main-content";
-import DashboardFooter from "../../../../../components/footer/dashboard";
 import Nav from "../../../../../components/nav";
 
 const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -35,7 +35,7 @@ const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
           </MainContent>
           <DashboardFooter
             isLargeNavOpen={openLargeNav}
-            text="&copy; Copyright 2024 Nurul Yateem Foundation"
+            text="&copy; Copyright 2025 Nurul Yateem Foundation"
           />
         </Box>
       </Box>

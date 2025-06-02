@@ -1,24 +1,26 @@
-'use client';
+"use client";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-} from '@mui/material';
-import { Box, Grid, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import LoaderBackdrop from '../common/loader';
-import AddAnOrphanForm from './add-an-orphan-form';
-import { useSession } from 'next-auth/react';
-import toast from 'react-hot-toast';
-import { useAddOrphanStore } from '../../utils/zustand/addOrphanstore';
+  Grid,
+  Typography,
+} from "@mui/material";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useAddOrphanStore } from "../../utils/zustand/addOrphanstore";
+import LoaderBackdrop from "../common/loader";
+import AddAnOrphanForm from "./add-an-orphan-form";
 // import { AddOphanApi } from "../../service/update-account";
-import { useMutation } from '@tanstack/react-query';
-import AddOrphanSuccess from './success/page';
-import { usePathname, useRouter } from 'next/navigation';
-import { AddOphanApi } from '@/src/app/api/service/update-account';
-import AddOrphanSuccessModal from '../modals/add-orphan-success';
+import { AddOphanApi } from "@/src/app/api/service/update-account";
+import { useMutation } from "@tanstack/react-query";
+import { usePathname, useRouter } from "next/navigation";
+import AddOrphanSuccessModal from "../modals/add-orphan-success";
+import AddOrphanSuccess from "./success/page";
 
 const AddAnOrphan: React.FC = () => {
   const pathname = usePathname();
@@ -64,7 +66,7 @@ const AddAnOrphan: React.FC = () => {
       const payload = {
         first_name: firstName,
         last_name: lastName,
-        profile_photo: 'https://example.com/profile.jpg',
+        profile_photo: "https://example.com/profile.jpg",
         gender: gender,
         date_of_birth: dateOfBirth,
         state_of_origin: stateOfOrigin,
@@ -80,7 +82,7 @@ const AddAnOrphan: React.FC = () => {
       // Make the API call with the payload
       await mutateAsync(payload);
     } catch (error) {
-      toast.error('An error occurred. Please try again later');
+      toast.error("An error occurred. Please try again later");
     } finally {
       setIsLoading(false);
     }
@@ -100,9 +102,9 @@ const AddAnOrphan: React.FC = () => {
         <Box
           sx={{
             ...(showSuccessMessage
-              ? { display: 'block' }
-              : { display: 'none' }),
-            paddingTop: '100px',
+              ? { display: "block" }
+              : { display: "none" }),
+            paddingTop: "100px",
           }}
         >
           <AddOrphanSuccess />
@@ -110,21 +112,21 @@ const AddAnOrphan: React.FC = () => {
         <Grid
           sx={{
             ...(showSuccessMessage
-              ? { display: 'none' }
-              : { display: 'block' }),
+              ? { display: "none" }
+              : { display: "block" }),
           }}
           container
         >
           <Grid container lg={12}>
-            {pathname == '/dashboard/add-an-orphan' && (
+            {pathname == "/dashboard/add-an-orphan" && (
               <Grid item xs={0} sm={5} md={4} lg={3}></Grid>
             )}
 
             <Grid
               sx={{
-                paddingLeft: { xs: '40px', sm: '50px' },
-                paddingRight: { xs: '40px', md: '200px' },
-                paddingTop: '40px',
+                paddingLeft: { xs: "40px", sm: "50px" },
+                paddingRight: { xs: "40px", md: "200px" },
+                paddingTop: "40px",
               }}
               item
               xs={12}
@@ -134,9 +136,9 @@ const AddAnOrphan: React.FC = () => {
             >
               <AddAnOrphanForm
                 onSuccess={() => {
-                  pathname != '/dashboard/add-an-orphan'
+                  pathname != "/dashboard/add-an-orphan"
                     ? setTimeout(
-                        () => router.push('/dashboard/guardian/orphan-list'),
+                        () => router.push("/dashboard/guardian/orphan-list"),
                         2000
                       )
                     : setOpenAddOrphanSuccessModal(true);
@@ -148,9 +150,9 @@ const AddAnOrphan: React.FC = () => {
           </Grid>
         </Grid>
         <Dialog open={showDialog}>
-          <DialogTitle sx={{ marginTop: '10px' }}>
+          <DialogTitle sx={{ marginTop: "10px" }}>
             <Typography
-              sx={{ color: '#39353D', fontWeight: 'bold', fontSize: '24px' }}
+              sx={{ color: "#39353D", fontWeight: "bold", fontSize: "24px" }}
             >
               Application
             </Typography>
@@ -159,16 +161,16 @@ const AddAnOrphan: React.FC = () => {
             Before submitting your Application, Make sure to verify every data
             is correct, if not you might be denied an approval.
           </DialogContent>
-          <DialogActions sx={{ marginBottom: '10px' }}>
+          <DialogActions sx={{ marginBottom: "10px" }}>
             <Button
-              sx={{ color: '#39353D', textTransform: 'none' }}
+              sx={{ color: "#39353D", textTransform: "none" }}
               onClick={() => setShowDialog(false)}
             >
               No, Cancel
             </Button>
             <Button
-              variant='contained'
-              sx={{ textTransform: 'none' }}
+              variant="contained"
+              sx={{ textTransform: "none" }}
               onClick={handleYesClick}
             >
               Yes, Continue

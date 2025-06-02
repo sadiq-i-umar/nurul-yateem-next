@@ -1,13 +1,13 @@
 "use client";
+import { UserRole } from "@/types";
 import { Box } from "@mui/material";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { ImageFrameRectangular117By53 } from "../common/image-frames";
 import { navConfig, navConfigAdmin, navConfigSponsor } from "./config";
 import { NavItem } from "./item";
 import UserAccount from "./user-account";
-import { useSession } from "next-auth/react";
-import { UserRole } from "@/types";
 
 const Nav: React.FC<{
   large: boolean;
@@ -18,20 +18,19 @@ const Nav: React.FC<{
   const path = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  console.log(session);
+
   const firstName = session?.user?.profile?.firstName;
   const lastName = session?.user?.profile?.lastName;
   const account = session?.user?.profile?.roles[0];
-  console.log(account);
 
   const navData =
     account === UserRole.Sponsor
       ? navConfigSponsor
       : account === UserRole.Guardian
-        ? navConfig
-        : account === UserRole.Admin
-          ? navConfigAdmin
-          : [];
+      ? navConfig
+      : account === UserRole.Admin
+      ? navConfigAdmin
+      : [];
 
   return (
     <Box
@@ -157,7 +156,7 @@ const Nav: React.FC<{
                     />
                   </Box>
                 </Box>
-              ),
+              )
             )}
             <UserAccount
               image=""

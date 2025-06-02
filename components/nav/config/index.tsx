@@ -5,39 +5,9 @@ export const navConfigAdmin = [
     path: "/dashboard/admin/home",
   },
   {
-    title: "Applications",
-    icon: "/category.svg",
-    path: "/dashboard/admin/applications",
-  },
-  {
-    title: "Orphan List",
-    icon: "/users.svg",
-    path: "/dashboard/admin/orphan-list",
-  },
-  {
-    title: "Guardian List",
-    icon: "/users.svg",
-    path: "/dashboard/admin/guardian-list",
-  },
-  {
-    title: "Sponsor List",
-    icon: "/users.svg",
-    path: "/dashboard/admin/sponsor-list",
-  },
-  {
-    title: "Activity",
+    title: "Approvals",
     icon: "/folder_open.svg",
-    path: "/dashboard/admin/activity",
-  },
-  {
-    title: "Users",
-    icon: "/folder_open.svg",
-    path: "/dashboard/admin/users",
-  },
-  {
-    title: "Settings",
-    icon: "/gear.svg",
-    path: "/dashboard/admin/settings",
+    path: "/dashboard/admin/approvals",
   },
 ];
 
@@ -53,9 +23,9 @@ export const navConfig = [
     path: "/dashboard/guardian/orphan-list",
   },
   {
-    title: "Activity",
+    title: "Sponsorship Requests",
     icon: "/folder_open.svg",
-    path: "/dashboard/guardian/activity",
+    path: "/dashboard/guardian/sponsorship-requests",
   },
   {
     title: "Settings",
@@ -70,18 +40,13 @@ export const navConfigSponsor = [
     path: "/dashboard/sponsor/home",
   },
   {
-    title: "Orphan List",
-    icon: "/users.svg",
-    path: "/dashboard/sponsor/orphan-list",
+    title: "Sponsorship Requests",
+    icon: "/folder_open.svg",
+    path: "/dashboard/sponsor/sponsorship-requests",
   },
   {
     title: "Donations",
     icon: "/wallet-money.svg",
-    path: "/dashboard/sponsor/donation",
-  },
-  {
-    title: "Settings",
-    icon: "/gear.svg",
-    path: "/dashboard/sponsor/settings",
+    path: "/dashboard/sponsor/donations",
   },
 ];

@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import Image from "next/image";
-import { IconHolder } from "../icon";
 
 const Header: React.FC<{
   small: boolean;
@@ -47,43 +46,6 @@ const Header: React.FC<{
       >
         <Image src={"/menu.svg"} width={24} height={24} alt={"Menu Icon"} />
       </Box>
-      <Box sx={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
-        <Box sx={{ display: "flex" }}>
-          {[
-            { src: "/search_icon.svg", alt: "Search Icon" },
-            { src: "/message.svg", alt: "Message Icon" },
-            { src: "/bell.svg", alt: "Bell Icon" },
-          ].map((item) => (
-            <Box key={item.src} sx={{ marginRight: "40px" }}>
-              <Image alt={item.alt} width={24} height={24} src={item.src} />
-            </Box>
-          ))}
-        </Box>
-      </Box>
-      {/* <Box sx={{ display: { xs: "none", sm: "flex" }, marginRight: "30px" }}>
-        <Box
-          sx={{
-            padding: "5px 20px 5px 20px",
-            color: "#237A00",
-            backgroundColor: "#E9F3E6",
-            borderRadius: "10px",
-            marginRight: "-15px",
-            paddingRight: "40px",
-          }}
-        >
-          <IconHolder icon={"/moon.svg"} />
-        </Box>
-        <Box
-          sx={{
-            padding: "5px 20px 5px 20px",
-            color: "#FFFFFF",
-            backgroundColor: "#237A00",
-            borderRadius: "10px",
-          }}
-        >
-          <IconHolder icon={"/sun.svg"} />
-        </Box>
-      </Box> */}
     </Box>
   );
 };
