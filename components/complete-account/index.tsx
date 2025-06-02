@@ -53,6 +53,7 @@ const CompleteAccount = () => {
         (await getUrl(getValue2(field.identificationUpload.label)));
 
       const personalInfo = {
+        stateOfOrigin: getValue(field.stateOfOrigin.label),
         localGovernment: getValue(field.lga.label),
         dateOfBirth: dayjs(getValue(field.dateOfBirth.label)).toISOString(),
         homeAddress: getValue(field.homeAddress.label),
