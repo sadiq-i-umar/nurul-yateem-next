@@ -48,13 +48,14 @@ const FileUploadField = ({
   isAvatar,
   defaultValue,
 }: FileUploadFieldProps) => {
-  if (typeof FileList === "undefined" || typeof File === "undefined") {
-    return;
-  }
-
   const _name = name ?? "";
   const value = hookForm?.watch?.(_name);
-  const isFileListValue = value instanceof FileList;
+
+  //Check if FileList is being evaluated in the server or client
+  //to avoid a prerender error during build
+  const isFileListValue =
+    typeof FileList !== "undefined" && value instanceof FileList;
+
   const isImageType = fileType === FileUploadType.IMAGE;
   const imagePreviewName = `${_name}Preview`;
   const imagePreview = hookForm?.watch(imagePreviewName);
@@ -127,13 +128,17 @@ const FileUploadField = ({
         {...hookForm?.register(_name, {
           validate: {
             [requiredError]: (value) =>
-              (required && value && value instanceof File) ||
+              (required &&
+                value &&
+                typeof File !== "undefined" &&
+                value instanceof File) ||
               isDefaultValue ||
               !required,
             [`Only ${
               isImageType ? "JPG," : "PDF, JPG,"
             } JPEG, and PNG files are allowed`]: (value) =>
-              (value instanceof File &&
+              (typeof File !== "undefined" &&
+                value instanceof File &&
                 validateFileType(
                   value,
                   isImageType ? allowedImageFiles : allowedDocFiles
@@ -148,6 +153,7 @@ const FileUploadField = ({
               (!required && value === undefined) ||
               (!required && value instanceof FileList) ||
               (value &&
+                typeof File !== "undefined" &&
                 value instanceof File &&
                 value.size < _maxSize * 1024 * 1024),
           },
