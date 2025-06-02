@@ -206,7 +206,7 @@ const FileUploadField = ({
           </div>
         </div>
       )}
-      {value instanceof File && isImageType && (
+      {typeof File !== "undefined" && value instanceof File && isImageType && (
         <button
           onClick={() => {
             [_name, imagePreviewName].map((name) => {
