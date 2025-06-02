@@ -1,3 +1,4 @@
+"use client";
 import Button, { ButtonVariant } from "@/components/button";
 import EmptyState from "@/components/empty-state";
 import { icon as imageIcon } from "@/constants/icon";
@@ -50,7 +51,8 @@ const FileUploadField = ({
 }: FileUploadFieldProps) => {
   const _name = name ?? "";
   const value = hookForm?.watch?.(_name);
-  const isFileListValue = value instanceof FileList;
+  const isFileListValue =
+    typeof FileList !== "undefined" && value instanceof FileList;
   const isImageType = fileType === FileUploadType.IMAGE;
   const imagePreviewName = `${_name}Preview`;
   const imagePreview = hookForm?.watch(imagePreviewName);
