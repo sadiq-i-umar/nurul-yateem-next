@@ -57,6 +57,7 @@ const useAddOrphansForm = ({
           firstName: getValue(field.firstName.label),
           lastName: getValue(field.lastName.label),
           affidavitOfGuardianship: affidavit,
+          stateOfOrigin: getValue(field.stateOfOrigin.label),
           localGovernment: getValue(field.lga.label),
           dateOfBirth: getValue(field.dob.label),
           isEnrolled: isEnrolled,

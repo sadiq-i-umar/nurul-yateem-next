@@ -5,6 +5,7 @@ export type AddEditOrphanPayload = {
   middleName?: string;
   lastName?: string;
   affidavitOfGuardianship?: string;
+  stateOfOrigin?: string;
   localGovernment?: string;
   dateOfBirth?: string;
   isEnrolled?: boolean;
