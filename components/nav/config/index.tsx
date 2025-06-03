@@ -27,11 +27,6 @@ export const navConfig = [
     icon: "/folder_open.svg",
     path: "/dashboard/guardian/sponsorship-requests",
   },
-  {
-    title: "Settings",
-    icon: "/gear.svg",
-    path: "/dashboard/guardian/settings",
-  },
 ];
 export const navConfigSponsor = [
   {
