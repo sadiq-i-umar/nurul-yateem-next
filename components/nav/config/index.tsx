@@ -39,9 +39,4 @@ export const navConfigSponsor = [
     icon: "/folder_open.svg",
     path: "/dashboard/sponsor/sponsorship-requests",
   },
-  {
-    title: "Donations",
-    icon: "/wallet-money.svg",
-    path: "/dashboard/sponsor/donations",
-  },
 ];
