@@ -6,9 +6,8 @@ import { icon } from "@/constants/icon";
 import options from "@/constants/options";
 import useStateAndLga from "@/hooks/state-and-lga";
 import { getUrl } from "@/utils/api";
-import { getOptions } from "@/utils/form/options";
-import { getLgas } from "@/utils/nigeria-states";
 import dayjs from "dayjs";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import useAddOrphanApi from "../api";
 import { AddEditOrphanPayload } from "../api/types";
@@ -32,6 +31,15 @@ const useAddOrphansForm = ({
   const { disableField } = useSchoolStatusField(hookForm);
 
   const disableConstraint = { required: !disableField, disabled: disableField };
+
+  //Setting the default value for the LGA field when an orphan selected for editing
+  //The defaultValue prop on the selectfield only makes it appear as if the field is set, but it does not actually set the value in the form state
+  //So we need to set the value in the form state using setValue
+  useEffect(() => {
+    if (orphan) {
+      hookForm.setValue(field.lga.label, orphan?.user.profile.localGovernment);
+    }
+  }, [orphan]);
 
   const { addOrphan } = useAddOrphanApi({
     orphanId: orphan?.id,
@@ -127,11 +135,11 @@ const useAddOrphansForm = ({
       {
         label: field.lga.label,
         selectField: {
-          options: orphan
-            ? getOptions(getLgas(orphan?.user.profile.stateOfOrigin) ?? [])
-            : lgaOptions,
+          options: lgaOptions,
           required: true,
-          defaultValue: orphan?.user.profile.localGovernment,
+          value: lgaOptions.find(
+            (option) => option.value === orphan?.user.profile.localGovernment
+          )?.value, //value prop used to ensure it updates when state changes
         },
       },
       {
