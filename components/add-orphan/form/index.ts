@@ -121,19 +121,17 @@ const useAddOrphansForm = ({
         selectField: {
           options: field.stateOfOrigin.options,
           required: true,
-          defaultValue: orphan?.user.profile.localGovernment.state.name,
+          defaultValue: orphan?.user.profile.stateOfOrigin,
         },
       },
       {
         label: field.lga.label,
         selectField: {
           options: orphan
-            ? getOptions(
-                getLgas(orphan?.user.profile.localGovernment.state.name) ?? []
-              )
+            ? getOptions(getLgas(orphan?.user.profile.stateOfOrigin) ?? [])
             : lgaOptions,
           required: true,
-          defaultValue: orphan?.user.profile.localGovernment.name,
+          defaultValue: orphan?.user.profile.localGovernment,
         },
       },
       {

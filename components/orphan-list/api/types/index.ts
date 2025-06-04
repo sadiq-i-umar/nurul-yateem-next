@@ -10,7 +10,8 @@ type UserProfile = {
   middleName: string | null;
   lastName: string;
   gender: Gender;
-  localGovernmentId: string;
+  stateOfOrigin: string;
+  localGovernment: string;
   dateOfBirth: string;
   homeAddress: string | null;
   maritalStatus: string | null;
@@ -19,19 +20,6 @@ type UserProfile = {
   userId: string;
   createdByUserId: string | null;
   updatedByUserId: string | null;
-  localGovernment: {
-    id: string;
-    name: string;
-    stateId: string;
-    createdAt: string;
-    updatedAt: string;
-    state: {
-      id: string;
-      name: string;
-      createdAt: string;
-      updatedAt: string;
-    };
-  };
 };
 
 type User = {
