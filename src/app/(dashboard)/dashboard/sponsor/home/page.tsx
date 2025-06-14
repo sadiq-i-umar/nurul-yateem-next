@@ -1,4 +1,4 @@
-import BannerCarousel from "../../../../../../components/cards";
+import BannerCarousel from "@/components/cards";
 
 export default function GuardianDashboard() {
   return <BannerCarousel />;
