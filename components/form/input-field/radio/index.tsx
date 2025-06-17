@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Option } from "react-multi-select-component";
 import { HookFormRequired, InputFieldProps } from "..";
 
@@ -16,10 +17,23 @@ const RadioGroupField = ({
   hookForm,
   defaultValue,
 }: RadioGroupFieldProps) => {
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(
+    options[0]?.value
+  );
+
+  useEffect(() => {
+    hookForm?.setValue(name ?? "", options[0].value);
+  }, []);
+
   return (
-    <div>
+    <div className="grid grid-cols-2 gap-10">
       {options.map((option) => (
-        <label key={option.value}>
+        <label
+          className={`flex items-center gap-2 ${
+            selectedValue === option.value && "border-primary"
+          } border-2 rounded-lg p-4 cursor-pointer`}
+          key={option.value}
+        >
           <input
             type="radio"
             name={name}
@@ -27,9 +41,14 @@ const RadioGroupField = ({
             defaultChecked={defaultValue === option.value}
             {...hookForm?.register(name ?? "", {
               required: required,
+              onChange: (e) => {
+                setSelectedValue(e.target.value);
+                hookForm?.setValue(name ?? "", e.target.value);
+              },
             })}
+            className="cursor-pointer"
           />
-          {option.label}
+          <span className="text-sm">{option.label}</span>
         </label>
       ))}
     </div>

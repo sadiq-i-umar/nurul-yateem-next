@@ -29,6 +29,7 @@ const useRegistrationForm = () => {
       textField: {
         type: "text",
         required: true,
+        placeholder: "Enter your first name",
       },
     },
     {
@@ -36,6 +37,7 @@ const useRegistrationForm = () => {
       textField: {
         type: "text",
         required: true,
+        placeholder: "Enter your last name",
       },
     },
     {
@@ -43,6 +45,7 @@ const useRegistrationForm = () => {
       textField: {
         type: "email",
         required: true,
+        placeholder: "Enter your email address",
       },
     },
     {
@@ -51,6 +54,7 @@ const useRegistrationForm = () => {
         type: "password",
         required: true,
         validate: validatePassword,
+        placeholder: "Password",
       },
     },
     {
@@ -62,6 +66,7 @@ const useRegistrationForm = () => {
           [field.confirmPassword.error.matchingError.message]: (value) =>
             value === hookForm.watch(field.password.label),
         },
+        placeholder: "Password",
       },
     },
   ];
@@ -86,6 +91,7 @@ const useRegistrationForm = () => {
       {
         type: "submit",
         variant: ButtonVariant.CONTAINED,
+        fullWidth: true,
         text: "Sign Up",
       },
     ],

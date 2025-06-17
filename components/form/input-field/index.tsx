@@ -47,7 +47,7 @@ const InputField = ({
   const errors = hookForm?.formState.errors;
   return (
     <div className="flex flex-col gap-2">
-      {label && <p>{label}</p>}
+      {label && <p className="text-sm">{label}</p>}
       {textField && (
         <TextField {...textField} name={_name} hookForm={hookForm} />
       )}
@@ -83,7 +83,7 @@ const InputField = ({
       )}
       {groupField && <GroupField {...groupField} hookForm={hookForm} />}
       {errors?.[_name] && (
-        <p>
+        <p className="text-xs text-error-primary">
           {errors[_name]?.type === "required"
             ? `${_name} is required`
             : `${errors[_name]?.type}`}

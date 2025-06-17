@@ -25,6 +25,7 @@ const useLoginForm = () => {
         textField: {
           type: "email",
           required: true,
+          placeholder: "Enter your email address",
         },
       },
       {
@@ -32,6 +33,7 @@ const useLoginForm = () => {
         textField: {
           type: "password",
           required: true,
+          placeholder: "Password",
         },
       },
     ],
@@ -40,6 +42,7 @@ const useLoginForm = () => {
         {
           type: "submit",
           variant: ButtonVariant.CONTAINED,
+          fullWidth: true,
           text: "Login",
         },
       ],

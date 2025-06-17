@@ -14,6 +14,7 @@ export type ButtonProps = {
   text?: string;
   onClick?: () => void;
   preventDefault?: boolean;
+  fullWidth?: boolean;
 };
 
 const Button = ({
@@ -21,6 +22,7 @@ const Button = ({
   icon,
   text,
   onClick,
+  fullWidth,
   type = "button",
 }: ButtonProps) => {
   return (
@@ -33,7 +35,7 @@ const Button = ({
       className={`
         flex items-center gap-2 rounded-3xl ${
           icon ? "px-4" : "px-8"
-        } py-2 text-sm text-white
+        } py-3 text-sm text-white
         ${variant === ButtonVariant.CONTAINED && "bg-primary"}
         ${variant === ButtonVariant.CONTAINED_DARK && "bg-black"}
         ${variant === ButtonVariant.DELETE && "bg-red-600"}
@@ -41,6 +43,7 @@ const Button = ({
           variant === ButtonVariant.PAPER &&
           "bg-white !text-black border-2 border-black"
         }
+        ${fullWidth ? "w-full justify-center" : "w-fit"}
         `}
     >
       {icon && <Image {...icon} />}

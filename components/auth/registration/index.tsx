@@ -1,21 +1,28 @@
 "use client";
-import Form from "../../form";
+import ReusableAuth from "../reusable";
 import useRegistrationForm from "./form";
 
 const Register = () => {
   const { form } = useRegistrationForm();
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 ">
-      <div></div>
-      <div>
-        <div className="mb-10">
-          <h1>Get Started</h1>
-          <p>Create your account now</p>
-        </div>
-        <Form {...form} />
-        <p className="text-center mt-2">You already have an account? Login</p>
-      </div>
-    </div>
+    <ReusableAuth
+      title="Get Started"
+      subtitle="Create your account now"
+      form={form}
+      centerImage="/hero_picture_reg.png"
+      infoBottomText={{
+        initial:
+          "Be the change you want to see in the world – join us in transforming lives and making a lasting impact. ",
+        middle: "Sign up now ",
+        end: "to become a beacon of hope and support our mission for a brighter tomorrow.",
+        highlight: "middle",
+      }}
+      formBottomText={{
+        plainText: "You already have an account? ",
+        link: "/login",
+        linkText: "Login",
+      }}
+    />
   );
 };
 

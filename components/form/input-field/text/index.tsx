@@ -12,10 +12,11 @@ export type TextFieldProps = {
   disabled?: boolean;
   defaultValue?: string | number;
   type: TextFieldType;
+  placeholder?: string;
 };
 
 export const textFieldStyle =
-  "border-2 rounded-lg px-2 py-3 border-tetiary-100 w-full";
+  "border-2 rounded-lg px-4 py-4 border-tetiary-100 w-full text-sm";
 
 const TextField = ({
   type,
@@ -25,6 +26,7 @@ const TextField = ({
   disabled,
   hookForm,
   defaultValue,
+  placeholder,
 }: TextFieldProps) => {
   const [showText, setShowText] = useState(false);
 
@@ -38,6 +40,7 @@ const TextField = ({
           required: required,
           validate: validate,
         })}
+        placeholder={placeholder}
         defaultValue={defaultValue}
       />
       {type === "password" && (
@@ -45,7 +48,11 @@ const TextField = ({
           onClick={() => setShowText(!showText)}
           className="absolute top-3 right-5 cursor-pointer"
         >
-          {showText ? <VisibilityOff /> : <Visibility />}
+          {showText ? (
+            <VisibilityOff className="text-gray-400" />
+          ) : (
+            <Visibility className="text-gray-400" />
+          )}
         </span>
       )}
     </div>
